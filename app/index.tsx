@@ -2,7 +2,7 @@ import { COLORS } from "@/constants/theme";
 import { verticalScale } from "@/utils/styling";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { Image, StatusBar, StyleSheet, View } from "react-native";
 
 export default function Index() {
   const route = useRouter();
@@ -19,6 +19,7 @@ export default function Index() {
         source={require("../assets/images/SplashImage.png")}
         style={styles.logo}
       />
+      <StatusBar barStyle={"light-content"} />
     </View>
   );
 }

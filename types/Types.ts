@@ -1,7 +1,7 @@
 import React from "react";
 import { ViewStyle, StyleProp, TextStyle } from "react-native";
 
-interface ScreenWrapperProps {
+export interface ScreenWrapperProps {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   backgroundColor?: string;
@@ -9,7 +9,7 @@ interface ScreenWrapperProps {
   safeArea?: boolean;
 }
 
-interface TypoProps {
+export interface TypoProps {
   children: React.ReactNode;
   style?: StyleProp<TextStyle>;
   fontFamily?: TextStyle["fontFamily"];
@@ -24,4 +24,10 @@ export interface SvgIconProps {
   color?: string;
 }
 
-export { ScreenWrapperProps, TypoProps, SvgIconProps };
+export interface ButtonProps {
+  children: React.ReactNode;
+  style?: StyleProp<ViewStyle>;
+  activeOpacity?: number;
+  disabled?: boolean;
+  onPress: () => void;
+}

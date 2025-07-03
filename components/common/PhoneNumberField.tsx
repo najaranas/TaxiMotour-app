@@ -1,9 +1,8 @@
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-import { useState } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
 import THEME, { COLORS } from "@/constants/theme";
 import { moderateScale, horizontalScale, verticalScale } from "@/utils/styling";
-import { Entypo } from "@expo/vector-icons";
 import Typo from "./Typo";
+import { TunisiaFlag } from "./SvgIcons";
 
 interface PhoneNumberFieldProps {
   value?: string;
@@ -17,22 +16,25 @@ export default function PhoneNumberField({
   placeholder = "Phone number",
 }: PhoneNumberFieldProps) {
   return (
-    <View style={[styles.container]}>
-      {/* Country Code with Tunisia Flag */}
+    <View style={styles.container}>
       <Pressable style={styles.countryButton}>
-        {/* <Typo style={styles.flagEmoji}>🇹🇳</Typo> */}
-        <Typo variant="button">🇹🇳</Typo>
-        <Entypo
-          name="chevron-down"
-          size={moderateScale(15)}
-          color={THEME.text.secondary}
-        />
+        <TunisiaFlag height={verticalScale(30)} width={horizontalScale(30)} />
       </Pressable>
 
-      {/* Phone Input */}
-      <Pressable>
-        <Typo variant="button">+216</Typo>
-      </Pressable>
+      {/* Country Code Display */}
+      <View style={styles.countryCodeContainer}>
+        <Pressable>
+          <Typo variant="body" color={THEME.text.primary}>
+            +216
+          </Typo>
+        </Pressable>
+
+        <Pressable>
+          <Typo variant="body" color={THEME.input.placeholder}>
+            9XX XXX XX
+          </Typo>
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -45,11 +47,21 @@ const styles = StyleSheet.create({
     borderRadius: moderateScale(8),
     gap: horizontalScale(10),
     backgroundColor: COLORS.gray["100"],
+    borderWidth: 1,
+    borderColor: THEME.input.border,
   },
-
   countryButton: {
     flexDirection: "row",
     alignItems: "center",
+    gap: horizontalScale(5),
+    borderRightWidth: 1,
+    borderRightColor: COLORS.gray["300"],
+    paddingRight: horizontalScale(10),
+  },
+  countryCodeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
     gap: horizontalScale(10),
+    paddingRight: horizontalScale(8),
   },
 });
