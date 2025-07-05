@@ -8,7 +8,7 @@ export default function Index() {
   const route = useRouter();
   useEffect(() => {
     setTimeout(() => {
-      route.replace("/screens/Auth/Login");
+      route.replace("/screens/Auth/LoginScreen");
     }, 2000);
   }, [route]);
 

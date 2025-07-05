@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "403633585361",
+    "project_id": "taximotour",
+    "storage_bucket": "taximotour.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:403633585361:android:9dbdffa4bbe51ba1b499f0",
+        "android_client_info": {
+          "package_name": "com.anasnajar.Taximotour"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "403633585361-32ek5d2c87odsph8ol2c8uncdm24706t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZF-5YLxmfummaAO7RvaLx7WDy1G88L2M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "403633585361-32ek5d2c87odsph8ol2c8uncdm24706t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

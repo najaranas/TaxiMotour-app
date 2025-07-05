@@ -29,5 +29,15 @@ export interface ButtonProps {
   style?: StyleProp<ViewStyle>;
   activeOpacity?: number;
   disabled?: boolean;
+  loading?: boolean;
+  indicatorStyle?: { size?: number; color?: string };
   onPress: () => void;
+}
+export interface ConfirmationCodeFieldProps {
+  digitCount: number;
+  onCodeComplete?: (code: string) => void;
+  onCodeChange?: (code: string) => void;
+  disabled?: boolean;
+  autoFocus?: boolean;
+  containerStyle?: StyleProp<ViewStyle>;
 }

@@ -1,5 +1,5 @@
 import { SvgIconProps } from "@/types/Types";
-import Svg, { Path, Circle } from "react-native-svg";
+import Svg, { Path, Circle, G } from "react-native-svg";
 
 // Tunisia Flag SVG
 export function TunisiaFlag({ width = 24, height = 24 }: SvgIconProps) {
@@ -66,7 +66,6 @@ export function FacebookIcon({
   );
 }
 
-// Car Icon (for taxi)
 export function AppleIcon({
   width = 24,
   height = 24,
@@ -79,82 +78,81 @@ export function AppleIcon({
   );
 }
 
-// User/Profile Icon
-export function UserIcon({
+export function LeftArrowIcon({
   width = 24,
   height = 24,
   color = "#000000",
 }: SvgIconProps) {
   return (
-    <Svg width={width} height={height} viewBox="0 0 24 24">
-      <Path
-        fill={color}
-        d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
-      />
+    <Svg width={width} height={height} viewBox="0 0 24 24" fill="none">
+      <G id="SVGRepo_bgCarrier" stroke-width="0"></G>
+      <G
+        id="SVGRepo_tracerCarrier"
+        stroke-linecap="round"
+        stroke-linejoin="round"></G>
+      <G id="SVGRepo_iconCarrier">
+        <Path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M6.3508 12.7499L11.2096 17.4615L10.1654 18.5383L3.42264 11.9999L10.1654 5.46148L11.2096 6.53833L6.3508 11.2499L21 11.2499L21 12.7499L6.3508 12.7499Z"
+          fill={color}
+        />
+        {/* Bolder arrow by overlaying a thicker Path */}
+        <Path
+          d="M6.5 13L11.5 17.5L10.2 18.8L3 12L10.2 5.2L11.5 6.5L6.5 11H21V13H6.5Z"
+          fill={color}
+          opacity={0.5}
+        />
+      </G>
     </Svg>
   );
 }
 
-// Eye Icon (for show/hide password)
-export function EyeIcon({
+export function WhatsappIcon({
   width = 24,
   height = 24,
   color = "#000000",
 }: SvgIconProps) {
   return (
-    <Svg width={width} height={height} viewBox="0 0 24 24">
+    <Svg x="0px" y="0px" width={width} height={height} viewBox="0 0 48 48">
       <Path
-        fill={color}
-        d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"
-      />
+        fill="#40c351"
+        d="M35.176,12.832c-2.98-2.982-6.941-4.625-11.157-4.626c-8.704,0-15.783,7.076-15.787,15.774c-0.001,2.981,0.833,5.883,2.413,8.396l0.376,0.597l-1.595,5.821l5.973-1.566l0.577,0.342c2.422,1.438,5.2,2.198,8.032,2.199h0.006c8.698,0,15.777-7.077,15.78-15.776C39.795,19.778,38.156,15.814,35.176,12.832z"></Path>
+      <Path
+        fill="#fff"
+        fill-rule="evenodd"
+        d="M19.268,16.045c-0.355-0.79-0.729-0.806-1.068-0.82c-0.277-0.012-0.593-0.011-0.909-0.011c-0.316,0-0.83,0.119-1.265,0.594c-0.435,0.475-1.661,1.622-1.661,3.956c0,2.334,1.7,4.59,1.937,4.906c0.237,0.316,3.282,5.259,8.104,7.161c4.007,1.58,4.823,1.266,5.693,1.187c0.87-0.079,2.807-1.147,3.202-2.255c0.395-1.108,0.395-2.057,0.277-2.255c-0.119-0.198-0.435-0.316-0.909-0.554s-2.807-1.385-3.242-1.543c-0.435-0.158-0.751-0.237-1.068,0.238c-0.316,0.474-1.225,1.543-1.502,1.859c-0.277,0.317-0.554,0.357-1.028,0.119c-0.474-0.238-2.002-0.738-3.815-2.354c-1.41-1.257-2.362-2.81-2.639-3.285c-0.277-0.474-0.03-0.731,0.208-0.968c0.213-0.213,0.474-0.554,0.712-0.831c0.237-0.277,0.316-0.475,0.474-0.791c0.158-0.317,0.079-0.594-0.04-0.831C20.612,19.329,19.69,16.983,19.268,16.045z"
+        clip-rule="evenodd"></Path>
     </Svg>
   );
 }
 
-// Arrow Right Icon
-export function ArrowRightIcon({
+export function EditIcon({
   width = 24,
   height = 24,
   color = "#000000",
 }: SvgIconProps) {
   return (
-    <Svg width={width} height={height} viewBox="0 0 24 24">
-      <Path
-        fill={color}
-        d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"
-      />
-    </Svg>
-  );
-}
-
-// Back/Arrow Left Icon
-export function ArrowLeftIcon({
-  width = 24,
-  height = 24,
-  color = "#000000",
-}: SvgIconProps) {
-  return (
-    <Svg width={width} height={height} viewBox="0 0 24 24">
-      <Path
-        fill={color}
-        d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
-      />
-    </Svg>
-  );
-}
-
-// Star Icon (for ratings)
-export function StarIcon({
-  width = 24,
-  height = 24,
-  color = "#000000",
-}: SvgIconProps) {
-  return (
-    <Svg width={width} height={height} viewBox="0 0 24 24">
-      <Path
-        fill={color}
-        d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
-      />
+    <Svg width={width} height={height} viewBox="0 0 24 24" fill="none">
+      <G id="SVGRepo_bgCarrier" stroke-width="0"></G>
+      <G
+        id="SVGRepo_tracerCarrier"
+        stroke-linecap="round"
+        stroke-linejoin="round"></G>
+      <G id="SVGRepo_iconCarrier">
+        <Path
+          d="M18.3785 8.44975L11.4637 15.3647C11.1845 15.6439 10.8289 15.8342 10.4417 15.9117L7.49994 16.5L8.08829 13.5582C8.16572 13.1711 8.35603 12.8155 8.63522 12.5363L15.5501 5.62132M18.3785 8.44975L19.7927 7.03553C20.1832 6.64501 20.1832 6.01184 19.7927 5.62132L18.3785 4.20711C17.988 3.81658 17.3548 3.81658 16.9643 4.20711L15.5501 5.62132M18.3785 8.44975L15.5501 5.62132"
+          stroke={color}
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"></Path>
+        <Path
+          d="M5 20H19"
+          stroke={color}
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"></Path>
+      </G>
     </Svg>
   );
 }

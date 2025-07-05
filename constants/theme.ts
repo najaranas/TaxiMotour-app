@@ -26,6 +26,9 @@ export const COLORS = {
   danger: "#EF4444",
   warning: "#F59E0B",
   info: "#3B82F6",
+
+  // Custom selection color
+  selection: "rgba(12, 129, 224, 0.2)",
 };
 
 // Font Families
@@ -52,6 +55,24 @@ const THEMES = {
       primary: COLORS.black,
       secondary: COLORS.gray[600],
       muted: COLORS.gray[500],
+    },
+
+    // Border Radius
+    borderRadius: {
+      none: 0,
+      small: 6,
+      medium: 10,
+      large: 15,
+      pill: 30,
+      circle: 9999,
+    },
+    // Border Width
+    borderWidth: {
+      none: 0,
+      thin: 1,
+      regular: 2,
+      thick: 3,
+      extraThick: 5,
     },
 
     // Buttons
@@ -92,6 +113,24 @@ const THEMES = {
       muted: COLORS.gray[500],
     },
 
+    // Border Radius
+    borderRadius: {
+      none: 0,
+      small: 6,
+      medium: 10,
+      large: 15,
+      pill: 30,
+      circle: 9999,
+    },
+    // Border Width
+    borderWidth: {
+      none: 0,
+      thin: 1,
+      regular: 2,
+      thick: 3,
+      extraThick: 5,
+    },
+
     // Buttons
     button: {
       primary: COLORS.secondary, // #FFB218
@@ -119,6 +158,10 @@ const THEMES = {
 
 // Default to dark theme (your current theme)
 const THEME = THEMES.light;
+
+// Export borderRadius and borderWidth for direct import if needed
+export const BORDER_RADIUS = THEME.borderRadius;
+export const BORDER_WIDTH = THEME.borderWidth;
 
 export { THEMES };
 export default THEME;

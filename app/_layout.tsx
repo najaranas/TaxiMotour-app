@@ -2,6 +2,7 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
+import { KeyboardProvider } from "react-native-keyboard-controller"; // ✅ Add this import
 
 // Prevent splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();
@@ -27,8 +28,11 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack screenOptions={{ animation: "ios_from_right", headerShown: false }}>
-      <Stack.Screen name="index" options={{ title: "splashScreen" }} />
-    </Stack>
+    <KeyboardProvider>
+      <Stack
+        screenOptions={{ animation: "ios_from_right", headerShown: false }}>
+        <Stack.Screen name="index" options={{ title: "splashScreen" }} />
+      </Stack>
+    </KeyboardProvider>
   );
 }
