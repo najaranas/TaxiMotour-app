@@ -8,9 +8,19 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "icon": "./assets/images/icon.png",
+    "splash": {
+      "image": "./assets/images/splash-no-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#10252A"
+    },
     "ios": {
       "supportsTablet": true,
-      "icon": "./assets/images/icon.png"
+      "icon": "./assets/images/icon.png",
+      "splash": {
+        "image": "./assets/images/splash-no-icon.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#10252A"
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -18,19 +28,33 @@
         "backgroundColor": "#10252A"
       },
       "icon": "./assets/images/icon.png",
-      "edgeToEdgeEnabled": true,
-      "navigationBar": {
-        "visible": false
+      "splash": {
+        "image": "./assets/images/splash-no-icon.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#10252A"
       },
+      "edgeToEdgeEnabled": true,
+
       "package": "com.anasnajar.Taximotour"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "icon": "./assets/images/icon.png"
+      "icon": "./assets/images/icon.png",
+      "splash": {
+        "image": "./assets/images/splash-no-icon.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#10252A"
+      }
     },
     "plugins": ["expo-router"],
 
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "exclude": ["react-native-indicators", "eslint-plugin-react-compiler"],
+        "listUnknownPackages": false
+      }
+    },
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
