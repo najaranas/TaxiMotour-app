@@ -65,7 +65,7 @@ docs/
 .metro-health-check*
 
 # Debug files
-*.map
+*.map 
 
 # React Native
 *.jks

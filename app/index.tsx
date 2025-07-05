@@ -16,7 +16,7 @@ export default function Index() {
     <View style={styles.container}>
       <Image
         resizeMode="contain"
-        source={require("../assets/images/SplashImage.png")}
+        source={require("../assets/images/logo.png")}
         style={styles.logo}
       />
       <StatusBar barStyle={"light-content"} />

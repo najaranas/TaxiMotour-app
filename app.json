@@ -7,13 +7,17 @@
     "scheme": "taximotour",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "icon": "./assets/images/icon.png",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "icon": "./assets/images/icon.png"
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#10252A"
       },
+      "icon": "./assets/images/icon.png",
       "edgeToEdgeEnabled": true,
       "navigationBar": {
         "visible": false
@@ -22,9 +26,11 @@
     },
     "web": {
       "bundler": "metro",
-      "output": "static"
+      "output": "static",
+      "icon": "./assets/images/icon.png"
     },
     "plugins": ["expo-router"],
+
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true

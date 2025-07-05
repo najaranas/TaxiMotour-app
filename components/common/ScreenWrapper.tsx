@@ -27,7 +27,11 @@ export default function ScreenWrapper({
 
   return (
     <View style={containerStyle}>
-      <StatusBar barStyle={"dark-content"} backgroundColor={"transparent"} />
+      <StatusBar
+        barStyle={"dark-content"}
+        translucent={safeArea ? false : true}
+        backgroundColor={"transparent"}
+      />
       {children}
     </View>
   );
