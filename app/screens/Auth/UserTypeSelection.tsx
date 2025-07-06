@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
     borderRadius: THEME.borderRadius.large,
     padding: horizontalScale(18),
     position: "relative",
-    borderWidth: THEME.borderWidth.thick,
+    borderWidth: THEME.borderWidth.regular,
   },
   cardContent: {
     flexDirection: "row",
