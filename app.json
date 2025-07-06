@@ -34,7 +34,7 @@
         "backgroundColor": "#10252A"
       },
       "edgeToEdgeEnabled": true,
-
+      "googleServicesFile": "./google-services.json",
       "package": "com.anasnajar.Taximotour"
     },
     "web": {
