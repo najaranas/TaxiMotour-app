@@ -18,7 +18,7 @@ export default function ScreenWrapper({
     {
       backgroundColor,
       paddingTop: safeArea ? insets.top + padding : 0,
-      paddingBottom: insets.bottom + padding,
+      paddingBottom: safeArea ? insets.bottom + padding : 0,
       paddingRight: padding,
       paddingLeft: padding,
     },
@@ -29,7 +29,7 @@ export default function ScreenWrapper({
     <View style={containerStyle}>
       <StatusBar
         barStyle={"dark-content"}
-        translucent={safeArea ? false : true}
+        translucent={true}
         backgroundColor={"transparent"}
       />
       {children}

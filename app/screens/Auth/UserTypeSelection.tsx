@@ -17,9 +17,10 @@ export default function UserTypeSelection() {
   const router = useRouter();
 
   const handleContinue = () => {
-    router.dismissAll();
+    // router.dismissAll();
     if (selectedType === "passenger") {
-      router.replace("/screens/Passenger/Home/PassengerHomeScreen");
+      // router.replace("/screens/Passenger/Home/PassengerHomeScreen");
+      router.push("/(tabs)/Home");
     } else {
       router.replace("/screens/Driver/Home/DriverHomeScreen");
     }

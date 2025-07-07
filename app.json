@@ -7,6 +7,7 @@
     "scheme": "taximotour",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "jsEngine": "hermes",
     "icon": "./assets/images/icon.png",
     "splash": {
       "image": "./assets/images/splash-no-icon.png",
@@ -20,7 +21,8 @@
         "image": "./assets/images/splash-no-icon.png",
         "resizeMode": "contain",
         "backgroundColor": "#10252A"
-      }
+      },
+      "bundleIdentifier": "com.anasnajar.Taximotour"
     },
     "android": {
       "adaptiveIcon": {
@@ -47,8 +49,16 @@
         "backgroundColor": "#10252A"
       }
     },
-    "plugins": ["expo-router"],
-
+    "plugins": [
+      "expo-router",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow Taximotour to use your location for taxi services."
+        }
+      ],
+      "@maplibre/maplibre-react-native"
+    ],
     "doctor": {
       "reactNativeDirectoryCheck": {
         "exclude": ["react-native-indicators", "eslint-plugin-react-compiler"],

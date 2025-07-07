@@ -32,6 +32,7 @@ export default function RootLayout() {
       <Stack
         screenOptions={{ animation: "ios_from_right", headerShown: false }}>
         <Stack.Screen name="index" options={{ title: "splashScreen" }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
     </KeyboardProvider>
   );
