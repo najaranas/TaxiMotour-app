@@ -3,6 +3,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { KeyboardProvider } from "react-native-keyboard-controller"; // ✅ Add this import
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 // Prevent splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();
@@ -28,12 +29,14 @@ export default function RootLayout() {
   }
 
   return (
-    <KeyboardProvider>
-      <Stack
-        screenOptions={{ animation: "ios_from_right", headerShown: false }}>
-        <Stack.Screen name="index" options={{ title: "splashScreen" }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Stack>
-    </KeyboardProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <KeyboardProvider>
+        <Stack
+          screenOptions={{ animation: "ios_from_right", headerShown: false }}>
+          <Stack.Screen name="index" options={{ title: "splashScreen" }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        </Stack>
+      </KeyboardProvider>
+    </GestureHandlerRootView>
   );
 }

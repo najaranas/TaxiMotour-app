@@ -1,17 +1,14 @@
-import React, { useState } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import React, { useState, useEffect } from "react";
+import { Image, StyleSheet, View } from "react-native";
 import * as MapLibreRN from "@maplibre/maplibre-react-native";
 import { verticalScale } from "@/utils/styling";
-import { useFocusEffect } from "expo-router";
 
 export default function Map() {
   const [routeGeoJSON, setRouteGeoJSON] = useState(null);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      fetchRoute().then(setRouteGeoJSON);
-    }, [])
-  );
+  useEffect(() => {
+    fetchRoute().then(setRouteGeoJSON);
+  }, []); // Empty dependency array - only run once on mount
 
   const fetchRoute = async () => {
     const response = await fetch(

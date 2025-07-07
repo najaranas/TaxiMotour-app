@@ -19,8 +19,7 @@ export interface TypoProps {
 }
 
 export interface SvgIconProps {
-  width?: number;
-  height?: number;
+  size?: number;
   color?: string;
 }
 
@@ -40,4 +39,12 @@ export interface ConfirmationCodeFieldProps {
   disabled?: boolean;
   autoFocus?: boolean;
   containerStyle?: StyleProp<ViewStyle>;
+}
+
+export interface CustomDrawerProps {
+  children: React.ReactNode;
+  open: boolean;
+  onOpen: () => void;
+  onClose: () => void;
+  style?: StyleProp<ViewStyle>;
 }
