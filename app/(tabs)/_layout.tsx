@@ -1,6 +1,12 @@
 import { Tabs } from "expo-router";
-import { MaterialIcons } from "@expo/vector-icons";
 import { COLORS } from "@/constants/theme";
+import {
+  BagIcon,
+  HomeIcon,
+  MotoIcon,
+  UserIcon,
+} from "@/components/common/SvgIcons";
+import { moderateScale } from "@/utils/styling";
 
 export default function TabLayout() {
   return (
@@ -19,8 +25,8 @@ export default function TabLayout() {
         name="Home"
         options={{
           title: "Home",
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons name="home" size={24} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <HomeIcon size={moderateScale(27)} color={color} bold={focused} />
           ),
         }}
       />
@@ -28,8 +34,8 @@ export default function TabLayout() {
         name="rides"
         options={{
           title: "Rides",
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons name="directions-car" size={24} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <MotoIcon size={moderateScale(27)} color={color} bold={focused} />
           ),
         }}
       />
@@ -37,8 +43,8 @@ export default function TabLayout() {
         name="earnings"
         options={{
           title: "Earnings",
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons name="attach-money" size={24} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <BagIcon size={moderateScale(27)} color={color} bold={focused} />
           ),
         }}
       />
@@ -46,8 +52,8 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: "Profile",
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons name="person" size={24} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <UserIcon size={moderateScale(27)} color={color} bold={focused} />
           ),
         }}
       />

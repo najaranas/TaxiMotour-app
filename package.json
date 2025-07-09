@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
+    "@gorhom/bottom-sheet": "^5.1.6",
     "@maplibre/maplibre-react-native": "^10.1.6",
     "@react-native-firebase/app": "^22.2.1",
     "@react-native-firebase/auth": "^22.2.1",

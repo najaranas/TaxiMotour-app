@@ -21,6 +21,7 @@ export interface TypoProps {
 export interface SvgIconProps {
   size?: number;
   color?: string;
+  bold?: boolean;
 }
 
 export interface ButtonProps {
@@ -47,4 +48,23 @@ export interface CustomDrawerProps {
   onOpen: () => void;
   onClose: () => void;
   style?: StyleProp<ViewStyle>;
+}
+export interface CustomBottomSheetProps {
+  children: React.ReactNode;
+  snapPoints: (string | number)[];
+  enablePanDownToClose?: boolean;
+  showIndicator?: boolean;
+  enableOverDrag?: boolean;
+  enableContentPanningGesture?: boolean;
+  style?: StyleProp<ViewStyle>;
+  onChange?: (index: number) => void;
+  onRef?: (methods: {
+    snapToIndex: (index: number) => void;
+    snapToPosition: (position: string | number) => void;
+    expand: () => void;
+    collapse: () => void;
+    close: () => void;
+    forceClose: () => void;
+    ref: any;
+  }) => void;
 }
