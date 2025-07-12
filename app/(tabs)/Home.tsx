@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Modal, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useFocusEffect } from "expo-router";
 
@@ -58,8 +58,6 @@ export default function Home() {
   const handleRoadDataChange = (newRoadData: LocationData[]) => {
     // Only update road data if we have valid coordinates
 
-    console.log(newRoadData);
-
     const validRoadData = newRoadData.filter((location) =>
       apiUtils.validateCoordinates(location.lat ?? null, location.lon ?? null)
     );
@@ -86,8 +84,9 @@ export default function Home() {
       <Map roadData={roadData} />
 
       {/* Navigation Drawer */}
+
       <View
-        style={[StyleSheet.absoluteFill, { zIndex: 20 }]}
+        style={[StyleSheet.absoluteFill, { zIndex: 15 }]}
         pointerEvents={isDrawerOpen ? "auto" : "none"}>
         <CustomDrawer
           open={isDrawerOpen}
@@ -114,7 +113,7 @@ export default function Home() {
       <CustomBottomSheet
         enableOverDrag
         onRef={setBottomSheetMethods}
-        snapPoints={["25%", "100%"]}
+        snapPoints={["100%"]}
         onChange={setActiveBottomSheetIndex}>
         <RideBookingSheet
           activeIndex={activeBottomSheetIndex}
@@ -154,13 +153,5 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 6,
-  },
-  bottomSheetContainer: {
-    // position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    zIndex: 15,
-    height: "100%",
   },
 });

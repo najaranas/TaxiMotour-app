@@ -27,6 +27,7 @@ interface RideBookingSheetProps {
   onCurrentLocationChange: (location: LocationData) => void;
   onDestinationLocationChange: (location: LocationData) => void;
   onRoadDataChange: (roadData: LocationData[]) => void;
+  onClose?: () => void;
 }
 
 export default function RideBookingSheet({
@@ -37,6 +38,7 @@ export default function RideBookingSheet({
   onCurrentLocationChange,
   onDestinationLocationChange,
   onRoadDataChange,
+  onClose,
 }: RideBookingSheetProps) {
   const insets = useSafeAreaInsets();
   const [locationInputFocused, setLocationInputFocused] = useState(false);
@@ -149,7 +151,7 @@ export default function RideBookingSheet({
         exiting={FadeOutLeft}
         style={[styles.header, { paddingTop: insets.top }]}>
         <View style={styles.headerContent}>
-          <Button onPress={() => onSnapToIndex(0)}>
+          <Button onPress={() => onClose?.() || onSnapToIndex(0)}>
             <CloseIcon size={horizontalScale(25)} />
           </Button>
           <Typo variant="h3">Take a ride</Typo>

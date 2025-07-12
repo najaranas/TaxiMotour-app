@@ -38,6 +38,7 @@ export default function LocationSearchInput({
   };
 
   const fetchSuggestions = async (text: string) => {
+    if (!text) return;
     try {
       const data = await geocodingService.fetchSuggestions(text);
       onSearchDataChange?.(data);

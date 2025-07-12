@@ -159,7 +159,7 @@ export default function EnhancedMap({ roadData }: MapProps) {
         {!routeGeoJSON && (
           <MapLibreRN.Camera
             followUserLocation={true}
-            zoomLevel={15}
+            zoomLevel={2}
             centerCoordinate={[10.17226, 36.8104]}
           />
         )}

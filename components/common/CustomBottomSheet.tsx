@@ -47,6 +47,7 @@ export default function CustomBottomSheet({
       ref={bottomSheetRef}
       snapPoints={snapPoints}
       style={style}
+      containerStyle={{ zIndex: 10 }}
       handleIndicatorStyle={
         showIndicator
           ? {
