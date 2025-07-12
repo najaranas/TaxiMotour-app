@@ -398,7 +398,8 @@ export function MotoIcon({ size = 24, bold, color = "#000000" }: SvgIconProps) {
     </Svg>
   );
 }
-export function Searchcon({ size = 24, color = "#000000" }: SvgIconProps) {
+
+export function SearchIcon({ size = 24, color = "#000000" }: SvgIconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <G id="SVGRepo_bgCarrier" stroke-width="0"></G>
@@ -413,6 +414,114 @@ export function Searchcon({ size = 24, color = "#000000" }: SvgIconProps) {
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"></Path>
+      </G>
+    </Svg>
+  );
+}
+
+export function LocationIcon({
+  size = 24,
+  bold,
+  color = "#000000",
+}: SvgIconProps) {
+  return bold ? (
+    <Svg viewBox="-4 0 32 32" width={size} height={size} fill={color}>
+      <G id="SVGRepo_bgCarrier" stroke-width="0"></G>
+      <G
+        id="SVGRepo_tracerCarrier"
+        stroke-linecap="round"
+        stroke-linejoin="round"></G>
+      <G id="SVGRepo_iconCarrier">
+        <G
+          id="Page-1"
+          stroke="none"
+          stroke-width="1"
+          fill="none"
+          fill-rule="evenodd">
+          <G
+            id="Icon-Set-Filled"
+            transform="translate(-106.000000, -413.000000)"
+            fill={color}>
+            <Path
+              d="M118,422 C116.343,422 115,423.343 115,425 C115,426.657 116.343,428 118,428 C119.657,428 121,426.657 121,425 C121,423.343 119.657,422 118,422 L118,422 Z M118,430 C115.239,430 113,427.762 113,425 C113,422.238 115.239,420 118,420 C120.761,420 123,422.238 123,425 C123,427.762 120.761,430 118,430 L118,430 Z M118,413 C111.373,413 106,418.373 106,425 C106,430.018 116.005,445.011 118,445 C119.964,445.011 130,429.95 130,425 C130,418.373 124.627,413 118,413 L118,413 Z"
+              id="location"></Path>
+          </G>
+        </G>
+      </G>
+    </Svg>
+  ) : (
+    <Svg viewBox="-4 0 32 32" width={size} height={size} fill={color}>
+      <G id="SVGRepo_bgCarrier" stroke-width="0"></G>
+      <G
+        id="SVGRepo_tracerCarrier"
+        stroke-linecap="round"
+        stroke-linejoin="round"></G>
+      <G id="SVGRepo_iconCarrier">
+        <G
+          id="Page-1"
+          stroke="none"
+          stroke-width="1"
+          fill="none"
+          fill-rule="evenodd">
+          <G
+            id="Icon-Set"
+            transform="translate(-104.000000, -411.000000)"
+            fill={color}>
+            <Path
+              d="M116,426 C114.343,426 113,424.657 113,423 C113,421.343 114.343,420 116,420 C117.657,420 119,421.343 119,423 C119,424.657 117.657,426 116,426 L116,426 Z M116,418 C113.239,418 111,420.238 111,423 C111,425.762 113.239,428 116,428 C118.761,428 121,425.762 121,423 C121,420.238 118.761,418 116,418 L116,418 Z M116,440 C114.337,440.009 106,427.181 106,423 C106,417.478 110.477,413 116,413 C121.523,413 126,417.478 126,423 C126,427.125 117.637,440.009 116,440 L116,440 Z M116,411 C109.373,411 104,416.373 104,423 C104,428.018 114.005,443.011 116,443 C117.964,443.011 128,427.95 128,423 C128,416.373 122.627,411 116,411 L116,411 Z"
+              id="location"></Path>
+          </G>
+        </G>
+      </G>
+    </Svg>
+  );
+}
+export function TopIcon({ size = 24, color = "#000000" }: SvgIconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <G id="SVGRepo_bgCarrier" stroke-width="0"></G>
+      <G
+        id="SVGRepo_tracerCarrier"
+        stroke-linecap="round"
+        stroke-linejoin="round"></G>
+      <G id="SVGRepo_iconCarrier">
+        <Path
+          d="M12 4.5L17 9.5M12 4.5L7 9.5M12 4.5C12 4.5 12 12.8333 12 14.5C12 16.1667 11 19.5 7 19.5"
+          stroke={color}
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"></Path>
+      </G>
+    </Svg>
+  );
+}
+
+export function TargetIcon({ size = 24, color = "#000000" }: SvgIconProps) {
+  return (
+    <Svg viewBox="0 0 20 20" width={size} height={size} fill={color}>
+      <G id="SVGRepo_bgCarrier" stroke-width="0"></G>
+      <G
+        id="SVGRepo_tracerCarrier"
+        stroke-linecap="round"
+        stroke-linejoin="round"></G>
+      <G id="SVGRepo_iconCarrier">
+        <G
+          id="Page-1"
+          stroke="none"
+          stroke-width="1"
+          fill="none"
+          fill-rule="evenodd">
+          <G
+            id="Dribbble-Light-Preview"
+            transform="translate(-220.000000, -4759.000000)"
+            fill={color}>
+            <G id="icons" transform="translate(56.000000, 160.000000)">
+              <Path
+                d="M176,4609 C176,4610.105 175.105,4611 174,4611 C172.895,4611 172,4610.105 172,4609 C172,4607.895 172.895,4607 174,4607 C175.105,4607 176,4607.895 176,4609 M174,4613 C171.794,4613 170,4611.206 170,4609 C170,4606.794 171.794,4605 174,4605 C176.206,4605 178,4606.794 178,4609 C178,4611.206 176.206,4613 174,4613 M174,4603 C170.686,4603 168,4605.686 168,4609 C168,4612.314 170.686,4615 174,4615 C177.314,4615 180,4612.314 180,4609 C180,4605.686 177.314,4603 174,4603 M174,4617 C169.589,4617 166,4613.411 166,4609 C166,4604.589 169.589,4601 174,4601 C178.411,4601 182,4604.589 182,4609 C182,4613.411 178.411,4617 174,4617 M174,4599 C168.477,4599 164,4603.477 164,4609 C164,4614.523 168.477,4619 174,4619 C179.523,4619 184,4614.523 184,4609 C184,4603.477 179.523,4599 174,4599"
+                id="target-[#784]"></Path>
+            </G>
+          </G>
+        </G>
       </G>
     </Svg>
   );

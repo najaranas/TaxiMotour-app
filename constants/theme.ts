@@ -8,6 +8,10 @@ export const COLORS = {
   white: "#FFFFFF",
   black: "#000000",
 
+  // Route colors
+  routeBlue: "#4285F4", // Main route color
+  routeBlueLight: "#5B9BF8", // Lighter route color
+
   // Gray Scale
   gray: {
     100: "#F0F0F0", // Light gray

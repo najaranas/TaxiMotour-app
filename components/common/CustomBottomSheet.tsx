@@ -1,6 +1,5 @@
 import React, { useRef, useCallback } from "react";
-import { StyleSheet } from "react-native";
-import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
+import BottomSheet from "@gorhom/bottom-sheet";
 import { CustomBottomSheetProps } from "@/types/Types";
 import { COLORS } from "@/constants/theme";
 import { horizontalScale, verticalScale } from "@/utils/styling";
@@ -60,16 +59,11 @@ export default function CustomBottomSheet({
       onChange={handleSheetChanges}
       enableOverDrag={enableOverDrag}
       enableContentPanningGesture={enableContentPanningGesture}
-      enablePanDownToClose={enablePanDownToClose}>
-      <BottomSheetScrollView style={styles.contentContainer}>
-        {children}
-      </BottomSheetScrollView>
+      enablePanDownToClose={enablePanDownToClose}
+      keyboardBehavior="interactive"
+      keyboardBlurBehavior="restore"
+      android_keyboardInputMode="adjustResize">
+      {children}
     </BottomSheet>
   );
 }
-
-const styles = StyleSheet.create({
-  contentContainer: {
-    flex: 1,
-  },
-});

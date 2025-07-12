@@ -9,6 +9,7 @@ export default function Typo({
   color = THEME.text.primary,
   style,
   children,
+  numberOfLines,
   variant = "body",
 }: TypoProps) {
   // Typography variants
@@ -39,5 +40,9 @@ export default function Typo({
     color,
   };
 
-  return <Text style={[textStyle, style]}>{children}</Text>;
+  return (
+    <Text numberOfLines={numberOfLines} style={[textStyle, style]}>
+      {children}
+    </Text>
+  );
 }
