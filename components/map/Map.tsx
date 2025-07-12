@@ -95,13 +95,6 @@ export default function EnhancedMap({ roadData }: MapProps) {
         style={styles.map}
         compassEnabled={false}
         mapStyle={mapStyleUrl}>
-        {/* Taxi 1 Marker */}
-        <MapLibreRN.PointAnnotation id="taxi1" coordinate={defaultCoordinates}>
-          <View style={styles.taxiMarker}>
-            <View style={styles.taxiDot} />
-          </View>
-        </MapLibreRN.PointAnnotation>
-
         {/* Taxi 2 Marker */}
         <MapLibreRN.PointAnnotation id="taxi2" coordinate={[10.1815, 36.8065]}>
           <View style={styles.motoMarker}>
@@ -166,10 +159,8 @@ export default function EnhancedMap({ roadData }: MapProps) {
         {!routeGeoJSON && (
           <MapLibreRN.Camera
             followUserLocation={true}
-            zoomLevel={13}
-            centerCoordinate={
-              APP_CONFIG.DEFAULT_COORDINATES as [number, number]
-            }
+            zoomLevel={15}
+            centerCoordinate={[10.17226, 36.8104]}
           />
         )}
 
