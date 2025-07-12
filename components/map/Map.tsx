@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Image, StyleSheet, View, ActivityIndicator } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 import * as MapLibreRN from "@maplibre/maplibre-react-native";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import { MapProps } from "@/types/Types";
@@ -26,15 +26,17 @@ interface RouteData {
 }
 
 export default function EnhancedMap({ roadData }: MapProps) {
-  const mapRef = useRef<MapLibreRN.MapView>(null);
+  const mapRef = useRef<MapLibreRN.MapViewRef>(null);
+  const mapCameraRef = useRef<MapLibreRN.CameraRef>(null);
   const [routeGeoJSON, setRouteGeoJSON] = useState<RouteData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  console.log("map", roadData);
+
   useEffect(() => {
     if (roadData && roadData.length >= 2) {
       fetchRoute();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roadData]);
 
   const fetchRoute = async () => {
@@ -49,17 +51,29 @@ export default function EnhancedMap({ roadData }: MapProps) {
         roadData[0].lat!,
       ];
       const endCoords: [number, number] = [roadData[1].lon!, roadData[1].lat!];
-      console.log(startCoords);
-      console.log(endCoords);
       if (
         !apiUtils.validateCoordinates(startCoords[0], startCoords[1]) ||
         !apiUtils.validateCoordinates(endCoords[0], endCoords[1])
       ) {
         throw new Error("Invalid coordinates");
       }
-      console.log("cors", startCoords, endCoords);
       const data = await routeService.fetchRoute(startCoords, endCoords);
       setRouteGeoJSON(data);
+
+      // Fix: Add type for coord, and ensure correct bounds order (SW, NE)
+      if (data.features[0].geometry.coordinates.length > 0) {
+        const coordinates = data.features[0].geometry.coordinates as [
+          number,
+          number
+        ][];
+        const lons = coordinates.map((coord) => coord[0]);
+        const lats = coordinates.map((coord) => coord[1]);
+        const minLon = Math.min(...lons);
+        const maxLon = Math.max(...lons);
+        const minLat = Math.min(...lats);
+        const maxLat = Math.max(...lats);
+        mapCameraRef.current?.fitBounds([minLon, minLat], [maxLon, maxLat]);
+      }
     } catch (error) {
       console.error("Route fetching error:", error);
       setError(apiUtils.handleApiError(error, "Failed to fetch route"));
@@ -68,34 +82,7 @@ export default function EnhancedMap({ roadData }: MapProps) {
     }
   };
 
-  console.log("routeGeoJSON", routeGeoJSON);
   const defaultCoordinates = [...APP_CONFIG.DEFAULT_COORDINATES];
-
-  // ... existing code ...
-
-  const fakeRouteGeoJSON: RouteData = {
-    type: "FeatureCollection" as const,
-    features: [
-      {
-        type: "Feature" as const,
-        properties: {
-          summary: {
-            distance: 5000,
-            duration: 600,
-          },
-        },
-        geometry: {
-          type: "LineString" as const,
-          coordinates: [
-            [10.1815, 36.8065], // Start point (lon, lat)
-            [10.1915, 36.8165], // End point (lon, lat)
-          ],
-        },
-      },
-    ],
-  };
-
-  // ... existing code ...
 
   const mapStyleUrl = process.env.EXPO_PUBLIC_MAPTILER_MAP_API
     ? `https://api.maptiler.com/maps/streets/style.json?key=${process.env.EXPO_PUBLIC_MAPTILER_MAP_API}`
@@ -131,7 +118,7 @@ export default function EnhancedMap({ roadData }: MapProps) {
             <MapLibreRN.LineLayer
               id="lineLayerBackground"
               style={{
-                lineColor: COLORS.routeBlue, // COLORS.routeBlue
+                lineColor: COLORS.routeBlue,
                 lineWidth: horizontalScale(10),
                 lineCap: "round",
                 lineJoin: "round",
@@ -140,7 +127,7 @@ export default function EnhancedMap({ roadData }: MapProps) {
             <MapLibreRN.LineLayer
               id="lineLayer"
               style={{
-                lineColor: COLORS.routeBlueLight, // COLORS.routeBlueLight
+                lineColor: COLORS.routeBlueLight,
                 lineWidth: horizontalScale(3),
                 lineCap: "round",
                 lineJoin: "round",
@@ -154,7 +141,11 @@ export default function EnhancedMap({ roadData }: MapProps) {
           <MapLibreRN.PointAnnotation
             id="routeStart"
             coordinate={routeGeoJSON.features[0].geometry.coordinates[0]}>
-            <LocationIcon bold size={horizontalScale(35)} />
+            <LocationIcon
+              bold
+              size={horizontalScale(35)}
+              color={COLORS.danger}
+            />
           </MapLibreRN.PointAnnotation>
         )}
 
@@ -167,8 +158,57 @@ export default function EnhancedMap({ roadData }: MapProps) {
                 routeGeoJSON.features[0].geometry.coordinates.length - 1
               ]
             }>
-            <TargetIcon size={horizontalScale(35)} />
+            <TargetIcon size={horizontalScale(35)} color={COLORS.primary} />
           </MapLibreRN.PointAnnotation>
+        )}
+
+        {/* Default Camera (when no route) */}
+        {!routeGeoJSON && (
+          <MapLibreRN.Camera
+            followUserLocation={true}
+            zoomLevel={13}
+            centerCoordinate={
+              APP_CONFIG.DEFAULT_COORDINATES as [number, number]
+            }
+          />
+        )}
+
+        {/* Route Camera (when route is loaded) */}
+        {routeGeoJSON && routeGeoJSON.features[0]?.geometry?.coordinates && (
+          <MapLibreRN.Camera
+            ref={mapCameraRef}
+            followUserLocation={false}
+            bounds={{
+              ne: [
+                Math.max(
+                  ...routeGeoJSON.features[0].geometry.coordinates.map(
+                    (coord) => coord[0]
+                  )
+                ),
+                Math.max(
+                  ...routeGeoJSON.features[0].geometry.coordinates.map(
+                    (coord) => coord[1]
+                  )
+                ),
+              ],
+              sw: [
+                Math.min(
+                  ...routeGeoJSON.features[0].geometry.coordinates.map(
+                    (coord) => coord[0]
+                  )
+                ),
+                Math.min(
+                  ...routeGeoJSON.features[0].geometry.coordinates.map(
+                    (coord) => coord[1]
+                  )
+                ),
+              ],
+              paddingLeft: 100,
+              paddingRight: 100,
+              paddingTop: 100,
+              paddingBottom: 200,
+            }}
+          />
         )}
       </MapLibreRN.MapView>
 
@@ -260,7 +300,6 @@ const styles = StyleSheet.create({
   // startMarker: {
   //
   // },
-
   endDot: {
     width: 10,
     height: 10,
