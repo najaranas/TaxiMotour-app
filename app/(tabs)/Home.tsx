@@ -113,7 +113,7 @@ export default function Home() {
       <CustomBottomSheet
         enableOverDrag
         onRef={setBottomSheetMethods}
-        snapPoints={["100%"]}
+        snapPoints={["30%", "100%"]}
         onChange={setActiveBottomSheetIndex}>
         <RideBookingSheet
           activeIndex={activeBottomSheetIndex}

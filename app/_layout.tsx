@@ -4,11 +4,6 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { KeyboardProvider } from "react-native-keyboard-controller"; // ✅ Add this import
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import {
-  BottomSheetGestureHandlersContext,
-  BottomSheetModalInternalContext,
-} from "@gorhom/bottom-sheet/lib/typescript/contexts";
-import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 
 // Prevent splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();

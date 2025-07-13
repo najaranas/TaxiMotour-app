@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { TextInput, View, StyleSheet } from "react-native";
+import { TextInput, View, StyleSheet, Keyboard } from "react-native";
 import { BottomSheetScrollView, BottomSheetView } from "@gorhom/bottom-sheet";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import Animated, { FadeInRight, FadeOutLeft } from "react-native-reanimated";
@@ -12,6 +12,7 @@ import { CloseIcon, SearchIcon } from "@/components/common/SvgIcons";
 import LocationSearchInput from "./LocationSearchInput";
 import LocationSuggestionItem from "./LocationSuggestionItem";
 import { MapTilerFeature } from "@/types/Types";
+import BottomSheetKeyboardAwareScrollView from "../common/BottomSheetKeyboardAwareScrollView";
 
 interface LocationData {
   place?: string;
@@ -52,40 +53,43 @@ export default function RideBookingSheet({
   const destinationInputRef = useRef<TextInput | null>(null);
 
   const handleLocationSelect = (item: MapTilerFeature) => {
-    const locationData = {
-      place: item.text,
-      lon: item.geometry.coordinates[0],
-      lat: item.geometry.coordinates[1],
-    };
+    Keyboard.dismiss();
+    setTimeout(() => {
+      const locationData = {
+        place: item.text,
+        lon: item.geometry.coordinates[0],
+        lat: item.geometry.coordinates[1],
+      };
 
-    if (activeInputData === "destination") {
-      onDestinationLocationChange(locationData);
-      // Auto-update road data if both locations are set
-      if (currentLocation && typeof currentLocation !== "string") {
-        // Now TypeScript knows currentLocation is LocationData
-        if (currentLocation.place) {
-          onRoadDataChange([currentLocation, locationData]);
-          onSnapToIndex(0);
-          return;
+      if (activeInputData === "destination") {
+        onDestinationLocationChange(locationData);
+        // Auto-update road data if both locations are set
+        if (currentLocation && typeof currentLocation !== "string") {
+          // Now TypeScript knows currentLocation is LocationData
+          if (currentLocation.place) {
+            onRoadDataChange([currentLocation, locationData]);
+            onSnapToIndex(0);
+            return;
+          }
         }
-      }
 
-      locationInputRef.current?.focus();
-    } else {
-      onCurrentLocationChange(locationData);
+        locationInputRef.current?.focus();
+      } else {
+        onCurrentLocationChange(locationData);
 
-      if (destinationLocation && typeof destinationLocation !== "string") {
-        // Now TypeScript knows destinationLocation is LocationData
-        if (destinationLocation.place) {
-          onRoadDataChange([locationData, destinationLocation]);
-          onSnapToIndex(0);
-          return;
+        if (destinationLocation && typeof destinationLocation !== "string") {
+          // Now TypeScript knows destinationLocation is LocationData
+          if (destinationLocation.place) {
+            onRoadDataChange([locationData, destinationLocation]);
+            onSnapToIndex(0);
+            return;
+          }
         }
-      }
-      destinationInputRef.current?.focus();
+        destinationInputRef.current?.focus();
 
-      // Auto-update road data if both locations are set
-    }
+        // Auto-update road data if both locations are set
+      }
+    }, 100);
   };
 
   const handleLocationRefine = (item: MapTilerFeature) => {
@@ -121,6 +125,13 @@ export default function RideBookingSheet({
     }
   };
 
+  const handleClose = () => {
+    Keyboard.dismiss();
+    setTimeout(() => {
+      onClose?.() || onSnapToIndex(0);
+    }, 100);
+  };
+
   if (activeIndex === 0) {
     return (
       <BottomSheetView
@@ -151,7 +162,7 @@ export default function RideBookingSheet({
         exiting={FadeOutLeft}
         style={[styles.header, { paddingTop: insets.top }]}>
         <View style={styles.headerContent}>
-          <Button onPress={() => onClose?.() || onSnapToIndex(0)}>
+          <Button onPress={handleClose}>
             <CloseIcon size={horizontalScale(25)} />
           </Button>
           <Typo variant="h3">Take a ride</Typo>
@@ -181,35 +192,28 @@ export default function RideBookingSheet({
         </View>
       </Animated.View>
 
-      <BottomSheetScrollView
+      <BottomSheetKeyboardAwareScrollView
         key="view2"
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}>
-        <KeyboardAwareScrollView
-          style={{ flex: 1 }}
-          showsVerticalScrollIndicator={true}
-          keyboardShouldPersistTaps="handled"
-          enabled={true}>
-          <Animated.View
-            entering={FadeInRight.duration(300)}
-            exiting={FadeOutLeft}
-            style={styles.suggestionsContainer}>
-            {searchData?.features?.map(
-              (item: MapTilerFeature, index: number) => (
-                <LocationSuggestionItem
-                  key={index}
-                  item={item}
-                  index={index}
-                  isLast={searchData.features.length - 1 === index}
-                  onSelect={handleLocationSelect}
-                  onRefine={handleLocationRefine}
-                />
-              )
-            )}
-          </Animated.View>
-        </KeyboardAwareScrollView>
-      </BottomSheetScrollView>
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled">
+        <Animated.View
+          entering={FadeInRight.duration(300)}
+          exiting={FadeOutLeft}
+          style={styles.suggestionsContainer}>
+          {searchData?.features?.map((item: MapTilerFeature, index: number) => (
+            <LocationSuggestionItem
+              key={index}
+              item={item}
+              index={index}
+              isLast={searchData.features.length - 1 === index}
+              onSelect={handleLocationSelect}
+              onRefine={handleLocationRefine}
+            />
+          ))}
+        </Animated.View>
+      </BottomSheetKeyboardAwareScrollView>
     </>
   );
 }
