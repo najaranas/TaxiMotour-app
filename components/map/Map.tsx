@@ -31,7 +31,7 @@ export default function EnhancedMap({ roadData }: MapProps) {
   const [routeGeoJSON, setRouteGeoJSON] = useState<RouteData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+  console.log("routeGeoJSON", routeGeoJSON);
   useEffect(() => {
     if (roadData && roadData.length >= 2) {
       fetchRoute();
@@ -58,22 +58,8 @@ export default function EnhancedMap({ roadData }: MapProps) {
         throw new Error("Invalid coordinates");
       }
       const data = await routeService.fetchRoute(startCoords, endCoords);
-      setRouteGeoJSON(data);
 
-      // Fix: Add type for coord, and ensure correct bounds order (SW, NE)
-      if (data.features[0].geometry.coordinates.length > 0) {
-        const coordinates = data.features[0].geometry.coordinates as [
-          number,
-          number
-        ][];
-        const lons = coordinates.map((coord) => coord[0]);
-        const lats = coordinates.map((coord) => coord[1]);
-        const minLon = Math.min(...lons);
-        const maxLon = Math.max(...lons);
-        const minLat = Math.min(...lats);
-        const maxLat = Math.max(...lats);
-        mapCameraRef.current?.fitBounds([minLon, minLat], [maxLon, maxLat]);
-      }
+      setRouteGeoJSON(data);
     } catch (error) {
       console.error("Route fetching error:", error);
       setError(apiUtils.handleApiError(error, "Failed to fetch route"));
@@ -81,8 +67,6 @@ export default function EnhancedMap({ roadData }: MapProps) {
       setIsLoading(false);
     }
   };
-
-  const defaultCoordinates = [...APP_CONFIG.DEFAULT_COORDINATES];
 
   const mapStyleUrl = process.env.EXPO_PUBLIC_MAPTILER_MAP_API
     ? `https://api.maptiler.com/maps/streets/style.json?key=${process.env.EXPO_PUBLIC_MAPTILER_MAP_API}`

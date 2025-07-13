@@ -5,7 +5,7 @@ export const APP_CONFIG = {
   OPENROUTE_SERVICE_URL:
     "https://api.openrouteservice.org/v2/directions/driving-car/geojson",
 
-  // Map Configuration
+  // Map Configurationa
   DEFAULT_COORDINATES: [10.1819, 36.8065], // Tunis, Tunisia (longitude, latitude)
   MAP_BOUNDING_BOX: "7.5,30.0,12.0,38.0", // Tunisia bounding box
   SEARCH_LIMIT: 5,

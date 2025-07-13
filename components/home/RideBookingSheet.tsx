@@ -28,7 +28,6 @@ interface RideBookingSheetProps {
   onCurrentLocationChange: (location: LocationData) => void;
   onDestinationLocationChange: (location: LocationData) => void;
   onRoadDataChange: (roadData: LocationData[]) => void;
-  onClose?: () => void;
 }
 
 export default function RideBookingSheet({
@@ -39,7 +38,6 @@ export default function RideBookingSheet({
   onCurrentLocationChange,
   onDestinationLocationChange,
   onRoadDataChange,
-  onClose,
 }: RideBookingSheetProps) {
   const insets = useSafeAreaInsets();
   const [locationInputFocused, setLocationInputFocused] = useState(false);
@@ -65,7 +63,6 @@ export default function RideBookingSheet({
         onDestinationLocationChange(locationData);
         // Auto-update road data if both locations are set
         if (currentLocation && typeof currentLocation !== "string") {
-          // Now TypeScript knows currentLocation is LocationData
           if (currentLocation.place) {
             onRoadDataChange([currentLocation, locationData]);
             onSnapToIndex(0);
@@ -128,7 +125,7 @@ export default function RideBookingSheet({
   const handleClose = () => {
     Keyboard.dismiss();
     setTimeout(() => {
-      onClose?.() || onSnapToIndex(0);
+      onSnapToIndex(0);
     }, 100);
   };
 
@@ -146,7 +143,7 @@ export default function RideBookingSheet({
           entering={FadeInRight.duration(300)}
           exiting={FadeOutLeft}>
           <Typo variant="h3">Let&apos;s go places.</Typo>
-          <Button onPress={() => onSnapToIndex(1)} style={styles.searchButton}>
+          <Button onPress={() => onSnapToIndex(2)} style={styles.searchButton}>
             <SearchIcon size={horizontalScale(20)} />
             <Typo variant="body">Where to go ?</Typo>
           </Button>

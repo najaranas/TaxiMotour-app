@@ -1,9 +1,10 @@
 import React from "react";
 import { TextInput, View, StyleSheet } from "react-native";
-import { SearchIcon } from "@/components/common/SvgIcons";
+import { CloseIcon, SearchIcon } from "@/components/common/SvgIcons";
 import { COLORS } from "@/constants/theme";
-import { horizontalScale, moderateScale } from "@/utils/styling";
+import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import { geocodingService } from "@/services/api";
+import Button from "../common/Button";
 
 interface LocationData {
   place?: string;
@@ -18,7 +19,7 @@ interface LocationSearchInputProps {
   onFocus?: () => void;
   onBlur?: () => void;
   isFocused?: boolean;
-  inputRef?: React.MutableRefObject<TextInput | null>;
+  inputRef?: React.RefObject<TextInput | null>;
   onSearchDataChange?: (data: any) => void;
 }
 
@@ -67,6 +68,17 @@ export default function LocationSearchInput({
         placeholder={placeholder}
         style={styles.textInput}
       />
+      <Button
+        onPress={() => {
+          onValueChange({
+            place: "",
+            lon: null,
+            lat: null,
+          });
+          inputRef?.current?.focus();
+        }}>
+        <CloseIcon size={horizontalScale(15)} />
+      </Button>
     </View>
   );
 }
@@ -74,7 +86,8 @@ export default function LocationSearchInput({
 const styles = StyleSheet.create({
   inputContainer: {
     backgroundColor: COLORS.gray["100"],
-    padding: horizontalScale(6),
+    paddingVertical: verticalScale(6),
+    paddingInline: horizontalScale(10),
     borderRadius: 10,
     flexDirection: "row",
     alignItems: "center",

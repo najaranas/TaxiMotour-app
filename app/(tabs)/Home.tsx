@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useFocusEffect } from "expo-router";
 
@@ -113,7 +113,7 @@ export default function Home() {
       <CustomBottomSheet
         enableOverDrag
         onRef={setBottomSheetMethods}
-        snapPoints={["30%", "100%"]}
+        snapPoints={["25%", "100%"]}
         onChange={setActiveBottomSheetIndex}>
         <RideBookingSheet
           activeIndex={activeBottomSheetIndex}
