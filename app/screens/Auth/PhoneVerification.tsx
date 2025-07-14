@@ -1,5 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { StyleSheet, TextInput, View, ScrollView } from "react-native";
+import {
+  StyleSheet,
+  TextInput,
+  View,
+  ScrollView,
+  TouchableOpacity,
+  Text,
+} from "react-native";
 import Button from "@/components/common/Button";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import { TunisiaFlag, WhatsappIcon } from "@/components/common/SvgIcons";
@@ -8,7 +15,10 @@ import THEME, { COLORS, FONTS } from "@/constants/theme";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 import BackButton from "@/components/common/BackButton";
-import { useRouter, useFocusEffect } from "expo-router";
+import { useRouter, useFocusEffect, Link } from "expo-router";
+import { useSignUp, useSSO } from "@clerk/clerk-expo";
+import * as Linking from "expo-linking";
+import * as WebBrowser from "expo-web-browser";
 
 export default function PhoneVerification() {
   const inputRef = useRef<TextInput>(null);
@@ -16,6 +26,66 @@ export default function PhoneVerification() {
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const route = useRouter();
+
+  const { isLoaded, signUp, setActive } = useSignUp();
+
+  const [emailAddress, setEmailAddress] = React.useState(
+    "anas.najjartn@gmail.com"
+  );
+  const [password, setPassword] = React.useState("!Linlin123");
+  const [pendingVerification, setPendingVerification] = React.useState(false);
+  const [code, setCode] = React.useState("391047");
+
+  const onSignUpPress = async () => {
+    if (!isLoaded) return;
+
+    // Start sign-up process using email and password provided
+    try {
+      await signUp.create({
+        emailAddress,
+        password,
+      });
+
+      // Send user an email with verification code
+      await signUp.prepareEmailAddressVerification({
+        strategy: "email_code",
+      });
+
+      // Set 'pendingVerification' to true to display second form
+      // and capture OTP code
+      setPendingVerification(true);
+    } catch (err) {
+      // See https://clerk.com/docs/custom-flows/error-handling
+      // for more info on error handling
+      console.error(JSON.stringify(err, null, 2));
+    }
+  };
+
+  const onVerifyPress = async () => {
+    if (!isLoaded) return;
+
+    try {
+      // Use the code the user provided to attempt verification
+      const signUpAttempt = await signUp.attemptEmailAddressVerification({
+        code,
+      });
+
+      // If verification was completed, set the session to active
+      // and redirect the user
+      if (signUpAttempt.status === "complete") {
+        await setActive({ session: signUpAttempt.createdSessionId });
+        // router.replace("/");
+      } else {
+        // If the status is not complete, check why. User may need to
+        // complete further steps.
+        console.error(JSON.stringify(signUpAttempt, null, 2));
+      }
+    } catch (err) {
+      // See https://clerk.com/docs/custom-flows/error-handling
+      // for more info on error handling
+      console.error(JSON.stringify(err, null, 2));
+    }
+  };
 
   useFocusEffect(
     React.useCallback(() => {
@@ -44,16 +114,21 @@ export default function PhoneVerification() {
 
         {/* Content */}
         <View style={styles.content}>
+          <TextInput
+            value={code}
+            placeholder="Enter your verification code"
+            onChangeText={(code) => setCode(code)}
+          />
+          <TouchableOpacity onPress={onVerifyPress}>
+            <Text>Verify</Text>
+          </TouchableOpacity>
           <View style={styles.titleContainer}>
             <Typo color={THEME.text.primary} variant="h3">
               Enter your number
             </Typo>
 
             <View style={styles.whatsappInfo}>
-              <WhatsappIcon
-                width={horizontalScale(40)}
-                height={verticalScale(40)}
-              />
+              <WhatsappIcon size={horizontalScale(40)} />
               <Typo
                 color={THEME.text.muted}
                 variant="body"
@@ -65,10 +140,7 @@ export default function PhoneVerification() {
 
           <View style={styles.phoneInputContainer}>
             <View style={styles.countrySection}>
-              <TunisiaFlag
-                width={horizontalScale(30)}
-                height={verticalScale(30)}
-              />
+              <TunisiaFlag size={horizontalScale(30)} />
               <Typo variant="body" color={THEME.text.primary}>
                 +216
               </Typo>

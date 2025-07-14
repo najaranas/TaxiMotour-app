@@ -21,7 +21,7 @@ export default function Button({
       {loading ? (
         <MaterialIndicator
           size={indicatorStyle?.size || 25}
-          color={indicatorStyle?.color || COLORS.white}
+          color={indicatorStyle?.color || COLORS.primary}
           key="loading"
         />
       ) : (

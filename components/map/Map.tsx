@@ -89,7 +89,7 @@ export default function EnhancedMap({ roadData }: MapProps) {
           </View>
         </MapLibreRN.PointAnnotation>
 
-        {/* Route Layer - This comes FIRST */}
+        {/* Route Layer  */}
         {routeGeoJSON && (
           <MapLibreRN.ShapeSource id="route" shape={routeGeoJSON}>
             <MapLibreRN.LineLayer
@@ -113,7 +113,7 @@ export default function EnhancedMap({ roadData }: MapProps) {
           </MapLibreRN.ShapeSource>
         )}
 
-        {/* Start Point Marker - This comes AFTER route */}
+        {/* Start Point Marker  */}
         {routeGeoJSON && routeGeoJSON.features[0]?.geometry?.coordinates[0] && (
           <MapLibreRN.PointAnnotation
             id="routeStart"
@@ -126,7 +126,7 @@ export default function EnhancedMap({ roadData }: MapProps) {
           </MapLibreRN.PointAnnotation>
         )}
 
-        {/* End Point Marker - This comes AFTER route */}
+        {/* End Point Marker */}
         {routeGeoJSON && routeGeoJSON.features[0]?.geometry?.coordinates && (
           <MapLibreRN.PointAnnotation
             id="routeEnd"
@@ -178,10 +178,10 @@ export default function EnhancedMap({ roadData }: MapProps) {
                   )
                 ),
               ],
-              paddingLeft: 100,
-              paddingRight: 100,
-              paddingTop: 100,
-              paddingBottom: 200,
+              paddingLeft: horizontalScale(100),
+              paddingRight: horizontalScale(100),
+              paddingTop: verticalScale(100),
+              paddingBottom: verticalScale(200),
             }}
           />
         )}

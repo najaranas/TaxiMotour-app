@@ -2,19 +2,20 @@ import React from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { COLORS, FONTS } from "@/constants/theme";
+import THEME, { COLORS, FONTS } from "@/constants/theme";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import Typo from "@/components/common/Typo";
 import Button from "@/components/common/Button";
+import { CloseIcon, UserIcon } from "@/components/common/SvgIcons";
 import {
-  AboutIcon,
-  CloseIcon,
-  HistoryIcon,
-  SafetyIcon,
-  SettingIcon,
-  UserIcon,
-} from "@/components/common/SvgIcons";
+  Settings,
+  Info,
+  ShieldCheck,
+  CalendarCheck,
+  X,
+} from "lucide-react-native";
 import { APP_CONFIG, ROUTE_CONFIG } from "@/constants/app";
+import { useUser } from "@clerk/clerk-expo";
 
 interface NavigationDrawerProps {
   onClose: () => void;
@@ -23,7 +24,7 @@ interface NavigationDrawerProps {
 export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-
+  const { user } = useUser();
   const handleMyAccount = () => {
     router.push(ROUTE_CONFIG.PROFILE);
     onClose();
@@ -31,10 +32,10 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
 
   const menuItems = APP_CONFIG.MENU_ITEMS.map((item) => {
     const iconMap = {
-      history: HistoryIcon,
-      about: AboutIcon,
-      safety: SafetyIcon,
-      settings: SettingIcon,
+      history: CalendarCheck,
+      about: Info,
+      safety: ShieldCheck,
+      settings: Settings,
     };
 
     return {
@@ -59,9 +60,9 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
               size={horizontalScale(25)}
             />
           </View>
-          <View>
-            <Typo variant="body" fontFamily={FONTS.medium}>
-              {APP_CONFIG.DEFAULT_PHONE_NUMBER}
+          <View style={{ flexShrink: 1 }}>
+            <Typo variant="body" numberOfLines={1} fontFamily={FONTS.medium}>
+              {user?.fullName}
             </Typo>
             <Typo
               variant="body"
@@ -74,7 +75,11 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
         </Button>
 
         <Button onPress={onClose}>
-          <CloseIcon size={horizontalScale(25)} />
+          <X
+            color={THEME.text.primary}
+            strokeWidth={1.5}
+            size={moderateScale(25)}
+          />
         </Button>
       </View>
 
@@ -83,8 +88,9 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
           <Button key={index} onPress={item.onPress} style={styles.menuItem}>
             <View style={styles.menuItemRow}>
               <item.icon
-                size={horizontalScale(27)}
-                color={COLORS.gray["500"]}
+                color={THEME.text.primary}
+                strokeWidth={1.5}
+                size={moderateScale(25)}
               />
               <Text style={styles.menuText}>{item.title}</Text>
             </View>

@@ -2,25 +2,37 @@ import { COLORS } from "@/constants/theme";
 import { verticalScale } from "@/utils/styling";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
-import { Image, StatusBar, StyleSheet, View } from "react-native";
+import { Image, StatusBar, StyleSheet } from "react-native";
+import { useAuth } from "@clerk/clerk-expo";
+import ScreenWrapper from "@/components/common/ScreenWrapper";
 
 export default function Index() {
-  const route = useRouter();
+  const router = useRouter();
+  const { isSignedIn, isLoaded } = useAuth();
+
   useEffect(() => {
-    setTimeout(() => {
-      route.replace("/screens/Auth/LoginScreen");
-    }, 2000);
-  }, [route]);
+    if (isLoaded) {
+      const timer = setTimeout(() => {
+        if (isSignedIn) {
+          router.replace("/(tabs)/Home");
+        } else {
+          router.replace("/screens/Auth/Login");
+        }
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isLoaded, isSignedIn, router]);
 
   return (
-    <View style={styles.container}>
+    <ScreenWrapper style={styles.container}>
       <Image
         resizeMode="contain"
         source={require("../assets/images/logo.png")}
         style={styles.logo}
       />
       <StatusBar barStyle={"light-content"} />
-    </View>
+    </ScreenWrapper>
   );
 }
 
