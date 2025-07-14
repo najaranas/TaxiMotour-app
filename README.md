@@ -1,50 +1,67 @@
-# Welcome to your Expo app 👋
+# 🚗 TaxiMotour
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A modern taxi booking app built with React Native and Expo, featuring real-time ride booking, driver tracking, and seamless user experience.
 
-## Get started
+## ✨ Features
 
-1. Install dependencies
+- 🔐 **Authentication** - Secure login with Clerk (OAuth support)
+- 🗺️ **Maps Integration** - Real-time location tracking and route planning
+- 📱 **Dual User Types** - Separate interfaces for passengers and drivers
+- 🎨 **Modern UI** - Clean design with Lucide icons and custom theming
+- 🌙 **Dark Mode** - Toggle between light and dark themes
+- 📊 **Earnings Tracking** - Driver earnings dashboard
+- 👤 **Profile Management** - User profile with customization options
+
+## 🚀 Quick Start
+
+1. **Install dependencies**
 
    ```bash
    npm install
    ```
 
-2. Start the app
+2. **Start the development server**
 
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+3. **Run on device/simulator**
+   - Press `a` for Android emulator
+   - Press `i` for iOS simulator
+   - Scan QR code with Expo Go app
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 🛠️ Tech Stack
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- **Framework**: React Native with Expo
+- **Language**: TypeScript
+- **Navigation**: Expo Router (file-based routing)
+- **Authentication**: Clerk
+- **Icons**: Lucide React Native
+- **Maps**: React Native Maps
+- **State Management**: React Context/Hooks
 
-## Get a fresh project
+## 📱 App Structure
 
-When you're ready, run:
+```
+app/
+├── (tabs)/          # Tab navigation screens
+├── screens/         # Auth and feature screens
+└── navigation/      # Navigation components
 
-```bash
-npm run reset-project
+components/
+├── common/          # Reusable UI components
+├── home/           # Home screen components
+└── Profile/        # Profile related components
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 🎯 Getting Started
 
-## Learn more
+1. Clone the repository
+2. Install dependencies with `npm install`
+3. Configure your environment variables
+4. Run `npx expo start` to start development
 
-To learn more about developing your project with Expo, look at the following resources:
+## 📄 License
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+This project is private and proprietary.
