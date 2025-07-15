@@ -33,6 +33,7 @@ export const COLORS = {
 
   // Custom selection color
   selection: "rgba(12, 129, 224, 0.2)",
+  transparent_gray: "rgba(71, 72, 73, 0.29)",
 };
 
 // Font Families
