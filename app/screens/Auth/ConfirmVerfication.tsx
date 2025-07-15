@@ -62,72 +62,72 @@ export default function ConfirmVerification() {
   };
 
   return (
-    <ScreenWrapper safeArea padding={horizontalScale(15)}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <BackButton />
-
-        {/* Content */}
-        <View style={styles.content}>
-          <View style={styles.titleContainer}>
-            <Typo color={THEME.text.primary} variant="h3">
-              Verify Your Phone
+    <ScreenWrapper
+      safeArea
+      padding={horizontalScale(15)}
+      scroll
+      style={styles.container}
+      contentContainerStyle={styles.scrollContent}
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}>
+      {/* Header */}
+      <BackButton />
+      {/* Content */}
+      <View style={styles.content}>
+        <View style={styles.titleContainer}>
+          <Typo color={THEME.text.primary} variant="h3">
+            Verify Your Phone
+          </Typo>
+          <View style={{ gap: verticalScale(5) }}>
+            <Typo
+              color={THEME.text.muted}
+              variant="body"
+              style={styles.infoText}>
+              Enter the verification code sent to your WhatsApp number.
             </Typo>
-            <View style={{ gap: verticalScale(5) }}>
-              <Typo
-                color={THEME.text.muted}
-                variant="body"
-                style={styles.infoText}>
-                Enter the verification code sent to your WhatsApp number.
-              </Typo>
-              <Typo
-                variant="body"
-                fontFamily={FONTS.bold}
-                color={THEME.text.secondary}
-                style={styles.infoText}>
-                +216 93 231 421
-              </Typo>
-            </View>
+            <Typo
+              variant="body"
+              fontFamily={FONTS.bold}
+              color={THEME.text.secondary}
+              style={styles.infoText}>
+              +216 93 231 421
+            </Typo>
           </View>
-
-          <ConfirmationCodeField
-            digitCount={4}
-            autoFocus
-            onCodeComplete={() => null}
-          />
-
-          <View style={styles.resendContainer}>
-            {resendTimer === 0 ? (
-              <Button onPress={handleResendCode}>
-                <Typo variant="button" color={COLORS.secondary}>
-                  Resend code
-                </Typo>
-              </Button>
-            ) : (
-              <Typo variant="body" color={THEME.text.muted}>
-                Resend Code in {resendTimer}
-              </Typo>
-            )}
-          </View>
-
-          <Button onPress={handleEditNumber}>
-            <View style={styles.editNumberContainer}>
-              <EditIcon color={THEME.text.secondary} height={30} width={30} />
-              <Typo
-                variant="body"
-                fontFamily={FONTS.medium}
-                color={THEME.text.secondary}
-                style={styles.infoText}>
-                Edit phone number
-              </Typo>
-            </View>
-          </Button>
         </View>
-      </ScrollView>
+
+        <ConfirmationCodeField
+          digitCount={4}
+          autoFocus
+          onCodeComplete={() => null}
+        />
+
+        <View style={styles.resendContainer}>
+          {resendTimer === 0 ? (
+            <Button onPress={handleResendCode}>
+              <Typo variant="button" color={COLORS.secondary}>
+                Resend code
+              </Typo>
+            </Button>
+          ) : (
+            <Typo variant="body" color={THEME.text.muted}>
+              Resend Code in {resendTimer}
+            </Typo>
+          )}
+        </View>
+
+        <Button onPress={handleEditNumber}>
+          <View style={styles.editNumberContainer}>
+            <EditIcon color={THEME.text.secondary} size={30} />
+            <Typo
+              variant="body"
+              fontFamily={FONTS.medium}
+              color={THEME.text.secondary}
+              style={styles.infoText}>
+              Edit phone number
+            </Typo>
+          </View>
+        </Button>
+      </View>
     </ScreenWrapper>
   );
 }

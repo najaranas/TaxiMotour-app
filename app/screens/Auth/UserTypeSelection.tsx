@@ -26,7 +26,13 @@ export default function UserTypeSelection() {
     }
   };
   return (
-    <ScreenWrapper safeArea padding={horizontalScale(15)}>
+    <ScreenWrapper
+      safeArea
+      padding={horizontalScale(15)}
+      scroll
+      style={styles.scroll}
+      contentContainerStyle={styles.scrollContent}
+      showsVerticalScrollIndicator={false}>
       {/* Header */}
       <BackButton />
       <View style={styles.header}>
@@ -52,46 +58,41 @@ export default function UserTypeSelection() {
       </View>
 
       {/* Cards */}
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}>
-        {userTypes.map((type) => {
-          const isSelected = selectedType === type.id;
-          return (
-            <UserTypeCard
-              key={type.id}
-              icon={type.icon}
-              title={type.title}
-              subtitle={type.subtitle}
-              description={type.description}
-              isSelected={isSelected}
-              onPress={() => setSelectedType(type.id)}
-            />
-          );
-        })}
-        {/* Continue Button */}
-        <Button
-          disabled={!selectedType}
-          style={[
-            styles.button,
-            {
-              backgroundColor: selectedType
-                ? COLORS.secondary
-                : COLORS.gray["300"],
-              opacity: selectedType ? 1 : 0.5,
-            },
-          ]}
-          onPress={handleContinue}>
-          <Typo
-            variant="button"
-            size={moderateScale(18)}
-            fontFamily={FONTS.medium}
-            color={COLORS.white}>
-            Continue
-          </Typo>
-        </Button>
-      </ScrollView>
+      {userTypes.map((type) => {
+        const isSelected = selectedType === type.id;
+        return (
+          <UserTypeCard
+            key={type.id}
+            icon={type.icon}
+            title={type.title}
+            subtitle={type.subtitle}
+            description={type.description}
+            isSelected={isSelected}
+            onPress={() => setSelectedType(type.id)}
+          />
+        );
+      })}
+      {/* Continue Button */}
+      <Button
+        disabled={!selectedType}
+        style={[
+          styles.button,
+          {
+            backgroundColor: selectedType
+              ? COLORS.secondary
+              : COLORS.gray["300"],
+            opacity: selectedType ? 1 : 0.5,
+          },
+        ]}
+        onPress={handleContinue}>
+        <Typo
+          variant="button"
+          size={moderateScale(18)}
+          fontFamily={FONTS.medium}
+          color={COLORS.white}>
+          Continue
+        </Typo>
+      </Button>
     </ScreenWrapper>
   );
 }

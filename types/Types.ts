@@ -1,12 +1,13 @@
 import React from "react";
-import { ViewStyle, StyleProp, TextStyle } from "react-native";
+import { ViewStyle, StyleProp, TextStyle, ScrollViewProps } from "react-native";
 
-export interface ScreenWrapperProps {
+export interface ScreenWrapperProps extends ScrollViewProps {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   backgroundColor?: string;
   padding?: number;
   safeArea?: boolean;
+  scroll?: boolean;
 }
 
 export interface TypoProps {

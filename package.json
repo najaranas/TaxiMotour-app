@@ -27,6 +27,7 @@
     "expo": "53.0.17",
     "expo-auth-session": "~6.2.1",
     "expo-blur": "~14.1.5",
+    "expo-camera": "^16.1.10",
     "expo-constants": "~17.1.6",
     "expo-crypto": "~14.1.5",
     "expo-dev-client": "~5.2.4",

@@ -38,6 +38,10 @@ function AppNavigator() {
       {/* Main app screens - only accessible when signed in */}
       <Stack.Protected guard={Boolean(isSignedIn)}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="screens/Profile/Selfie"
+          options={{ animation: "slide_from_bottom" }}
+        />
       </Stack.Protected>
     </Stack>
   );

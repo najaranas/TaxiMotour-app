@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { View, StyleSheet, ScrollView, Switch } from "react-native";
+import { View, StyleSheet, Switch } from "react-native";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
-import THEME, { COLORS } from "@/constants/theme";
+import THEME, { COLORS, FONTS } from "@/constants/theme";
 import { useClerk, useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
@@ -31,19 +31,19 @@ export default function ProfileScreen() {
     <ScreenWrapper
       style={styles.container}
       safeArea
-      padding={horizontalScale(15)}>
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ flex: 1 }}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}>
-        <View>
-          <View
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-              gap: verticalScale(5),
-            }}>
+      padding={horizontalScale(15)}
+      scroll
+      contentContainerStyle={{ flex: 1 }}
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}>
+      <View>
+        <View
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
+            gap: verticalScale(5),
+          }}>
+          <Button onPress={() => router.push("/screens/Profile/Selfie")}>
             <View
               style={{
                 padding: horizontalScale(10),
@@ -73,7 +73,6 @@ export default function ProfileScreen() {
                     borderRadius: "50%",
                     padding: horizontalScale(4),
                   }}>
-                  {/* <EditIcon color={COLORS.white} size={horizontalScale(15)} /> */}
                   <Pencil
                     color={COLORS.white}
                     strokeWidth={1.5}
@@ -82,87 +81,95 @@ export default function ProfileScreen() {
                 </View>
               </View>
             </View>
+          </Button>
 
-            <Typo style={{ textAlign: "center" }} variant="h3">
-              {user?.fullName}
-            </Typo>
-          </View>
-          {/* Profile Menu List */}
-          <View style={styles.menuContainer}>
-            {/* Personal Info */}
-            <Button style={styles.menuItem} onPress={() => {}}>
-              <View style={styles.menuItemContent}>
-                <User
-                  color={THEME.text.primary}
-                  strokeWidth={1.5}
-                  size={moderateScale(25)}
-                />
-                <Typo
-                  variant="body"
-                  size={moderateScale(17)}
-                  color={THEME.text.primary}>
-                  Personal Info
-                </Typo>
-              </View>
-            </Button>
+          <Typo style={{ textAlign: "center" }} variant="h3">
+            {user?.fullName}
+          </Typo>
+        </View>
+        {/* Profile Menu List */}
+        <View style={styles.menuContainer}>
+          {/* Personal Info */}
+          <Button style={styles.menuItem} onPress={() => {}}>
+            <View style={styles.menuItemContent}>
+              <User
+                color={THEME.text.primary}
+                strokeWidth={1.5}
+                size={moderateScale(25)}
+              />
+              <Typo
+                variant="body"
+                size={moderateScale(17)}
+                color={THEME.text.primary}>
+                Personal Info
+              </Typo>
+            </View>
+          </Button>
 
-            {/* Language */}
-            <Button style={styles.menuItem} onPress={() => {}}>
-              <View style={styles.menuItemContent}>
-                <Globe
-                  color={THEME.text.primary}
-                  strokeWidth={1.5}
-                  size={moderateScale(25)}
-                />
+          {/* Language */}
+          <Button style={styles.menuItem} onPress={() => {}}>
+            <View style={styles.menuItemContent}>
+              <Globe
+                color={THEME.text.primary}
+                strokeWidth={1.5}
+                size={moderateScale(25)}
+              />
+              <View style={{ gap: verticalScale(5) }}>
                 <Typo variant="body" color={THEME.text.primary}>
                   Language
                 </Typo>
-              </View>
-            </Button>
-
-            {/* Dark Mode */}
-            <Button style={styles.menuItem} onPress={() => {}}>
-              <View style={styles.menuItemContent}>
-                <Moon
-                  color={THEME.text.primary}
-                  strokeWidth={1.5}
-                  size={moderateScale(25)}
-                />
-                <Typo variant="body" color={THEME.text.primary}>
-                  Dark Mode
+                <Typo
+                  variant="caption"
+                  fontFamily={FONTS.regular}
+                  color={THEME.text.secondary}>
+                  English
                 </Typo>
               </View>
-              <Switch
-                value={isDarkMode}
-                onValueChange={setIsDarkMode}
-                trackColor={{
-                  false: COLORS.gray["200"],
-                  true: COLORS.secondary,
-                }}
-                thumbColor={isDarkMode ? COLORS.white : COLORS.gray["400"]}
-                ios_backgroundColor={COLORS.gray["200"]}
-                style={{ transform: [{ scale: 1.2 }] }}
+            </View>
+          </Button>
+
+          {/* Dark Mode */}
+          <Button style={styles.menuItem} onPress={() => {}}>
+            <View style={styles.menuItemContent}>
+              <Moon
+                color={THEME.text.primary}
+                strokeWidth={1.5}
+                size={moderateScale(25)}
               />
-            </Button>
+              <Typo variant="body" color={THEME.text.primary}>
+                Dark Mode
+              </Typo>
+            </View>
+            <Switch
+              value={isDarkMode}
+              onValueChange={setIsDarkMode}
+              trackColor={{
+                false: COLORS.gray["100"],
+                true: COLORS.secondary,
+              }}
+              thumbColor={isDarkMode ? COLORS.white : COLORS.gray["200"]}
+              ios_backgroundColor={COLORS.gray["200"]}
+              style={{ transform: [{ scale: 1.2 }] }}
+            />
+          </Button>
 
-            {/* Logout */}
-            <Button
-              style={[styles.menuItem, { borderBottomWidth: 0 }]}
-              onPress={handleSignOut}>
-              <View style={styles.menuItemContent}>
-                <LogOut
-                  color="#FF4757"
-                  strokeWidth={1.5}
-                  size={moderateScale(25)}
-                />
-                <Typo variant="body" color="#FF4757">
-                  Logout
-                </Typo>
-              </View>
-            </Button>
-          </View>
+          {/* Logout */}
+          <Button
+            style={[styles.menuItem, { borderBottomWidth: 0 }]}
+            onPress={handleSignOut}>
+            <View style={styles.menuItemContent}>
+              <LogOut
+                color={COLORS.danger}
+                strokeWidth={1.5}
+                size={moderateScale(25)}
+              />
+              <Typo variant="body" color={COLORS.danger}>
+                Logout
+              </Typo>
+            </View>
+          </Button>
         </View>
-      </ScrollView>
+      </View>
     </ScreenWrapper>
   );
 }

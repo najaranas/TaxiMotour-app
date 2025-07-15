@@ -118,74 +118,72 @@ export default function Login() {
   };
 
   return (
-    <ScreenWrapper safeArea padding={horizontalScale(15)}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}>
-        <View style={styles.loginContaienr}>
+    <ScreenWrapper
+      safeArea
+      padding={horizontalScale(15)}
+      scroll
+      style={styles.container}
+      contentContainerStyle={styles.scrollContent}
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}>
+      <View style={styles.loginContaienr}>
+        <Typo color={THEME.text.primary} variant="h3" style={styles.centerText}>
+          Enter your number
+        </Typo>
+
+        <PhoneSelector />
+
+        <View style={styles.separator}>
+          <View style={styles.separatorLine} />
           <Typo
-            color={THEME.text.primary}
-            variant="h3"
-            style={styles.centerText}>
-            Enter your number
-          </Typo>
-
-          <PhoneSelector />
-
-          <View style={styles.separator}>
-            <View style={styles.separatorLine} />
-            <Typo
-              color={THEME.text.muted}
-              variant="body"
-              style={styles.separatorText}>
-              Or
-            </Typo>
-            <View style={styles.separatorLine} />
-          </View>
-
-          <View style={styles.socialButtonsContainer}>
-            <Button
-              onPress={() => onSocialPress("oauth_google")}
-              style={styles.socialButtons}
-              loading={googleLoading}>
-              <GoolgeIcon size={verticalScale(30)} />
-              <Typo variant="body">Sign in with Google</Typo>
-            </Button>
-            <Button
-              onPress={() => onSocialPress("oauth_apple")}
-              style={styles.socialButtons}
-              loading={appleLoading}>
-              <AppleIcon size={verticalScale(30)} />
-              <Typo variant="body">Sign in with Apple</Typo>
-            </Button>
-            <Button
-              onPress={() => onSocialPress("oauth_facebook")}
-              style={styles.socialButtons}
-              loading={facebookLoading}>
-              <FacebookIcon size={verticalScale(30)} />
-              <Typo variant="body">Sign in with Facebook</Typo>
-            </Button>
-          </View>
-        </View>
-
-        <View style={styles.footerContainer}>
-          <Typo
-            variant="caption"
-            color={THEME.text.secondary}
-            style={styles.centerText}>
-            By continuing, you agree to our secure service.
-          </Typo>
-          <Typo
-            variant="body"
             color={THEME.text.muted}
-            style={styles.centerText}
-            size={moderateScale(15)}>
-            Taximotour - Safe rides across Tunisia
+            variant="body"
+            style={styles.separatorText}>
+            Or
           </Typo>
+          <View style={styles.separatorLine} />
         </View>
-      </ScrollView>
+
+        <View style={styles.socialButtonsContainer}>
+          <Button
+            onPress={() => onSocialPress("oauth_google")}
+            style={styles.socialButtons}
+            loading={googleLoading}>
+            <GoolgeIcon size={verticalScale(30)} />
+            <Typo variant="body">Sign in with Google</Typo>
+          </Button>
+          <Button
+            onPress={() => onSocialPress("oauth_apple")}
+            style={styles.socialButtons}
+            loading={appleLoading}>
+            <AppleIcon size={verticalScale(30)} />
+            <Typo variant="body">Sign in with Apple</Typo>
+          </Button>
+          <Button
+            onPress={() => onSocialPress("oauth_facebook")}
+            style={styles.socialButtons}
+            loading={facebookLoading}>
+            <FacebookIcon size={verticalScale(30)} />
+            <Typo variant="body">Sign in with Facebook</Typo>
+          </Button>
+        </View>
+      </View>
+
+      <View style={styles.footerContainer}>
+        <Typo
+          variant="caption"
+          color={THEME.text.secondary}
+          style={styles.centerText}>
+          By continuing, you agree to our secure service.
+        </Typo>
+        <Typo
+          variant="body"
+          color={THEME.text.muted}
+          style={styles.centerText}
+          size={moderateScale(15)}>
+          Taximotour - Safe rides across Tunisia
+        </Typo>
+      </View>
     </ScreenWrapper>
   );
 }

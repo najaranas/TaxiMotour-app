@@ -574,7 +574,7 @@ export function LanguageIcon({ size = 24, color = "#000000" }: SvgIconProps) {
   );
 }
 
-export function ExitIcon({ size = 24, color = "#464455" }: SvgIconProps) {
+export function ExitIcon({ size = 24, color = "#000000" }: SvgIconProps) {
   return (
     <Svg viewBox="0 0 24 24" width={size} height={size} fill="none">
       <G id="SVGRepo_bgCarrier" stroke-width="0"></G>

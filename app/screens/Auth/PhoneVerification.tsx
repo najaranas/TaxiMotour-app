@@ -103,92 +103,92 @@ export default function PhoneVerification() {
   };
 
   return (
-    <ScreenWrapper safeArea padding={horizontalScale(15)}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <BackButton />
+    <ScreenWrapper
+      safeArea
+      padding={horizontalScale(15)}
+      scroll
+      style={styles.container}
+      contentContainerStyle={styles.scrollContent}
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}>
+      {/* Header */}
+      <BackButton />
+      {/* Content */}
+      <View style={styles.content}>
+        <TextInput
+          value={code}
+          placeholder="Enter your verification code"
+          onChangeText={(code) => setCode(code)}
+        />
+        <TouchableOpacity onPress={onVerifyPress}>
+          <Text>Verify</Text>
+        </TouchableOpacity>
+        <View style={styles.titleContainer}>
+          <Typo color={THEME.text.primary} variant="h3">
+            Enter your number
+          </Typo>
 
-        {/* Content */}
-        <View style={styles.content}>
-          <TextInput
-            value={code}
-            placeholder="Enter your verification code"
-            onChangeText={(code) => setCode(code)}
-          />
-          <TouchableOpacity onPress={onVerifyPress}>
-            <Text>Verify</Text>
-          </TouchableOpacity>
-          <View style={styles.titleContainer}>
-            <Typo color={THEME.text.primary} variant="h3">
-              Enter your number
+          <View style={styles.whatsappInfo}>
+            <WhatsappIcon size={horizontalScale(40)} />
+            <Typo
+              color={THEME.text.muted}
+              variant="body"
+              style={styles.whatsappText}>
+              We&apos;ll send a verification code to your WhatsApp number.
             </Typo>
-
-            <View style={styles.whatsappInfo}>
-              <WhatsappIcon size={horizontalScale(40)} />
-              <Typo
-                color={THEME.text.muted}
-                variant="body"
-                style={styles.whatsappText}>
-                We&apos;ll send a verification code to your WhatsApp number.
-              </Typo>
-            </View>
-          </View>
-
-          <View style={styles.phoneInputContainer}>
-            <View style={styles.countrySection}>
-              <TunisiaFlag size={horizontalScale(30)} />
-              <Typo variant="body" color={THEME.text.primary}>
-                +216
-              </Typo>
-            </View>
-
-            <View
-              style={[
-                styles.inputContainer,
-                {
-                  borderColor: isInputOnFocus
-                    ? COLORS.secondary
-                    : COLORS.gray["200"],
-                },
-              ]}>
-              <TextInput
-                ref={inputRef}
-                value={phoneNumber}
-                onChangeText={setPhoneNumber}
-                onFocus={() => setIsInputOnFocus(true)}
-                onBlur={() => setIsInputOnFocus(false)}
-                keyboardType="numeric"
-                placeholder="9X XXX XXX"
-                placeholderTextColor={THEME.text.secondary}
-                maxLength={8}
-                style={styles.textInput}
-              />
-            </View>
           </View>
         </View>
 
-        {/* Submit Button */}
-        <KeyboardStickyView offset={{ closed: 0, opened: verticalScale(50) }}>
-          <Button
-            loading={loading}
-            disabled={loading}
-            indicatorStyle={{ size: moderateScale(25), color: COLORS.primary }}
-            style={[styles.button, { opacity: loading ? 0.3 : 1 }]}
-            onPress={handleContinue}>
-            <Typo
-              variant="button"
-              size={moderateScale(20)}
-              fontFamily={FONTS.medium}
-              color={COLORS.white}>
-              Continue
+        <View style={styles.phoneInputContainer}>
+          <View style={styles.countrySection}>
+            <TunisiaFlag size={horizontalScale(30)} />
+            <Typo variant="body" color={THEME.text.primary}>
+              +216
             </Typo>
-          </Button>
-        </KeyboardStickyView>
-      </ScrollView>
+          </View>
+
+          <View
+            style={[
+              styles.inputContainer,
+              {
+                borderColor: isInputOnFocus
+                  ? COLORS.secondary
+                  : COLORS.gray["200"],
+              },
+            ]}>
+            <TextInput
+              ref={inputRef}
+              value={phoneNumber}
+              onChangeText={setPhoneNumber}
+              onFocus={() => setIsInputOnFocus(true)}
+              onBlur={() => setIsInputOnFocus(false)}
+              keyboardType="numeric"
+              placeholder="9X XXX XXX"
+              placeholderTextColor={THEME.text.secondary}
+              maxLength={8}
+              style={styles.textInput}
+            />
+          </View>
+        </View>
+      </View>
+
+      {/* Submit Button */}
+      <KeyboardStickyView offset={{ closed: 0, opened: verticalScale(50) }}>
+        <Button
+          loading={loading}
+          disabled={loading}
+          indicatorStyle={{ size: moderateScale(25), color: COLORS.primary }}
+          style={[styles.button, { opacity: loading ? 0.3 : 1 }]}
+          onPress={handleContinue}>
+          <Typo
+            variant="button"
+            size={moderateScale(20)}
+            fontFamily={FONTS.medium}
+            color={COLORS.white}>
+            Continue
+          </Typo>
+        </Button>
+      </KeyboardStickyView>
     </ScreenWrapper>
   );
 }
