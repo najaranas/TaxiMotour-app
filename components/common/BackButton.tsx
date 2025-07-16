@@ -13,13 +13,17 @@ const CloseIcon = (props: { color: string; size: number }) => (
 
 type BackButtonProps = {
   variant?: "arrow" | "close";
+  disabled?: boolean;
 };
 
-export default function BackButton({ variant = "arrow" }: BackButtonProps) {
+export default function BackButton({
+  variant = "arrow",
+  disabled = false,
+}: BackButtonProps) {
   const route = useRouter();
 
   return (
-    <Button onPress={route.back}>
+    <Button onPress={route.back} disabled={disabled}>
       {variant === "arrow" ? (
         <LeftArrowIcon color={THEME.text.primary} size={horizontalScale(30)} />
       ) : (

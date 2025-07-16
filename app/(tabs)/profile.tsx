@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Switch } from "react-native";
+import { View, StyleSheet, Switch, Image } from "react-native";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import THEME, { COLORS, FONTS } from "@/constants/theme";
 import { useClerk, useUser } from "@clerk/clerk-expo";
@@ -8,7 +8,7 @@ import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import { UserIcon } from "@/components/common/SvgIcons";
 import Typo from "@/components/common/Typo";
 import Button from "@/components/common/Button";
-import { Globe, LogOut, Moon, Pencil, User } from "lucide-react-native";
+import { Flag, Globe, LogOut, Moon, Pencil, User } from "lucide-react-native";
 
 export default function ProfileScreen() {
   const { signOut } = useClerk();
@@ -26,7 +26,6 @@ export default function ProfileScreen() {
       console.error(JSON.stringify(err, null, 2));
     }
   };
-
   return (
     <ScreenWrapper
       style={styles.container}
@@ -44,47 +43,35 @@ export default function ProfileScreen() {
             gap: verticalScale(5),
           }}>
           <Button onPress={() => router.push("/screens/Profile/Selfie")}>
-            <View
-              style={{
-                padding: horizontalScale(10),
-                alignItems: "center",
-                justifyContent: "center",
-                position: "relative",
-                backgroundColor: COLORS.gray["100"],
-                borderRadius: "50%",
-              }}>
-              <UserIcon
-                color={COLORS.gray["600"]}
-                bold
-                size={horizontalScale(35)}
-              />
-              <View
-                style={{
-                  position: "absolute",
-                  bottom: 0,
-                  right: -horizontalScale(5),
-                  backgroundColor: THEME.background,
-                  borderRadius: "50%",
-                  padding: horizontalScale(2),
-                }}>
-                <View
-                  style={{
-                    backgroundColor: COLORS.secondary,
-                    borderRadius: "50%",
-                    padding: horizontalScale(4),
-                  }}>
+            <View style={styles.profileImageWrapper}>
+              {user?.hasImage ? (
+                <Image
+                  source={{ uri: user?.imageUrl }}
+                  style={styles.profileImage}
+                />
+              ) : (
+                <View style={styles.profileImagePlaceholder}>
+                  <UserIcon
+                    color={COLORS.gray["600"]}
+                    bold
+                    size={horizontalScale(70)}
+                  />
+                </View>
+              )}
+              <View style={styles.profileEditIconWrapper}>
+                <View style={styles.profileEditIconInner}>
                   <Pencil
                     color={COLORS.white}
                     strokeWidth={1.5}
-                    size={moderateScale(13)}
+                    size={moderateScale(20)}
                   />
                 </View>
               </View>
             </View>
           </Button>
 
-          <Typo style={{ textAlign: "center" }} variant="h3">
-            {user?.fullName}
+          <Typo style={styles.profileGreeting} variant="h3">
+            {user?.firstName ? `Hi, ${user.firstName}!` : "Welcome!"}
           </Typo>
         </View>
         {/* Profile Menu List */}
@@ -187,7 +174,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingVertical: verticalScale(20),
     paddingHorizontal: horizontalScale(10),
-
     borderBottomWidth: 1,
     borderBottomColor: COLORS.gray["100"],
   },
@@ -195,5 +181,45 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: horizontalScale(12),
+  },
+  profileImageWrapper: {
+    position: "relative",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  profileImage: {
+    width: horizontalScale(100),
+    height: horizontalScale(100),
+    aspectRatio: 1,
+    borderRadius: horizontalScale(100) / 2,
+    backgroundColor: COLORS.gray["100"],
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  profileImagePlaceholder: {
+    width: horizontalScale(100),
+    height: horizontalScale(100),
+    aspectRatio: 1,
+    borderRadius: horizontalScale(100) / 2,
+    backgroundColor: COLORS.gray["100"],
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  profileEditIconWrapper: {
+    position: "absolute",
+    bottom: 0,
+    right: -horizontalScale(5),
+    backgroundColor: THEME.background,
+    borderRadius: 50,
+    padding: horizontalScale(3),
+  },
+  profileEditIconInner: {
+    backgroundColor: COLORS.secondary,
+    borderRadius: 50,
+    padding: horizontalScale(7),
+  },
+  profileGreeting: {
+    textAlign: "center",
+    marginTop: verticalScale(10),
   },
 });

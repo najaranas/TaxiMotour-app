@@ -6,49 +6,72 @@ import Typo from "@/components/common/Typo";
 import { Flashlight, RefreshCcw, Zap, ZapOff } from "lucide-react-native";
 import THEME, { COLORS } from "@/constants/theme";
 import Button from "@/components/common/Button";
-import {
-  CameraView,
-  CameraType,
-  useCameraPermissions,
-  CameraViewRef,
-  Camera,
-} from "expo-camera";
-import { useRef, useState } from "react";
+import { CameraView } from "expo-camera";
+import { useRef, useState, useCallback } from "react";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
+import { useFocusEffect, useRouter } from "expo-router";
+import { setSelfieImage } from "./selfieImageStore";
 
 const AnimatedRefreshCcw = Animated.createAnimatedComponent(RefreshCcw);
 
 export default function Selfie() {
   const cameraRef = useRef<CameraView>(null);
   const [cameraFace, setCameraFace] = useState<"front" | "back">("front");
-  const [isTorchActive, setIsToarchActive] = useState<boolean>(false);
-  const [image, setImage] = useState<string>(
-    "https://tse1.mm.bing.net/th/id/OIP.i4gn7MbTOHqpWaaTcenevgHaEK?r=0&rs=1&pid=ImgDetMain&o=7&rm=3"
-  );
+  const [isTorchActive, setIsTorchActive] = useState<boolean>(false);
+  const router = useRouter();
+  const [isCameraReady, setIsCameraReady] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
   const rotate = useSharedValue(0);
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [{ rotate: `${-rotate.value}deg` }],
   }));
-  const handlePress = () => {
+  const handleSwitchCamera = () => {
     rotate.value = withSpring(rotate.value + 360, {
-      stiffness: 50, // lower than default (default is 100)
-      damping: 40, // higher than default (default is 10)
+      stiffness: 50,
+      damping: 40,
     });
+    setCameraFace((prev) => (prev === "back" ? "front" : "back"));
   };
 
-  const HandleTakeImg = async () => {
-    // cameraRef?.current.;
-    const response = await cameraRef.current?.takePictureAsync({});
-
-    if (response?.uri) {
-      setImage(response?.uri);
+  const takeSelfie = async () => {
+    if (!isCameraReady) {
+      console.log("Camera not ready");
+      return;
+    }
+    console.log("startingbefore ");
+    try {
+      const response = await cameraRef?.current?.takePictureAsync({
+        base64: true,
+      });
+      console.log("starting ");
+      if (response) {
+        console.log("entered");
+        setSelfieImage(response);
+        router.push("/screens/Profile/CheckSelfie");
+      } else {
+        console.log("aze");
+      }
+    } catch (error) {
+      console.error("Error taking selfie:", error);
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      console.log("mounted");
+      setIsFocused(true);
+      return () => {
+        console.log("unmounted");
+        setIsCameraReady(false);
+        setIsFocused(false);
+      };
+    }, [])
+  );
 
   return (
     <ScreenWrapper
@@ -57,78 +80,42 @@ export default function Selfie() {
       scroll
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{
-        flex: 1,
-      }}>
+      contentContainerStyle={styles.screenContent}>
       <BackButton variant="close" />
-
-      <Image source={{ uri: image }} style={{ width: 100, aspectRatio: 1 }} />
-      <View style={{ flex: 1, justifyContent: "space-between" }}>
+      <View style={styles.mainContent}>
         <Typo variant="h3" style={{ textAlign: "center" }}>
-          Take a selfie
+          Snap a Clear Selfie
         </Typo>
         <View>
-          <View
-            style={{
-              width: "90%",
-              marginInline: "auto",
-              aspectRatio: 1,
-              borderRadius: "50%",
-              overflow: "hidden",
-            }}>
-            <CameraView
-              ref={cameraRef}
-              enableTorch={isTorchActive}
-              style={{
-                flex: 1,
-              }}
-              facing={cameraFace}
-            />
-            <View
-              style={{
-                flex: 1,
-                position: "absolute",
-                top: 0,
-                right: 0,
-                left: 0,
-                bottom: 0,
-                backgroundColor: "transparent",
-                pointerEvents: "none",
-                borderWidth: 10,
-                borderRadius: "50%",
-                borderColor: COLORS.transparent_gray,
-              }}
-            />
+          <View style={styles.cameraContainer}>
+            {isFocused && (
+              <CameraView
+                ref={cameraRef}
+                enableTorch={isTorchActive}
+                mirror
+                ratio="1:1"
+                style={styles.cameraView}
+                facing={cameraFace}
+                onCameraReady={() => setIsCameraReady(true)}
+                onMountError={(error) => {
+                  console.error("Camera mount error:", error);
+                  setIsCameraReady(false);
+                }}
+              />
+            )}
+            <View style={styles.cameraOverlay} />
           </View>
-
           <Typo
-            style={{ textAlign: "center", marginTop: verticalScale(20) }}
+            style={styles.instructionText}
             variant="body"
             color={THEME.text.secondary}>
-            Avoid places with bad lighting , Position your face in the cirlce
-            and smile !
+            Make sure your face is centered and well-lit. Smile for the best
+            result!
           </Typo>
         </View>
-
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}>
-          <Button
-            onPress={() => {
-              setCameraFace((prev) => (prev === "back" ? "front" : "back"));
-              handlePress();
-            }}>
-            <View
-              style={{
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: COLORS.gray["100"],
-                padding: horizontalScale(10),
-                borderRadius: 50,
-              }}>
+        <View style={styles.buttonRow}>
+          <Button onPress={handleSwitchCamera}>
+            <View style={styles.iconButton}>
               <AnimatedRefreshCcw
                 color={THEME.text.primary}
                 strokeWidth={1.5}
@@ -137,40 +124,19 @@ export default function Selfie() {
               />
             </View>
           </Button>
-          <Button onPress={HandleTakeImg}>
-            <View
-              style={{
-                borderWidth: 3,
-                borderColor: COLORS.black,
-                padding: horizontalScale(2),
-                width: horizontalScale(60),
-                aspectRatio: 1,
-                borderRadius: 50,
-              }}>
-              <View
-                style={{
-                  backgroundColor: COLORS.black,
-                  flex: 1,
-                  borderRadius: 50,
-                }}
-              />
+          <Button onPress={takeSelfie}>
+            <View style={styles.captureButtonOuter}>
+              <View style={styles.captureButtonInner} />
             </View>
           </Button>
-
           <Button
             disabled={cameraFace === "front"}
-            onPress={() => {
-              setIsToarchActive((prev) => !prev);
-            }}>
+            onPress={() => setIsTorchActive((prev) => !prev)}>
             <View
-              style={{
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: COLORS.gray["100"],
-                padding: horizontalScale(10),
-                borderRadius: 50,
-                opacity: cameraFace === "front" ? 0 : 1,
-              }}>
+              style={[
+                styles.iconButton,
+                cameraFace === "front" && styles.iconButtonDisabled,
+              ]}>
               {isTorchActive ? (
                 <Zap
                   color={THEME.text.primary}
@@ -193,26 +159,65 @@ export default function Selfie() {
 }
 
 const styles = StyleSheet.create({
-  buttonContainer: {
+  screenContent: {
     flex: 1,
-    backgroundColor: "transparent",
-    flexDirection: "row",
-    alignItems: "flex-end",
-    justifyContent: "center",
-    paddingBottom: 20,
   },
-  button: {
-    backgroundColor: "#fff",
-    borderRadius: 20,
-    padding: 10,
-    marginHorizontal: 10,
+  mainContent: {
+    flex: 1,
+    justifyContent: "space-between",
+  },
+  cameraContainer: {
+    width: horizontalScale(300),
+    marginHorizontal: "auto",
+    aspectRatio: 1,
+    borderRadius: horizontalScale(300) / 2,
+    overflow: "hidden",
+  },
+  cameraView: {
+    flex: 1,
+    borderRadius: horizontalScale(300) / 2,
+  },
+  cameraOverlay: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    left: 0,
+    bottom: 0,
+    pointerEvents: "none",
+    borderWidth: 10,
+    borderRadius: horizontalScale(300) / 2,
+    borderColor: COLORS.transparent_gray,
+  },
+  instructionText: {
+    textAlign: "center",
+    marginTop: verticalScale(20),
+  },
+  buttonRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  iconButton: {
     alignItems: "center",
     justifyContent: "center",
-    elevation: 2,
+    backgroundColor: COLORS.gray["100"],
+    padding: horizontalScale(10),
+    borderRadius: 50,
   },
-  text: {
-    color: "#000",
-    fontSize: 16,
-    fontWeight: "bold",
+  iconButtonDisabled: {
+    opacity: 0,
+  },
+  captureButtonOuter: {
+    borderWidth: 3,
+    borderColor: COLORS.black,
+    padding: horizontalScale(2),
+    width: horizontalScale(60),
+    aspectRatio: 1,
+    borderRadius: 50,
+  },
+  captureButtonInner: {
+    backgroundColor: COLORS.black,
+    flex: 1,
+    borderRadius: 50,
   },
 });

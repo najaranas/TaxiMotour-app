@@ -17,7 +17,7 @@ export default function Button({
       disabled={disabled || loading}
       activeOpacity={loading ? 1 : activeOpacity}
       onPress={onPress}
-      style={style}>
+      style={[style, { opacity: loading || disabled ? 0.5 : 1 }]}>
       {loading ? (
         <MaterialIndicator
           size={indicatorStyle?.size || 25}
