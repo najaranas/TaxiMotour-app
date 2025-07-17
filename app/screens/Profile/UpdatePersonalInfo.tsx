@@ -23,25 +23,50 @@ export default function UpdatePersonalInfo() {
   const router = useRouter();
   const [firstName, setFirstName] = useState(user?.firstName || "");
   const [lastName, setLastName] = useState(user?.lastName || "");
+  const [emailAdress, setEmailAddress] = useState(
+    user?.primaryEmailAddress?.emailAddress || ""
+  );
+  const [phoneNumber, setPhoneNumber] = useState(
+    user?.primaryPhoneNumber?.phoneNumber || ""
+  );
   const [isButtonLoading, setIsButtonLoading] = useState(false);
 
   const firstNameRef = useRef<TextInput>(null);
   const LastNameRef = useRef<TextInput>(null);
+  const emailRef = useRef<TextInput>(null);
+  const phoneRef = useRef<TextInput>(null);
+
+  let isEnabled;
   if (pageType === "name") {
+    isEnabled =
+      (user?.firstName !== firstName || user?.lastName !== lastName) &&
+      firstName.trim() !== "" &&
+      lastName.trim() !== "";
+  } else if (pageType === "email") {
+    isEnabled =
+      user?.primaryEmailAddress?.emailAddress !== emailAdress &&
+      emailAdress.trim() !== "";
+  } else if (pageType === "phone") {
+    isEnabled =
+      user?.primaryPhoneNumber?.phoneNumber !== phoneNumber &&
+      phoneNumber.trim() !== "";
   }
 
-  const isEnabled =
-    (user?.firstName !== firstName || user?.lastName !== lastName) &&
-    firstName.trim() !== "" &&
-    lastName.trim() !== "";
-
-  const clearInput = (fieldType: "firstName" | "lastName") => {
+  const clearInput = (
+    fieldType: "firstName" | "lastName" | "emailAdresse" | "phone"
+  ) => {
     if (fieldType === "firstName") {
       setFirstName("");
       firstNameRef.current?.focus();
-    } else {
+    } else if (fieldType === "lastName") {
       setLastName("");
       LastNameRef.current?.focus();
+    } else if (fieldType === "emailAdresse") {
+      setEmailAddress("");
+      emailRef.current?.focus();
+    } else if (fieldType === "phone") {
+      setPhoneNumber("");
+      phoneRef.current?.focus();
     }
   };
 
@@ -78,57 +103,110 @@ export default function UpdatePersonalInfo() {
           {subTitle || "Please update your personal information below."}
         </Typo>
 
-        <View style={styles.inputContainer}>
-          <View style={styles.inputField}>
-            <Typo
-              variant="body"
-              color={COLORS.gray["600"]}
-              size={moderateScale(12)}>
-              First Name
-            </Typo>
+        {pageType === "name" ? (
+          <>
+            <View style={styles.inputContainer}>
+              <View style={styles.inputField}>
+                <Typo
+                  variant="body"
+                  color={COLORS.gray["600"]}
+                  size={moderateScale(12)}>
+                  First Name
+                </Typo>
 
-            <TextInput
-              ref={firstNameRef}
-              value={firstName}
-              onChangeText={setFirstName}
-              placeholder="Enter your first name"
-              style={styles.textInput}
-            />
+                <TextInput
+                  ref={firstNameRef}
+                  value={firstName}
+                  onChangeText={setFirstName}
+                  style={styles.textInput}
+                />
+              </View>
+              <Button onPress={() => clearInput("firstName")}>
+                <CircleX
+                  color={COLORS.gray["600"]}
+                  strokeWidth={1.5}
+                  size={moderateScale(25)}
+                />
+              </Button>
+            </View>
+
+            <View style={styles.inputContainer}>
+              <View style={styles.inputField}>
+                <Typo
+                  variant="body"
+                  color={COLORS.gray["600"]}
+                  size={moderateScale(12)}>
+                  Last Name
+                </Typo>
+
+                <TextInput
+                  ref={LastNameRef}
+                  value={lastName}
+                  onChangeText={setLastName}
+                  style={styles.textInput}
+                />
+              </View>
+              <Button onPress={() => clearInput("lastName")}>
+                <CircleX
+                  color={COLORS.gray["600"]}
+                  strokeWidth={1.5}
+                  size={moderateScale(25)}
+                />
+              </Button>
+            </View>
+          </>
+        ) : pageType === "email" ? (
+          <View style={styles.inputContainer}>
+            <View style={styles.inputField}>
+              <Typo
+                variant="body"
+                color={COLORS.gray["600"]}
+                size={moderateScale(12)}>
+                Email Address
+              </Typo>
+
+              <TextInput
+                ref={emailRef}
+                value={emailAdress}
+                onChangeText={setEmailAddress}
+                style={styles.textInput}
+              />
+            </View>
+            <Button onPress={() => clearInput("firstName")}>
+              <CircleX
+                color={COLORS.gray["600"]}
+                strokeWidth={1.5}
+                size={moderateScale(25)}
+              />
+            </Button>
           </View>
-          <Button onPress={() => clearInput("firstName")}>
-            <CircleX
-              color={COLORS.gray["600"]}
-              strokeWidth={1.5}
-              size={moderateScale(25)}
-            />
-          </Button>
-        </View>
+        ) : (
+          <View style={styles.inputContainer}>
+            <View style={styles.inputField}>
+              <Typo
+                variant="body"
+                color={COLORS.gray["600"]}
+                size={moderateScale(12)}>
+                Phone Number
+              </Typo>
 
-        <View style={styles.inputContainer}>
-          <View style={styles.inputField}>
-            <Typo
-              variant="body"
-              color={COLORS.gray["600"]}
-              size={moderateScale(12)}>
-              Last Name
-            </Typo>
-
-            <TextInput
-              ref={LastNameRef}
-              value={lastName}
-              onChangeText={setLastName}
-              placeholder="Enter your last name"
-              style={styles.textInput}
-            />
+              <TextInput
+                ref={phoneRef}
+                value={phoneNumber}
+                onChangeText={setPhoneNumber}
+                keyboardType="numeric"
+                style={styles.textInput}
+              />
+            </View>
+            <Button onPress={() => clearInput("phone")}>
+              <CircleX
+                color={COLORS.gray["600"]}
+                strokeWidth={1.5}
+                size={moderateScale(25)}
+              />
+            </Button>
           </View>
-          <Button onPress={() => clearInput("lastName")}>
-            <CircleX
-              color={COLORS.gray["600"]}
-              strokeWidth={1.5}
-              size={moderateScale(25)}
-            />
-          </Button>
-        </View>
+        )}
       </View>
 
       <KeyboardStickyView offset={{ closed: 0, opened: verticalScale(50) }}>
