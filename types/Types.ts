@@ -1,5 +1,12 @@
 import React from "react";
-import { ViewStyle, StyleProp, TextStyle, ScrollViewProps } from "react-native";
+import {
+  ViewStyle,
+  StyleProp,
+  TextStyle,
+  ScrollViewProps,
+  Text,
+  TextProps,
+} from "react-native";
 
 export interface ScreenWrapperProps extends ScrollViewProps {
   children: React.ReactNode;
@@ -10,7 +17,7 @@ export interface ScreenWrapperProps extends ScrollViewProps {
   scroll?: boolean;
 }
 
-export interface TypoProps {
+export interface TypoProps extends TextProps {
   children: React.ReactNode;
   style?: StyleProp<TextStyle>;
   fontFamily?: TextStyle["fontFamily"];
@@ -33,7 +40,7 @@ export interface ButtonProps {
   disabled?: boolean;
   loading?: boolean;
   indicatorStyle?: { size?: number; color?: string };
-  onPress: () => void;
+  onPress?: () => void;
 }
 export interface ConfirmationCodeFieldProps {
   digitCount: number;

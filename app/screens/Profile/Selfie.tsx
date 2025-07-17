@@ -9,9 +9,10 @@ import Button from "@/components/common/Button";
 import { CameraView } from "expo-camera";
 import { useRef, useState, useCallback } from "react";
 import Animated, {
+  Easing,
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
+  withTiming,
 } from "react-native-reanimated";
 import { useFocusEffect, useRouter } from "expo-router";
 import { setSelfieImage } from "./selfieImageStore";
@@ -22,6 +23,7 @@ export default function Selfie() {
   const cameraRef = useRef<CameraView>(null);
   const [cameraFace, setCameraFace] = useState<"front" | "back">("front");
   const [isTorchActive, setIsTorchActive] = useState<boolean>(false);
+  const [isTakeImgClicked, setIsTakeImgClicked] = useState<boolean>(false);
   const router = useRouter();
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -30,21 +32,18 @@ export default function Selfie() {
   const animatedStyles = useAnimatedStyle(() => ({
     transform: [{ rotate: `${-rotate.value}deg` }],
   }));
+
   const handleSwitchCamera = () => {
-    rotate.value = withSpring(rotate.value + 360, {
-      stiffness: 50,
-      damping: 40,
+    rotate.value = withTiming(rotate.value + 180, {
+      duration: 500,
     });
+
     setCameraFace((prev) => (prev === "back" ? "front" : "back"));
   };
 
   const takeSelfie = async () => {
-    if (!isCameraReady) {
-      console.log("Camera not ready");
-      return;
-    }
-    console.log("startingbefore ");
     try {
+      setIsTakeImgClicked(true);
       const response = await cameraRef?.current?.takePictureAsync({
         base64: true,
       });
@@ -53,11 +52,14 @@ export default function Selfie() {
         console.log("entered");
         setSelfieImage(response);
         router.push("/screens/Profile/CheckSelfie");
+        // router.push("/screens/Profile/Test");
       } else {
         console.log("aze");
       }
     } catch (error) {
       console.error("Error taking selfie:", error);
+    } finally {
+      setIsTakeImgClicked(false);
     }
   };
 
@@ -124,9 +126,24 @@ export default function Selfie() {
               />
             </View>
           </Button>
-          <Button onPress={takeSelfie}>
-            <View style={styles.captureButtonOuter}>
-              <View style={styles.captureButtonInner} />
+          <Button disabled={isTakeImgClicked} onPress={takeSelfie}>
+            <View
+              style={[
+                styles.captureButtonOuter,
+                {
+                  borderColor: isTakeImgClicked
+                    ? COLORS.gray["300"]
+                    : COLORS.black,
+                },
+              ]}>
+              <View
+                style={[
+                  styles.captureButtonInner,
+                  {
+                    opacity: isTakeImgClicked ? 0 : 1,
+                  },
+                ]}
+              />
             </View>
           </Button>
           <Button
@@ -209,15 +226,18 @@ const styles = StyleSheet.create({
   },
   captureButtonOuter: {
     borderWidth: 3,
-    borderColor: COLORS.black,
     padding: horizontalScale(2),
     width: horizontalScale(60),
     aspectRatio: 1,
-    borderRadius: 50,
+    borderRadius: "50%",
+    overflow: "hidden",
+    justifyContent: "center",
+    alignItems: "center",
   },
   captureButtonInner: {
+    width: horizontalScale(50),
+    aspectRatio: 1,
+    borderRadius: horizontalScale(50) / 2,
     backgroundColor: COLORS.black,
-    flex: 1,
-    borderRadius: 50,
   },
 });

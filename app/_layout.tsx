@@ -42,6 +42,13 @@ function AppNavigator() {
           name="screens/Profile/Selfie"
           options={{ animation: "slide_from_bottom" }}
         />
+        <Stack.Screen
+          name="screens/Profile/Test"
+          options={{
+            title: "Test",
+            headerShown: true,
+          }}
+        />
       </Stack.Protected>
     </Stack>
   );

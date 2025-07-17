@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { View, StyleSheet, Switch, Image } from "react-native";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import THEME, { COLORS, FONTS } from "@/constants/theme";
@@ -9,6 +9,7 @@ import { UserIcon } from "@/components/common/SvgIcons";
 import Typo from "@/components/common/Typo";
 import Button from "@/components/common/Button";
 import { Flag, Globe, LogOut, Moon, Pencil, User } from "lucide-react-native";
+import UserProfileImage from "@/components/common/UserProfileImage";
 
 export default function ProfileScreen() {
   const { signOut } = useClerk();
@@ -42,42 +43,26 @@ export default function ProfileScreen() {
             justifyContent: "center",
             gap: verticalScale(5),
           }}>
-          <Button onPress={() => router.push("/screens/Profile/Selfie")}>
-            <View style={styles.profileImageWrapper}>
-              {user?.hasImage ? (
-                <Image
-                  source={{ uri: user?.imageUrl }}
-                  style={styles.profileImage}
-                />
-              ) : (
-                <View style={styles.profileImagePlaceholder}>
-                  <UserIcon
-                    color={COLORS.gray["600"]}
-                    bold
-                    size={horizontalScale(70)}
-                  />
-                </View>
-              )}
-              <View style={styles.profileEditIconWrapper}>
-                <View style={styles.profileEditIconInner}>
-                  <Pencil
-                    color={COLORS.white}
-                    strokeWidth={1.5}
-                    size={moderateScale(20)}
-                  />
-                </View>
-              </View>
-            </View>
-          </Button>
+          <UserProfileImage
+            imageUrl={user?.imageUrl}
+            hasImage={user?.hasImage}
+            onPress={() => router.push("/screens/Profile/Selfie")}
+            size={100}
+            showEditIcon={true}
+            editable={true}
+          />
 
           <Typo style={styles.profileGreeting} variant="h3">
             {user?.firstName ? `Hi, ${user.firstName}!` : "Welcome!"}
           </Typo>
         </View>
+
         {/* Profile Menu List */}
         <View style={styles.menuContainer}>
           {/* Personal Info */}
-          <Button style={styles.menuItem} onPress={() => {}}>
+          <Button
+            style={styles.menuItem}
+            onPress={() => router.push("/screens/Profile/PersonalInfo")}>
             <View style={styles.menuItemContent}>
               <User
                 color={THEME.text.primary}

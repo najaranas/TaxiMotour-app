@@ -11,6 +11,7 @@ export default function Typo({
   children,
   numberOfLines,
   variant = "body",
+  ...props
 }: TypoProps) {
   // Typography variants
   const getVariantStyle = () => {
@@ -41,7 +42,7 @@ export default function Typo({
   };
 
   return (
-    <Text numberOfLines={numberOfLines} style={[textStyle, style]}>
+    <Text numberOfLines={numberOfLines} style={[textStyle, style]} {...props}>
       {children}
     </Text>
   );
