@@ -1,0 +1,357 @@
+import { StyleSheet, View } from "react-native";
+import { TextInput } from "react-native-gesture-handler";
+import ScreenWrapper from "@/components/common/ScreenWrapper";
+import BackButton from "@/components/common/BackButton";
+import Typo from "@/components/common/Typo";
+import THEME, { COLORS, FONTS } from "@/constants/theme";
+import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
+import { CircleX } from "lucide-react-native";
+import Button from "@/components/common/Button";
+import { useRef, useState } from "react";
+import { KeyboardStickyView } from "react-native-keyboard-controller";
+import { useUser } from "@clerk/clerk-expo";
+import { useLocalSearchParams, useRouter } from "expo-router";
+
+type EditType = "name" | "email" | "phone";
+type InputType = "firstName" | "lastName" | "email" | "phone";
+
+export default function EditPersonalInfo() {
+  const { editType, title, description } = useLocalSearchParams<{
+    editType?: EditType;
+    title?: string;
+    description?: string;
+  }>();
+
+  const { user } = useUser();
+  const router = useRouter();
+
+  // Form states
+  const [firstName, setFirstName] = useState(user?.firstName || "");
+  const [lastName, setLastName] = useState(user?.lastName || "");
+  const [email, setEmail] = useState(
+    user?.primaryEmailAddress?.emailAddress || ""
+  );
+  const [phone, setPhone] = useState(
+    user?.primaryPhoneNumber?.phoneNumber || ""
+  );
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Input refs
+  const firstNameRef = useRef<TextInput>(null);
+  const lastNameRef = useRef<TextInput>(null);
+  const emailRef = useRef<TextInput>(null);
+  const phoneRef = useRef<TextInput>(null);
+
+  // Validation logic
+  const getIsEnabled = (): boolean => {
+    switch (editType) {
+      case "name":
+        return (
+          (user?.firstName !== firstName.trim() ||
+            user?.lastName !== lastName.trim()) &&
+          firstName.trim() !== "" &&
+          lastName.trim() !== ""
+        );
+      case "email":
+        return (
+          user?.primaryEmailAddress?.emailAddress !== email.trim() &&
+          email.trim() !== ""
+        );
+      case "phone":
+        return (
+          user?.primaryPhoneNumber?.phoneNumber !== phone.trim() &&
+          phone.trim() !== ""
+        );
+      default:
+        return false;
+    }
+  };
+
+  const clearInput = (inputType: InputType) => {
+    switch (inputType) {
+      case "firstName":
+        setFirstName("");
+        firstNameRef.current?.focus();
+        break;
+      case "lastName":
+        setLastName("");
+        lastNameRef.current?.focus();
+        break;
+      case "email":
+        setEmail("");
+        emailRef.current?.focus();
+        break;
+      case "phone":
+        setPhone("");
+        phoneRef.current?.focus();
+        break;
+    }
+  };
+
+  const handleSave = async () => {
+    setIsLoading(true);
+    try {
+      if (editType === "name") {
+        // For name updates, use firstName and lastName directly
+        const updateData: {
+          firstName?: string;
+          lastName?: string;
+        } = {};
+
+        if (firstName.trim() !== user?.firstName) {
+          updateData.firstName = firstName.trim();
+        }
+        if (lastName.trim() !== user?.lastName) {
+          updateData.lastName = lastName.trim();
+        }
+
+        await user?.update(updateData);
+        router.back();
+      } else if (editType === "email") {
+        // For email, you need to create a new email address first, then set it as primary
+        try {
+          const emailAddress = await user?.createEmailAddress({
+            email: email.trim(),
+          });
+
+          // After creating, set it as primary using the ID
+          if (emailAddress) {
+            await user?.update({
+              primaryEmailAddressId: emailAddress.id,
+            });
+          }
+          router.back();
+        } catch (error) {
+          console.log("Error updating email:", error);
+        }
+      } else if (editType === "phone") {
+        // For phone, you need to create a new phone number first, then set it as primary
+        try {
+          const phoneNumber = await user?.createPhoneNumber({
+            phoneNumber: phone.trim(),
+          });
+
+          // After creating, set it as primary using the ID
+          if (phoneNumber) {
+            await user?.update({
+              primaryPhoneNumberId: phoneNumber.id,
+            });
+          }
+          router.back();
+        } catch (error) {
+          console.log("Error updating phone:", error);
+        }
+      }
+    } catch (error) {
+      console.log("Error updating personal info:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const renderNameInputs = () => (
+    <>
+      <View style={styles.inputContainer}>
+        <View style={styles.inputField}>
+          <Typo
+            variant="body"
+            color={COLORS.gray["600"]}
+            size={moderateScale(12)}>
+            First Name
+          </Typo>
+          <TextInput
+            ref={firstNameRef}
+            value={firstName}
+            onChangeText={setFirstName}
+            placeholder="Enter your first name"
+            style={styles.textInput}
+          />
+        </View>
+        <Button onPress={() => clearInput("firstName")}>
+          <CircleX
+            color={COLORS.gray["600"]}
+            strokeWidth={1.5}
+            size={moderateScale(25)}
+          />
+        </Button>
+      </View>
+
+      <View style={styles.inputContainer}>
+        <View style={styles.inputField}>
+          <Typo
+            variant="body"
+            color={COLORS.gray["600"]}
+            size={moderateScale(12)}>
+            Last Name
+          </Typo>
+          <TextInput
+            ref={lastNameRef}
+            value={lastName}
+            onChangeText={setLastName}
+            placeholder="Enter your last name"
+            style={styles.textInput}
+          />
+        </View>
+        <Button onPress={() => clearInput("lastName")}>
+          <CircleX
+            color={COLORS.gray["600"]}
+            strokeWidth={1.5}
+            size={moderateScale(25)}
+          />
+        </Button>
+      </View>
+    </>
+  );
+
+  const renderEmailInput = () => (
+    <View style={styles.inputContainer}>
+      <View style={styles.inputField}>
+        <Typo
+          variant="body"
+          color={COLORS.gray["600"]}
+          size={moderateScale(12)}>
+          Email Address
+        </Typo>
+        <TextInput
+          ref={emailRef}
+          value={email}
+          onChangeText={setEmail}
+          placeholder="Enter your email"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          style={styles.textInput}
+        />
+      </View>
+      <Button onPress={() => clearInput("email")}>
+        <CircleX
+          color={COLORS.gray["600"]}
+          strokeWidth={1.5}
+          size={moderateScale(25)}
+        />
+      </Button>
+    </View>
+  );
+
+  const renderPhoneInput = () => (
+    <View style={styles.inputContainer}>
+      <View style={styles.inputField}>
+        <Typo
+          variant="body"
+          color={COLORS.gray["600"]}
+          size={moderateScale(12)}>
+          Phone Number
+        </Typo>
+        <TextInput
+          ref={phoneRef}
+          value={phone}
+          onChangeText={setPhone}
+          placeholder="Enter your phone number"
+          keyboardType="phone-pad"
+          style={styles.textInput}
+        />
+      </View>
+      <Button onPress={() => clearInput("phone")}>
+        <CircleX
+          color={COLORS.gray["600"]}
+          strokeWidth={1.5}
+          size={moderateScale(25)}
+        />
+      </Button>
+    </View>
+  );
+
+  const renderInputs = () => {
+    switch (editType) {
+      case "name":
+        return renderNameInputs();
+      case "email":
+        return renderEmailInput();
+      case "phone":
+        return renderPhoneInput();
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <ScreenWrapper
+      safeArea
+      scroll
+      padding={horizontalScale(15)}
+      keyboardShouldPersistTaps="handled"
+      contentContainerStyle={styles.screenContent}>
+      <BackButton variant="arrow" />
+
+      <View style={styles.mainContent}>
+        <Typo variant="h3" style={styles.title}>
+          {title || "Edit Personal Info"}
+        </Typo>
+
+        <Typo
+          variant="body"
+          color={COLORS.gray["600"]}
+          style={styles.description}>
+          {description || "Please update your information below."}
+        </Typo>
+
+        {renderInputs()}
+      </View>
+
+      <KeyboardStickyView offset={{ closed: 0, opened: verticalScale(50) }}>
+        <Button
+          loading={isLoading}
+          disabled={isLoading || !getIsEnabled()}
+          style={[styles.saveButton, { opacity: isLoading ? 0.3 : 1 }]}
+          onPress={handleSave}>
+          <Typo variant="button" size={moderateScale(20)} color={COLORS.white}>
+            Save Changes
+          </Typo>
+        </Button>
+      </KeyboardStickyView>
+    </ScreenWrapper>
+  );
+}
+
+const styles = StyleSheet.create({
+  screenContent: {
+    flex: 1,
+  },
+  mainContent: {
+    flex: 1,
+    gap: verticalScale(20),
+  },
+  title: {
+    textAlign: "center",
+  },
+  description: {
+    lineHeight: moderateScale(22),
+  },
+  inputContainer: {
+    padding: horizontalScale(15),
+    backgroundColor: COLORS.gray["100"],
+    borderRadius: THEME.borderRadius.medium,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: horizontalScale(10),
+  },
+  inputField: {
+    flex: 1,
+    gap: verticalScale(5),
+  },
+  textInput: {
+    paddingTop: verticalScale(0),
+    paddingBottom: verticalScale(0),
+    paddingLeft: verticalScale(5),
+    paddingRight: verticalScale(0),
+    fontSize: moderateScale(16),
+  },
+  saveButton: {
+    borderRadius: THEME.borderRadius.pill,
+    backgroundColor: COLORS.secondary,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: verticalScale(15),
+    minHeight: verticalScale(60),
+  },
+});

@@ -58,12 +58,12 @@ export default function CheckSelfie() {
             style={styles.menuItem}
             onPress={() =>
               router.push({
-                pathname: "/screens/Profile/UpdatePersonalInfo",
+                pathname: "/screens/Profile/EditPersonalInfo",
                 params: {
-                  pageType: "name",
-                  title: "Update your name",
-                  subTitle:
-                    "Please enter your name exactly as it appears on your ID or Passport.",
+                  editType: "name",
+                  title: "Edit your name",
+                  description:
+                    "Please enter your name as it appears on your\u00A0ID",
                 },
               })
             }>
@@ -76,6 +76,7 @@ export default function CheckSelfie() {
               <Typo
                 variant="body"
                 style={{ flexShrink: 1 }}
+                numberOfLines={1}
                 size={moderateScale(17)}
                 color={THEME.text.primary}>
                 {user?.fullName}
@@ -97,12 +98,12 @@ export default function CheckSelfie() {
             style={styles.menuItem}
             onPress={() =>
               router.push({
-                pathname: "/screens/Profile/UpdatePersonalInfo",
+                pathname: "/screens/Profile/EditPersonalInfo",
                 params: {
-                  pageType: "email",
-                  title: "Update your email",
-                  subTitle:
-                    "Please enter your email address. It will be used for notifications and account recovery.",
+                  editType: "email",
+                  title: "Edit your email",
+                  description:
+                    "Please enter a valid email address for account notifications",
                 },
               })
             }>
@@ -115,6 +116,7 @@ export default function CheckSelfie() {
               <Typo
                 variant="body"
                 style={{ flexShrink: 1 }}
+                numberOfLines={1}
                 size={moderateScale(17)}
                 color={THEME.text.primary}>
                 {user?.primaryEmailAddress?.emailAddress}
