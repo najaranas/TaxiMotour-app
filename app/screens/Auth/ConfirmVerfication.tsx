@@ -8,11 +8,11 @@ import THEME, { COLORS, FONTS } from "@/constants/theme";
 import { horizontalScale, verticalScale } from "@/utils/styling";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, View, Alert } from "react-native";
+import { StyleSheet, View, Alert } from "react-native";
 
 export default function ConfirmVerification() {
   const [verificationCode, setVerificationCode] = useState<string>("");
-  const route = useRouter();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const resendTime = 20;
   const [timerId, setTimerId] = useState<number | null>(null);
@@ -57,8 +57,7 @@ export default function ConfirmVerification() {
     startResendTimer();
   };
   const handleEditNumber = () => {
-    // route.back();
-    route.push("/screens/Auth/UserTypeSelection");
+    router.navigate("/screens/Auth/UserTypeSelection");
   };
 
   return (

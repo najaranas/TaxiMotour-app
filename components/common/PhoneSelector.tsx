@@ -6,14 +6,14 @@ import { TunisiaFlag } from "./SvgIcons";
 import { useRouter } from "expo-router";
 
 export default function PhoneSelector() {
-  const route = useRouter();
+  const router = useRouter();
   const handlePress = () => {
-    route.push("/screens/Auth/PhoneVerification");
+    router.navigate("/screens/Auth/PhoneVerification");
   };
   return (
     <Pressable onPress={() => handlePress()} style={styles.container}>
       <View style={styles.countryButton}>
-        <TunisiaFlag height={verticalScale(30)} width={horizontalScale(30)} />
+        <TunisiaFlag size={verticalScale(30)} />
       </View>
 
       {/* Country Code Display */}

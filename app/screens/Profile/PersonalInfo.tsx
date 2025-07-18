@@ -2,17 +2,25 @@ import { StyleSheet, View } from "react-native";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import BackButton from "@/components/common/BackButton";
-import { useRouter } from "expo-router";
+import { usePathname, useRouter, useSegments } from "expo-router";
 import Typo from "@/components/common/Typo";
 import THEME, { COLORS, FONTS } from "@/constants/theme";
 import Button from "@/components/common/Button";
 import { useUser } from "@clerk/clerk-expo";
 import UserProfileImage from "@/components/common/UserProfileImage";
 import { Mail, User } from "lucide-react-native";
+import { useNavigationState } from "@react-navigation/native";
 
 export default function CheckSelfie() {
   const { user } = useUser();
   const router = useRouter();
+
+  const pathname = usePathname();
+
+  console.log("Current pathname:", pathname);
+  const navigationState = useNavigationState((state) => state);
+  console.log(navigationState?.routes?.map((r) => r.name)); // Should show the full stack
+
   return (
     <ScreenWrapper
       safeArea
@@ -26,38 +34,40 @@ export default function CheckSelfie() {
         <Typo variant="h3" style={{ textAlign: "center" }}>
           Personal Info
         </Typo>
-        <View
-          style={{
-            borderWidth: THEME.borderWidth.thin,
-            borderColor: COLORS.gray["200"],
-            padding: horizontalScale(20),
-            justifyContent: "center",
-            alignItems: "center",
-            gap: verticalScale(10),
-          }}>
-          <UserProfileImage
-            imageUrl={user?.imageUrl}
-            hasImage={user?.hasImage}
-            onPress={() => router.push("/screens/Profile/Selfie")}
-            size={60}
-            showEditIcon={true}
-            editable={true}
-          />
-          <Typo
-            variant="body"
-            // size={moderateScale(20)}
-            style={{ textAlign: "center" }}>
-            {user?.hasImage
-              ? "Change yout profile photo "
-              : "Add a profile photo so driver can recogniz you "}
-          </Typo>
-        </View>
+        <Button onPress={() => router.navigate("/screens/Profile/Selfie")}>
+          <View
+            style={{
+              borderWidth: THEME.borderWidth.thin,
+              borderColor: COLORS.gray["200"],
+              padding: horizontalScale(20),
+              justifyContent: "center",
+              alignItems: "center",
+              gap: verticalScale(10),
+            }}>
+            <UserProfileImage
+              imageUrl={user?.imageUrl}
+              hasImage={user?.hasImage}
+              size={60}
+              showEditIcon={true}
+              editable={false}
+            />
+            <Typo
+              variant="body"
+              // size={moderateScale(20)}
+              style={{ textAlign: "center" }}>
+              {user?.hasImage
+                ? "Change yout profile photo "
+                : "Add a profile photo so driver can recogniz you "}
+            </Typo>
+          </View>
+        </Button>
+
         <View style={styles.menuContainer}>
           {/* Personal Info */}
           <Button
             style={styles.menuItem}
-            onPress={() =>
-              router.push({
+            onPress={() => {
+              router.navigate({
                 pathname: "/screens/Profile/EditPersonalInfo",
                 params: {
                   editType: "name",
@@ -65,8 +75,8 @@ export default function CheckSelfie() {
                   description:
                     "Please enter your name as it appears on your\u00A0ID",
                 },
-              })
-            }>
+              });
+            }}>
             <View style={styles.menuItemContent}>
               <User
                 color={THEME.text.primary}
@@ -97,7 +107,7 @@ export default function CheckSelfie() {
           <Button
             style={styles.menuItem}
             onPress={() =>
-              router.push({
+              router.navigate({
                 pathname: "/screens/Profile/EditPersonalInfo",
                 params: {
                   editType: "email",

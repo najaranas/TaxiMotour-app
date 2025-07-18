@@ -1,5 +1,5 @@
-import { StyleSheet, View } from "react-native";
-import { TextInput } from "react-native-gesture-handler";
+import { StyleSheet, TouchableWithoutFeedback, View } from "react-native";
+import { Pressable, TextInput } from "react-native-gesture-handler";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import BackButton from "@/components/common/BackButton";
 import Typo from "@/components/common/Typo";
@@ -10,7 +10,13 @@ import Button from "@/components/common/Button";
 import { useRef, useState } from "react";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 import { useUser } from "@clerk/clerk-expo";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import {
+  useLocalSearchParams,
+  usePathname,
+  useRouter,
+  useSegments,
+} from "expo-router";
+import { useNavigationState } from "@react-navigation/native";
 
 type EditType = "name" | "email" | "phone";
 type InputType = "firstName" | "lastName" | "email" | "phone";
@@ -21,6 +27,12 @@ export default function EditPersonalInfo() {
     title?: string;
     description?: string;
   }>();
+
+  const pathname = usePathname();
+
+  console.log("Current pathname:", pathname);
+  const navigationState = useNavigationState((state) => state);
+  console.log(navigationState?.routes?.map((r) => r.name)); // Should show the full stack
 
   const { user } = useUser();
   const router = useRouter();
@@ -35,6 +47,9 @@ export default function EditPersonalInfo() {
     user?.primaryPhoneNumber?.phoneNumber || ""
   );
   const [isLoading, setIsLoading] = useState(false);
+
+  // Input states
+  const [focusedInput, setFocusedInput] = useState<InputType | null>(null);
 
   // Input refs
   const firstNameRef = useRef<TextInput>(null);
@@ -149,115 +164,202 @@ export default function EditPersonalInfo() {
     }
   };
 
+  const focusInput = (inputType: InputType) => {
+    switch (inputType) {
+      case "firstName":
+        firstNameRef.current?.focus();
+        setFocusedInput("firstName");
+        break;
+      case "lastName":
+        lastNameRef.current?.focus();
+        setFocusedInput("lastName");
+        break;
+      case "email":
+        emailRef.current?.focus();
+        setFocusedInput("email");
+        break;
+      case "phone":
+        phoneRef.current?.focus();
+        setFocusedInput("phone");
+        break;
+    }
+  };
+
+  const blurInput = (inputType: InputType) => {
+    switch (inputType) {
+      case "firstName":
+        firstNameRef.current?.blur();
+        break;
+      case "lastName":
+        lastNameRef.current?.blur();
+        break;
+      case "email":
+        emailRef.current?.blur();
+        break;
+      case "phone":
+        phoneRef.current?.blur();
+        break;
+    }
+  };
+
   const renderNameInputs = () => (
     <>
-      <View style={styles.inputContainer}>
-        <View style={styles.inputField}>
-          <Typo
-            variant="body"
-            color={COLORS.gray["600"]}
-            size={moderateScale(12)}>
-            First Name
-          </Typo>
-          <TextInput
-            ref={firstNameRef}
-            value={firstName}
-            onChangeText={setFirstName}
-            placeholder="Enter your first name"
-            style={styles.textInput}
-          />
+      <Button activeOpacity={1} onPress={() => focusInput("firstName")}>
+        <View
+          style={[
+            styles.inputContainer,
+            {
+              borderColor:
+                focusedInput === "firstName"
+                  ? COLORS.secondary
+                  : COLORS.gray["200"],
+            },
+          ]}
+          pointerEvents="box-none">
+          <View style={styles.inputField}>
+            <Typo
+              variant="body"
+              color={COLORS.gray["600"]}
+              size={moderateScale(12)}>
+              First Name
+            </Typo>
+            <TextInput
+              ref={firstNameRef}
+              value={firstName}
+              onChangeText={setFirstName}
+              placeholder="Enter your first name"
+              placeholderTextColor={THEME.input.placeholder}
+              onFocus={() => setFocusedInput("firstName")}
+              style={styles.textInput}
+            />
+          </View>
+          <Button onPress={() => clearInput("firstName")}>
+            <CircleX
+              color={COLORS.gray["600"]}
+              strokeWidth={1.5}
+              size={moderateScale(25)}
+            />
+          </Button>
         </View>
-        <Button onPress={() => clearInput("firstName")}>
-          <CircleX
-            color={COLORS.gray["600"]}
-            strokeWidth={1.5}
-            size={moderateScale(25)}
-          />
-        </Button>
-      </View>
+      </Button>
 
-      <View style={styles.inputContainer}>
-        <View style={styles.inputField}>
-          <Typo
-            variant="body"
-            color={COLORS.gray["600"]}
-            size={moderateScale(12)}>
-            Last Name
-          </Typo>
-          <TextInput
-            ref={lastNameRef}
-            value={lastName}
-            onChangeText={setLastName}
-            placeholder="Enter your last name"
-            style={styles.textInput}
-          />
+      <Button activeOpacity={1} onPress={() => focusInput("lastName")}>
+        <View
+          style={[
+            styles.inputContainer,
+            {
+              borderColor:
+                focusedInput === "lastName"
+                  ? COLORS.secondary
+                  : COLORS.gray["200"],
+            },
+          ]}>
+          <View style={styles.inputField}>
+            <Typo
+              variant="body"
+              color={COLORS.gray["600"]}
+              size={moderateScale(12)}>
+              Last Name
+            </Typo>
+            <TextInput
+              ref={lastNameRef}
+              value={lastName}
+              onChangeText={setLastName}
+              placeholder="Enter your last name"
+              placeholderTextColor={THEME.input.placeholder}
+              onFocus={() => setFocusedInput("lastName")}
+              style={styles.textInput}
+            />
+          </View>
+          <Button onPress={() => clearInput("lastName")}>
+            <CircleX
+              color={COLORS.gray["600"]}
+              strokeWidth={1.5}
+              size={moderateScale(25)}
+            />
+          </Button>
         </View>
-        <Button onPress={() => clearInput("lastName")}>
-          <CircleX
-            color={COLORS.gray["600"]}
-            strokeWidth={1.5}
-            size={moderateScale(25)}
-          />
-        </Button>
-      </View>
+      </Button>
     </>
   );
 
   const renderEmailInput = () => (
-    <View style={styles.inputContainer}>
-      <View style={styles.inputField}>
-        <Typo
-          variant="body"
-          color={COLORS.gray["600"]}
-          size={moderateScale(12)}>
-          Email Address
-        </Typo>
-        <TextInput
-          ref={emailRef}
-          value={email}
-          onChangeText={setEmail}
-          placeholder="Enter your email"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          style={styles.textInput}
-        />
+    <Button activeOpacity={1} onPress={() => focusInput("email")}>
+      <View
+        style={[
+          styles.inputContainer,
+          {
+            borderColor:
+              focusedInput === "email" ? COLORS.secondary : COLORS.gray["200"],
+          },
+        ]}>
+        <View style={styles.inputField}>
+          <Typo
+            variant="body"
+            color={COLORS.gray["600"]}
+            size={moderateScale(12)}>
+            Email Address
+          </Typo>
+          <TextInput
+            ref={emailRef}
+            value={email}
+            onChangeText={setEmail}
+            placeholder="Enter your email"
+            placeholderTextColor={THEME.input.placeholder}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            onFocus={() => setFocusedInput("email")}
+            style={styles.textInput}
+          />
+        </View>
+        <Button onPress={() => clearInput("email")}>
+          <CircleX
+            color={COLORS.gray["600"]}
+            strokeWidth={1.5}
+            size={moderateScale(25)}
+          />
+        </Button>
       </View>
-      <Button onPress={() => clearInput("email")}>
-        <CircleX
-          color={COLORS.gray["600"]}
-          strokeWidth={1.5}
-          size={moderateScale(25)}
-        />
-      </Button>
-    </View>
+    </Button>
   );
 
   const renderPhoneInput = () => (
-    <View style={styles.inputContainer}>
-      <View style={styles.inputField}>
-        <Typo
-          variant="body"
-          color={COLORS.gray["600"]}
-          size={moderateScale(12)}>
-          Phone Number
-        </Typo>
-        <TextInput
-          ref={phoneRef}
-          value={phone}
-          onChangeText={setPhone}
-          placeholder="Enter your phone number"
-          keyboardType="phone-pad"
-          style={styles.textInput}
-        />
+    <Button activeOpacity={1} onPress={() => focusInput("phone")}>
+      <View
+        style={[
+          styles.inputContainer,
+          {
+            borderColor:
+              focusedInput === "phone" ? COLORS.secondary : COLORS.gray["200"],
+          },
+        ]}>
+        <View style={styles.inputField}>
+          <Typo
+            variant="body"
+            color={COLORS.gray["600"]}
+            size={moderateScale(12)}>
+            Phone Number
+          </Typo>
+          <TextInput
+            ref={phoneRef}
+            value={phone}
+            onChangeText={setPhone}
+            placeholder="Enter your phone number"
+            placeholderTextColor={THEME.input.placeholder}
+            keyboardType="phone-pad"
+            onFocus={() => setFocusedInput("phone")}
+            style={styles.textInput}
+          />
+        </View>
+        <Button onPress={() => clearInput("phone")}>
+          <CircleX
+            color={COLORS.gray["600"]}
+            strokeWidth={1.5}
+            size={moderateScale(25)}
+          />
+        </Button>
       </View>
-      <Button onPress={() => clearInput("phone")}>
-        <CircleX
-          color={COLORS.gray["600"]}
-          strokeWidth={1.5}
-          size={moderateScale(25)}
-        />
-      </Button>
-    </View>
+    </Button>
   );
 
   const renderInputs = () => {
@@ -282,6 +384,13 @@ export default function EditPersonalInfo() {
       contentContainerStyle={styles.screenContent}>
       <BackButton variant="arrow" />
 
+      <Button onPress={() => router.navigate("/screens/Profile/PersonalInfo")}>
+        <CircleX
+          color={COLORS.gray["600"]}
+          strokeWidth={1.5}
+          size={moderateScale(25)}
+        />
+      </Button>
       <View style={styles.mainContent}>
         <Typo variant="h3" style={styles.title}>
           {title || "Edit Personal Info"}
@@ -327,8 +436,10 @@ const styles = StyleSheet.create({
     lineHeight: moderateScale(22),
   },
   inputContainer: {
-    padding: horizontalScale(15),
+    paddingInline: horizontalScale(15),
+    paddingBlock: horizontalScale(8),
     backgroundColor: COLORS.gray["100"],
+    borderWidth: THEME.borderWidth.thick,
     borderRadius: THEME.borderRadius.medium,
     flexDirection: "row",
     alignItems: "center",

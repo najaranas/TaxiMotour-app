@@ -25,7 +25,7 @@ export default function PhoneVerification() {
   const [isInputOnFocus, setIsInputOnFocus] = useState<boolean>(false);
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const route = useRouter();
+  const router = useRouter();
 
   const { isLoaded, signUp, setActive } = useSignUp();
 
@@ -98,7 +98,7 @@ export default function PhoneVerification() {
 
   const handleContinue = () => {
     // setLoading(true);
-    route.push("/screens/Auth/ConfirmVerfication");
+    router.navigate("/screens/Auth/ConfirmVerfication");
     console.log("Phone number:", phoneNumber);
   };
 

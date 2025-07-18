@@ -3,19 +3,26 @@ import { View, StyleSheet, Switch, Image } from "react-native";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import THEME, { COLORS, FONTS } from "@/constants/theme";
 import { useClerk, useUser } from "@clerk/clerk-expo";
-import { useRouter } from "expo-router";
+import { usePathname, useRouter, useSegments } from "expo-router";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import { UserIcon } from "@/components/common/SvgIcons";
 import Typo from "@/components/common/Typo";
 import Button from "@/components/common/Button";
 import { Flag, Globe, LogOut, Moon, Pencil, User } from "lucide-react-native";
 import UserProfileImage from "@/components/common/UserProfileImage";
+import { useNavigationState } from "@react-navigation/native";
 
 export default function ProfileScreen() {
   const { signOut } = useClerk();
   const { user } = useUser();
   const router = useRouter();
   const [isDarkMode, setIsDarkMode] = useState(false);
+
+  const pathname = usePathname();
+
+  console.log("Current pathname:", pathname);
+  const navigationState = useNavigationState((state) => state);
+  console.log(navigationState?.routes?.map((r) => r.name)); // Should show the full stack
 
   const handleSignOut = async () => {
     try {
@@ -46,7 +53,7 @@ export default function ProfileScreen() {
           <UserProfileImage
             imageUrl={user?.imageUrl}
             hasImage={user?.hasImage}
-            onPress={() => router.push("/screens/Profile/Selfie")}
+            onPress={() => router.navigate("/screens/Profile/Selfie")}
             size={100}
             showEditIcon={true}
             editable={true}
@@ -62,7 +69,7 @@ export default function ProfileScreen() {
           {/* Personal Info */}
           <Button
             style={styles.menuItem}
-            onPress={() => router.push("/screens/Profile/PersonalInfo")}>
+            onPress={() => router.navigate("/screens/Profile/PersonalInfo")}>
             <View style={styles.menuItemContent}>
               <User
                 color={THEME.text.primary}

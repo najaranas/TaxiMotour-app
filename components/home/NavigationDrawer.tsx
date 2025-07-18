@@ -26,7 +26,7 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
   const router = useRouter();
   const { user } = useUser();
   const handleMyAccount = () => {
-    router.push(ROUTE_CONFIG.PROFILE);
+    router.navigate(ROUTE_CONFIG.PROFILE);
     onClose();
   };
 

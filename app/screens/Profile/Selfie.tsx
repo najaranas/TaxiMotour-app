@@ -14,12 +14,26 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import { useFocusEffect, useRouter } from "expo-router";
+import {
+  useFocusEffect,
+  usePathname,
+  useRouter,
+  useSegments,
+} from "expo-router";
 import { setSelfieImage } from "./selfieImageStore";
+import { useNavigationState } from "@react-navigation/native";
 
 const AnimatedRefreshCcw = Animated.createAnimatedComponent(RefreshCcw);
 
 export default function Selfie() {
+  // useSegments() shows the URL segments, not the navigation stack
+
+  const pathname = usePathname();
+
+  console.log("Current pathname:", pathname);
+  const navigationState = useNavigationState((state) => state);
+  console.log(navigationState?.routes?.map((r) => r.name)); // Should show the full stack
+
   const cameraRef = useRef<CameraView>(null);
   const [cameraFace, setCameraFace] = useState<"front" | "back">("front");
   const [isTorchActive, setIsTorchActive] = useState<boolean>(false);
@@ -51,8 +65,8 @@ export default function Selfie() {
       if (response) {
         console.log("entered");
         setSelfieImage(response);
-        router.push("/screens/Profile/CheckSelfie");
-        // router.push("/screens/Profile/Test");
+        router.navigate("/screens/Profile/CheckSelfie");
+        // router.navigate("/screens/Profile/Test");
       } else {
         console.log("aze");
       }
