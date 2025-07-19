@@ -19,8 +19,8 @@ export const APP_CONFIG = {
   APP_VERSION: "1.0.0",
   CREATOR_NAME: "Anas Najar",
 
-  // Menu Items
-  MENU_ITEMS: [
+  // Home Navigation Menu Items (Drawer)
+  DRAWER_MENU_ITEMS: [
     {
       id: "history",
       title: "Trip History",

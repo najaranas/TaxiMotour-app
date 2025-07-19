@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from "react";
+import React, { useRef, useCallback, useEffect } from "react";
 import BottomSheet from "@gorhom/bottom-sheet";
 import { CustomBottomSheetProps } from "@/types/Types";
 import { COLORS } from "@/constants/theme";
@@ -13,12 +13,14 @@ export default function CustomBottomSheet({
   enableContentPanningGesture = true,
   style,
   onChange,
+  onClose,
   onRef,
+  index,
+  zindex,
 }: CustomBottomSheetProps) {
   const bottomSheetRef = useRef<BottomSheet>(null);
 
-  // Pass the bottom sheet methods to parent component through callback
-  React.useEffect(() => {
+  useEffect(() => {
     if (onRef && bottomSheetRef.current) {
       onRef({
         snapToIndex: (index: number) =>
@@ -46,8 +48,12 @@ export default function CustomBottomSheet({
     <BottomSheet
       ref={bottomSheetRef}
       snapPoints={snapPoints}
+      onClose={onClose}
       style={style}
-      containerStyle={{ zIndex: 10, flex: 1 }}
+      index={index}
+      containerStyle={{
+        zIndex: zindex,
+      }}
       handleIndicatorStyle={
         showIndicator
           ? {

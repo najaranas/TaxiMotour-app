@@ -6,7 +6,7 @@ import THEME, { COLORS, FONTS } from "@/constants/theme";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import Typo from "@/components/common/Typo";
 import Button from "@/components/common/Button";
-import { CloseIcon, UserIcon } from "@/components/common/SvgIcons";
+import { UserIcon } from "@/components/common/SvgIcons";
 import {
   Settings,
   Info,
@@ -30,7 +30,7 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
     onClose();
   };
 
-  const menuItems = APP_CONFIG.MENU_ITEMS.map((item) => {
+  const menuItems = APP_CONFIG.DRAWER_MENU_ITEMS.map((item) => {
     const iconMap = {
       history: CalendarCheck,
       about: Info,

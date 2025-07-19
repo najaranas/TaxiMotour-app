@@ -1,21 +1,16 @@
-import { StyleSheet, TouchableWithoutFeedback, View } from "react-native";
-import { Pressable, TextInput } from "react-native-gesture-handler";
+import { StyleSheet, View } from "react-native";
+import { TextInput } from "react-native-gesture-handler";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import BackButton from "@/components/common/BackButton";
 import Typo from "@/components/common/Typo";
-import THEME, { COLORS, FONTS } from "@/constants/theme";
+import THEME, { COLORS } from "@/constants/theme";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import { CircleX } from "lucide-react-native";
 import Button from "@/components/common/Button";
 import { useRef, useState } from "react";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 import { useUser } from "@clerk/clerk-expo";
-import {
-  useLocalSearchParams,
-  usePathname,
-  useRouter,
-  useSegments,
-} from "expo-router";
+import { useLocalSearchParams, usePathname, useRouter } from "expo-router";
 import { useNavigationState } from "@react-navigation/native";
 
 type EditType = "name" | "email" | "phone";
@@ -27,12 +22,6 @@ export default function EditPersonalInfo() {
     title?: string;
     description?: string;
   }>();
-
-  const pathname = usePathname();
-
-  console.log("Current pathname:", pathname);
-  const navigationState = useNavigationState((state) => state);
-  console.log(navigationState?.routes?.map((r) => r.name)); // Should show the full stack
 
   const { user } = useUser();
   const router = useRouter();
@@ -56,6 +45,26 @@ export default function EditPersonalInfo() {
   const lastNameRef = useRef<TextInput>(null);
   const emailRef = useRef<TextInput>(null);
   const phoneRef = useRef<TextInput>(null);
+
+  // Focus management
+  const handleInputFocus = (inputType: InputType) => {
+    setFocusedInput(inputType);
+  };
+
+  const handleInputBlur = () => {
+    // Check after a short delay to avoid race conditions during input switching
+    setTimeout(() => {
+      const isAnyInputFocused =
+        firstNameRef.current?.isFocused() ||
+        lastNameRef.current?.isFocused() ||
+        emailRef.current?.isFocused() ||
+        phoneRef.current?.isFocused();
+
+      if (!isAnyInputFocused) {
+        setFocusedInput(null);
+      }
+    }, 100);
+  };
 
   // Validation logic
   const getIsEnabled = (): boolean => {
@@ -107,7 +116,6 @@ export default function EditPersonalInfo() {
     setIsLoading(true);
     try {
       if (editType === "name") {
-        // For name updates, use firstName and lastName directly
         const updateData: {
           firstName?: string;
           lastName?: string;
@@ -123,13 +131,11 @@ export default function EditPersonalInfo() {
         await user?.update(updateData);
         router.back();
       } else if (editType === "email") {
-        // For email, you need to create a new email address first, then set it as primary
         try {
           const emailAddress = await user?.createEmailAddress({
             email: email.trim(),
           });
 
-          // After creating, set it as primary using the ID
           if (emailAddress) {
             await user?.update({
               primaryEmailAddressId: emailAddress.id,
@@ -140,13 +146,11 @@ export default function EditPersonalInfo() {
           console.log("Error updating email:", error);
         }
       } else if (editType === "phone") {
-        // For phone, you need to create a new phone number first, then set it as primary
         try {
           const phoneNumber = await user?.createPhoneNumber({
             phoneNumber: phone.trim(),
           });
 
-          // After creating, set it as primary using the ID
           if (phoneNumber) {
             await user?.update({
               primaryPhoneNumberId: phoneNumber.id,
@@ -165,39 +169,20 @@ export default function EditPersonalInfo() {
   };
 
   const focusInput = (inputType: InputType) => {
+    setFocusedInput(inputType);
+
     switch (inputType) {
       case "firstName":
         firstNameRef.current?.focus();
-        setFocusedInput("firstName");
         break;
       case "lastName":
         lastNameRef.current?.focus();
-        setFocusedInput("lastName");
         break;
       case "email":
         emailRef.current?.focus();
-        setFocusedInput("email");
         break;
       case "phone":
         phoneRef.current?.focus();
-        setFocusedInput("phone");
-        break;
-    }
-  };
-
-  const blurInput = (inputType: InputType) => {
-    switch (inputType) {
-      case "firstName":
-        firstNameRef.current?.blur();
-        break;
-      case "lastName":
-        lastNameRef.current?.blur();
-        break;
-      case "email":
-        emailRef.current?.blur();
-        break;
-      case "phone":
-        phoneRef.current?.blur();
         break;
     }
   };
@@ -229,7 +214,8 @@ export default function EditPersonalInfo() {
               onChangeText={setFirstName}
               placeholder="Enter your first name"
               placeholderTextColor={THEME.input.placeholder}
-              onFocus={() => setFocusedInput("firstName")}
+              onFocus={() => handleInputFocus("firstName")}
+              onBlur={handleInputBlur}
               style={styles.textInput}
             />
           </View>
@@ -267,7 +253,8 @@ export default function EditPersonalInfo() {
               onChangeText={setLastName}
               placeholder="Enter your last name"
               placeholderTextColor={THEME.input.placeholder}
-              onFocus={() => setFocusedInput("lastName")}
+              onFocus={() => handleInputFocus("lastName")}
+              onBlur={handleInputBlur}
               style={styles.textInput}
             />
           </View>
@@ -308,7 +295,8 @@ export default function EditPersonalInfo() {
             placeholderTextColor={THEME.input.placeholder}
             keyboardType="email-address"
             autoCapitalize="none"
-            onFocus={() => setFocusedInput("email")}
+            onFocus={() => handleInputFocus("email")}
+            onBlur={handleInputBlur}
             style={styles.textInput}
           />
         </View>
@@ -347,7 +335,8 @@ export default function EditPersonalInfo() {
             placeholder="Enter your phone number"
             placeholderTextColor={THEME.input.placeholder}
             keyboardType="phone-pad"
-            onFocus={() => setFocusedInput("phone")}
+            onFocus={() => handleInputFocus("phone")}
+            onBlur={handleInputBlur}
             style={styles.textInput}
           />
         </View>
@@ -384,13 +373,6 @@ export default function EditPersonalInfo() {
       contentContainerStyle={styles.screenContent}>
       <BackButton variant="arrow" />
 
-      <Button onPress={() => router.navigate("/screens/Profile/PersonalInfo")}>
-        <CircleX
-          color={COLORS.gray["600"]}
-          strokeWidth={1.5}
-          size={moderateScale(25)}
-        />
-      </Button>
       <View style={styles.mainContent}>
         <Typo variant="h3" style={styles.title}>
           {title || "Edit Personal Info"}
@@ -420,7 +402,6 @@ export default function EditPersonalInfo() {
     </ScreenWrapper>
   );
 }
-
 const styles = StyleSheet.create({
   screenContent: {
     flex: 1,

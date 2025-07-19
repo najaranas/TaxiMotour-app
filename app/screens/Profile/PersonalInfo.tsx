@@ -15,12 +15,6 @@ export default function CheckSelfie() {
   const { user } = useUser();
   const router = useRouter();
 
-  const pathname = usePathname();
-
-  console.log("Current pathname:", pathname);
-  const navigationState = useNavigationState((state) => state);
-  console.log(navigationState?.routes?.map((r) => r.name)); // Should show the full stack
-
   return (
     <ScreenWrapper
       safeArea

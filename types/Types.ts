@@ -1,10 +1,10 @@
+import { LucideIcon } from "lucide-react-native";
 import React from "react";
 import {
   ViewStyle,
   StyleProp,
   TextStyle,
   ScrollViewProps,
-  Text,
   TextProps,
 } from "react-native";
 
@@ -42,6 +42,7 @@ export interface ButtonProps {
   indicatorStyle?: { size?: number; color?: string };
   onPress?: () => void;
 }
+
 export interface ConfirmationCodeFieldProps {
   digitCount: number;
   onCodeComplete?: (code: string) => void;
@@ -58,24 +59,61 @@ export interface CustomDrawerProps {
   onClose: () => void;
   style?: StyleProp<ViewStyle>;
 }
+
 export interface CustomBottomSheetProps {
   children: React.ReactNode;
-  snapPoints: (string | number)[];
+  snapPoints?: (string | number)[];
   enablePanDownToClose?: boolean;
   showIndicator?: boolean;
   enableOverDrag?: boolean;
   enableContentPanningGesture?: boolean;
+  index?: number;
+  zindex?: number;
   style?: StyleProp<ViewStyle>;
   onChange?: (index: number) => void;
-  onRef?: (methods: {
-    snapToIndex: (index: number) => void;
-    snapToPosition: (position: string | number) => void;
-    expand: () => void;
-    collapse: () => void;
-    close: () => void;
-    forceClose: () => void;
-    ref: any;
-  }) => void;
+  onClose?: () => void;
+  onRef?: (methods: BottomSheetMethods) => void;
+  showBackdrop?: boolean; // Control whether to show backdrop overlay
+}
+
+export interface BottomSheetMethods {
+  snapToIndex: (index: number) => void;
+  snapToPosition: (position: string | number) => void;
+  expand: () => void;
+  collapse: () => void;
+  close: () => void;
+  forceClose: () => void;
+  present?: () => void; // For BottomSheetModal
+  dismiss?: () => void; // For BottomSheetModal
+  ref: any;
+}
+
+export interface ProfileMenuItemProps {
+  icon: React.ReactNode;
+  title: string;
+  subtitle?: string;
+  onPress: () => void;
+  rightComponent?: React.ReactNode;
+  isDanger?: boolean;
+}
+
+export interface ProfileMenuItemConfig {
+  id: string;
+  title: string;
+  subtitle?: string;
+  icon: LucideIcon; // Lucide icon component
+  iconColor: string;
+  route?: string;
+  type: "navigation" | "action" | "toggle";
+  action?: string;
+  isDanger?: boolean;
+}
+
+export interface LogoutBottomSheetProps {
+  isVisible: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+  isLoading: boolean;
 }
 
 // MapTiler Geocoding API Types

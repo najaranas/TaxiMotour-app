@@ -20,8 +20,8 @@ export default function ScreenWrapper({
       backgroundColor,
       paddingTop: safeArea ? insets.top + padding : 0,
       paddingBottom: safeArea ? insets.bottom + padding : 0,
-      paddingRight: padding,
-      paddingLeft: padding,
+      paddingRight: safeArea ? insets.right + padding : 0,
+      paddingLeft: safeArea ? insets.left + padding : 0,
     },
     style,
   ];

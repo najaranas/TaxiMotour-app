@@ -127,6 +127,8 @@ export default function Home() {
         enablePanDownToClose={false}
         onRef={setBottomSheetMethods}
         snapPoints={["25%", "100%"]}
+        index={0}
+        zindex={10}
         onChange={setActiveBottomSheetIndex}>
         <RideBookingSheet
           activeIndex={activeBottomSheetIndex}
