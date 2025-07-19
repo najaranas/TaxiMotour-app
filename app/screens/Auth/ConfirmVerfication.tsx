@@ -6,18 +6,20 @@ import { EditIcon } from "@/components/common/SvgIcons";
 import Typo from "@/components/common/Typo";
 import THEME, { COLORS, FONTS } from "@/constants/theme";
 import { horizontalScale, verticalScale } from "@/utils/styling";
+import { useUser } from "@clerk/clerk-expo";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { StyleSheet, View, Alert } from "react-native";
 
 export default function ConfirmVerification() {
-  const { contactType, contactValue } = useLocalSearchParams() as {
+  const { contactType, contactValue } = useLocalSearchParams() as unknown as {
     contactType: "email" | "phone" | "whatsapp";
     contactValue: string;
   };
-  // console.log("params", contactType, contactValue);
+
   const [verificationCode, setVerificationCode] = useState<string>("");
   const router = useRouter();
+  const { user } = useUser();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const resendTime = 20;
   const [timerId, setTimerId] = useState<number | null>(null);
@@ -33,7 +35,6 @@ export default function ConfirmVerification() {
     console.log("Verifying code:", verificationCode);
   };
 
-  // Start timer on mount
   useEffect(() => {
     startResendTimer();
     return () => {
@@ -41,7 +42,6 @@ export default function ConfirmVerification() {
     };
   }, []);
 
-  // Clear timer when countdown reaches 0
   useEffect(() => {
     if (resendTimer === 0 && timerId) {
       clearInterval(timerId);
@@ -59,11 +59,60 @@ export default function ConfirmVerification() {
   };
 
   const handleResendCode = () => {
+    // if (onResendCode) {
+    //   onResendCode();
+    // }
+
     startResendTimer();
   };
 
   const handleEditNumber = () => {
     router.back();
+  };
+
+  const onCodeComplete = async (code: string) => {
+    try {
+      const emailToVerify = user?.emailAddresses.find(
+        (email) => email.emailAddress === contactValue
+      );
+      const phoneToVerify = user?.phoneNumbers.find(
+        (phone) => phone.phoneNumber === contactValue
+      );
+      if (emailToVerify) {
+        // Verify email code
+        const verificationResult = await emailToVerify.attemptVerification({
+          code: code,
+        });
+        console.log("verificationResult", verificationResult);
+        if (verificationResult.verification.status === "verified") {
+          // Set as primary email after successful verification
+          console.log("emailResstart");
+
+          const emailRes = await user?.update({
+            primaryEmailAddressId: emailToVerify.id,
+          });
+          console.log("emailRes", emailRes);
+          console.log("Email verified and set as primary successfully");
+          router.navigate("/screens/Profile/PersonalInfo");
+        }
+      } else if (phoneToVerify) {
+        // Verify phone code
+        const verification = await phoneToVerify.attemptVerification({ code });
+        if (verification.verification.status === "verified") {
+          // Set as primary phone after successful verification
+          await user?.update({
+            primaryPhoneNumberId: phoneToVerify.id,
+          });
+          console.log("Phone verified and set as primary successfully");
+          router.navigate("/screens/Profile/PersonalInfo");
+        }
+      }
+    } catch (error) {
+      console.log("Error verifying code:", error);
+      // TODO: Show error message to user
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -107,7 +156,8 @@ export default function ConfirmVerification() {
         <ConfirmationCodeField
           digitCount={4}
           autoFocus
-          onCodeComplete={() => null}
+          // onCodeChange={onCodeChange}
+          // onCodeComplete={onCodeComplete}
         />
 
         <View style={styles.resendContainer}>

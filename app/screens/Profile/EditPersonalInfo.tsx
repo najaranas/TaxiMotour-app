@@ -43,7 +43,7 @@ export default function EditPersonalInfo() {
   const [phoneToVerify, setPhoneToVerify] = useState<any>(null); // Store phone number object for verification
 
   console.log("verificationCode", verificationCode);
-  console.log("emailToVerify", emailToVerify);
+  console.log("editType", editType);
   // Input states
   const [focusedInput, setFocusedInput] = useState<InputType | null>(null);
 
@@ -104,45 +104,6 @@ export default function EditPersonalInfo() {
   };
 
   // Verification function
-  const handleVerifyCode = async (code: string) => {
-    setIsLoading(true);
-    try {
-      if (emailToVerify) {
-        // Verify email code
-        const verificationResult = await emailToVerify.attemptVerification({
-          code: code,
-        });
-        console.log("verificationResult", verificationResult);
-        if (verificationResult.verification.status === "verified") {
-          // Set as primary email after successful verification
-          console.log("emailResstart");
-
-          const emailRes = await user?.update({
-            primaryEmailAddressId: emailToVerify.id,
-          });
-          console.log("emailRes", emailRes);
-          console.log("Email verified and set as primary successfully");
-          router.back();
-        }
-      } else if (phoneToVerify) {
-        // Verify phone code
-        const verification = await phoneToVerify.attemptVerification({ code });
-        if (verification.status === "verified") {
-          // Set as primary phone after successful verification
-          await user?.update({
-            primaryPhoneNumberId: phoneToVerify.id,
-          });
-          console.log("Phone verified and set as primary successfully");
-          router.back();
-        }
-      }
-    } catch (error) {
-      console.log("Error verifying code:", error);
-      // TODO: Show error message to user
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const clearInput = (inputType: InputType) => {
     switch (inputType) {
@@ -166,11 +127,10 @@ export default function EditPersonalInfo() {
   };
 
   const handleSave = async () => {
-    if (verificationSent && verificationCode) {
-      // If verification is pending, verify the code
-      await handleVerifyCode(verificationCode);
-      return;
-    }
+    // if (verificationSent && verificationCode) {
+    //   await handleVerifyCode(verificationCode);
+    //   return;
+    // }
 
     setIsLoading(true);
     try {
@@ -199,9 +159,14 @@ export default function EditPersonalInfo() {
               await existingEmail.prepareVerification({
                 strategy: "email_code",
               });
-              setEmailToVerify(existingEmail); // Store for verification
-              setVerificationSent(true);
-              setMessage("Enter the verification code sent to your email.");
+              setEmailToVerify(existingEmail);
+              router.push({
+                pathname: "/screens/Auth/ConfirmVerfication",
+                params: {
+                  contactType: "email",
+                  contactValue: email.trim(),
+                },
+              });
             } else {
               // Already verified, set as primary
               await user?.update({
@@ -218,9 +183,14 @@ export default function EditPersonalInfo() {
               await newEmailAddress.prepareVerification({
                 strategy: "email_code",
               });
-              setEmailToVerify(newEmailAddress); // Store for verification
-              setVerificationSent(true);
-              setMessage("Enter the verification code sent to your email.");
+              setEmailToVerify(newEmailAddress);
+              router.push({
+                pathname: "/screens/Auth/ConfirmVerfication",
+                params: {
+                  contactType: "email",
+                  contactValue: email.trim(),
+                },
+              });
             }
           }
         } catch (error) {
@@ -239,8 +209,13 @@ export default function EditPersonalInfo() {
             if (existingPhone.verification?.status !== "verified") {
               await existingPhone.prepareVerification();
               setPhoneToVerify(existingPhone); // Store for verification
-              setVerificationSent(true);
-              setMessage("Enter the verification code sent to your phone.");
+              router.push({
+                pathname: "/screens/Auth/ConfirmVerfication",
+                params: {
+                  contactType: "phone",
+                  contactValue: phone.trim(),
+                },
+              });
             } else {
               // If already verified, just set as primary
               await user?.update({
@@ -259,8 +234,13 @@ export default function EditPersonalInfo() {
               // Send verification SMS
               await phoneNumber.prepareVerification();
               setPhoneToVerify(phoneNumber); // Store for verification
-              setVerificationSent(true);
-              setMessage("Enter the verification code sent to your phone.");
+              router.push({
+                pathname: "/screens/Auth/ConfirmVerfication",
+                params: {
+                  contactType: "phone",
+                  contactValue: phone.trim(),
+                },
+              });
             }
           }
 
@@ -497,19 +477,6 @@ export default function EditPersonalInfo() {
         </Typo>
 
         {renderInputs()}
-        {message && (
-          <View style={{ gap: verticalScale(10) }}>
-            <Typo variant="body" color={THEME.text.muted}>
-              {message}
-            </Typo>
-            <ConfirmationCodeField
-              digitCount={6}
-              autoFocus
-              onCodeComplete={handleVerifyCode}
-              onCodeChange={setVerificationCode}
-            />
-          </View>
-        )}
       </View>
 
       <KeyboardStickyView offset={{ closed: 0, opened: verticalScale(50) }}>
@@ -519,7 +486,7 @@ export default function EditPersonalInfo() {
           style={[styles.saveButton, { opacity: isLoading ? 0.3 : 1 }]}
           onPress={handleSave}>
           <Typo variant="button" size={moderateScale(20)} color={COLORS.white}>
-            {verificationSent ? "Verify Code" : "Save Changes"}
+            Save Changes
           </Typo>
         </Button>
       </KeyboardStickyView>

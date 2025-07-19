@@ -9,7 +9,6 @@ import Button from "@/components/common/Button";
 import { useUser } from "@clerk/clerk-expo";
 import UserProfileImage from "@/components/common/UserProfileImage";
 import { Mail, User } from "lucide-react-native";
-import { useNavigationState } from "@react-navigation/native";
 
 export default function CheckSelfie() {
   const { user } = useUser();
@@ -28,17 +27,7 @@ export default function CheckSelfie() {
         <Typo variant="h3" style={{ textAlign: "center" }}>
           Personal Info
         </Typo>
-        {/* <Button onPress={() => router.navigate("/screens/Profile/Selfie")}> */}
-        <Button
-          onPress={() =>
-            router.push({
-              pathname: "/screens/Auth/ConfirmVerfication",
-              params: {
-                contactType: "email",
-                contactValue: "anas.tn@gmail.Com",
-              },
-            })
-          }>
+        <Button onPress={() => router.navigate("/screens/Profile/Selfie")}>
           <View
             style={{
               borderWidth: THEME.borderWidth.thin,
