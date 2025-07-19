@@ -6,11 +6,13 @@ import { EditIcon } from "@/components/common/SvgIcons";
 import Typo from "@/components/common/Typo";
 import THEME, { COLORS, FONTS } from "@/constants/theme";
 import { horizontalScale, verticalScale } from "@/utils/styling";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { StyleSheet, View, Alert } from "react-native";
 
 export default function ConfirmVerification() {
+  const params = useLocalSearchParams();
+  console.log("params", params);
   const [verificationCode, setVerificationCode] = useState<string>("");
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);

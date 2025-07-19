@@ -5,7 +5,7 @@ import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import { MapProps } from "@/types/Types";
 import { COLORS } from "@/constants/theme";
 import { routeService, apiUtils } from "@/services/api";
-import { APP_CONFIG } from "@/constants/app";
+import * as Location from "expo-location";
 import { LocationIcon, TargetIcon } from "../common/SvgIcons";
 import { MaterialIndicator } from "react-native-indicators";
 
@@ -27,6 +27,9 @@ interface RouteData {
 
 export default function EnhancedMap({ roadData }: MapProps) {
   const mapRef = useRef<MapLibreRN.MapViewRef>(null);
+  const [location, setLocation] = useState<Location.LocationObject | null>(
+    null
+  );
   const mapCameraRef = useRef<MapLibreRN.CameraRef>(null);
   const [routeGeoJSON, setRouteGeoJSON] = useState<RouteData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -72,6 +75,7 @@ export default function EnhancedMap({ roadData }: MapProps) {
     ? `https://api.maptiler.com/maps/streets/style.json?key=${process.env.EXPO_PUBLIC_MAPTILER_MAP_API}`
     : "https://api.maptiler.com/maps/streets/style.json";
 
+  console.log("locationd", location);
   return (
     <View style={styles.mapContainer}>
       <MapLibreRN.MapView
@@ -142,7 +146,7 @@ export default function EnhancedMap({ roadData }: MapProps) {
         {/* Default Camera (when no route) */}
         {!routeGeoJSON && (
           <MapLibreRN.Camera
-            followUserLocation={true}
+            followUserLocation={location !== null}
             zoomLevel={2}
             centerCoordinate={[10.17226, 36.8104]}
           />

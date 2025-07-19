@@ -1,4 +1,11 @@
-import { ScrollView, StyleSheet, View, Alert } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  Alert,
+  TouchableHighlight,
+  Text,
+} from "react-native";
 import PhoneSelector from "@/components/common/PhoneSelector";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import Typo from "@/components/common/Typo";
@@ -15,6 +22,12 @@ import { useRouter } from "expo-router";
 import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
 import React, { useState } from "react";
+import { createClient } from "@supabase/supabase-js";
+
+const supabaseUrl = "https://adjxlxetifrtxfygomse.supabase.co";
+const supabaseAnonKey =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkanhseGV0aWZydHhmeWdvbXNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5NDA3MjcsImV4cCI6MjA2ODUxNjcyN30.QSJBRz5VEJkVydmX6n6sEV5ntO6p9H2gudmvvv-NXSc";
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Complete the WebBrowser auth session
 WebBrowser.maybeCompleteAuthSession();
@@ -130,8 +143,6 @@ export default function Login() {
         <Typo color={THEME.text.primary} variant="h3" style={styles.centerText}>
           Enter your number
         </Typo>
-
-        <PhoneSelector />
 
         <View style={styles.separator}>
           <View style={styles.separatorLine} />

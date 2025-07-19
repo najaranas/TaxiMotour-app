@@ -10,8 +10,8 @@ import Button from "@/components/common/Button";
 import { useRef, useState } from "react";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 import { useUser } from "@clerk/clerk-expo";
-import { useLocalSearchParams, usePathname, useRouter } from "expo-router";
-import { useNavigationState } from "@react-navigation/native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import ConfirmationCodeField from "@/components/common/ConfirmationCodeField";
 
 type EditType = "name" | "email" | "phone";
 type InputType = "firstName" | "lastName" | "email" | "phone";
@@ -36,7 +36,14 @@ export default function EditPersonalInfo() {
     user?.primaryPhoneNumber?.phoneNumber || ""
   );
   const [isLoading, setIsLoading] = useState(false);
+  const [verificationSent, setVerificationSent] = useState(false);
+  const [message, setMessage] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
+  const [emailToVerify, setEmailToVerify] = useState<any>(null); // Store email address object for verification
+  const [phoneToVerify, setPhoneToVerify] = useState<any>(null); // Store phone number object for verification
 
+  console.log("verificationCode", verificationCode);
+  console.log("emailToVerify", emailToVerify);
   // Input states
   const [focusedInput, setFocusedInput] = useState<InputType | null>(null);
 
@@ -68,6 +75,11 @@ export default function EditPersonalInfo() {
 
   // Validation logic
   const getIsEnabled = (): boolean => {
+    if (verificationSent) {
+      // During verification, enable if code is entered
+      return verificationCode.length === 6;
+    }
+
     switch (editType) {
       case "name":
         return (
@@ -88,6 +100,47 @@ export default function EditPersonalInfo() {
         );
       default:
         return false;
+    }
+  };
+
+  // Verification function
+  const handleVerifyCode = async (code: string) => {
+    setIsLoading(true);
+    try {
+      if (emailToVerify) {
+        // Verify email code
+        const verificationResult = await emailToVerify.attemptVerification({
+          code: code,
+        });
+        console.log("verificationResult", verificationResult);
+        if (verificationResult.verification.status === "verified") {
+          // Set as primary email after successful verification
+          console.log("emailResstart");
+
+          const emailRes = await user?.update({
+            primaryEmailAddressId: emailToVerify.id,
+          });
+          console.log("emailRes", emailRes);
+          console.log("Email verified and set as primary successfully");
+          router.back();
+        }
+      } else if (phoneToVerify) {
+        // Verify phone code
+        const verification = await phoneToVerify.attemptVerification({ code });
+        if (verification.status === "verified") {
+          // Set as primary phone after successful verification
+          await user?.update({
+            primaryPhoneNumberId: phoneToVerify.id,
+          });
+          console.log("Phone verified and set as primary successfully");
+          router.back();
+        }
+      }
+    } catch (error) {
+      console.log("Error verifying code:", error);
+      // TODO: Show error message to user
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -113,6 +166,12 @@ export default function EditPersonalInfo() {
   };
 
   const handleSave = async () => {
+    if (verificationSent && verificationCode) {
+      // If verification is pending, verify the code
+      await handleVerifyCode(verificationCode);
+      return;
+    }
+
     setIsLoading(true);
     try {
       if (editType === "name") {
@@ -132,33 +191,85 @@ export default function EditPersonalInfo() {
         router.back();
       } else if (editType === "email") {
         try {
-          const emailAddress = await user?.createEmailAddress({
-            email: email.trim(),
-          });
-
-          if (emailAddress) {
-            await user?.update({
-              primaryEmailAddressId: emailAddress.id,
+          const existingEmail = user?.emailAddresses.find(
+            (emailAd) => emailAd.emailAddress === email.trim()
+          );
+          if (existingEmail) {
+            if (existingEmail?.verification?.status !== "verified") {
+              await existingEmail.prepareVerification({
+                strategy: "email_code",
+              });
+              setEmailToVerify(existingEmail); // Store for verification
+              setVerificationSent(true);
+              setMessage("Enter the verification code sent to your email.");
+            } else {
+              // Already verified, set as primary
+              await user?.update({
+                primaryEmailAddressId: existingEmail.id,
+              });
+              router.back();
+            }
+          } else {
+            // Create new email address
+            const newEmailAddress = await user?.createEmailAddress({
+              email: email.trim(),
             });
+            if (newEmailAddress) {
+              await newEmailAddress.prepareVerification({
+                strategy: "email_code",
+              });
+              setEmailToVerify(newEmailAddress); // Store for verification
+              setVerificationSent(true);
+              setMessage("Enter the verification code sent to your email.");
+            }
           }
-          router.back();
         } catch (error) {
           console.log("Error updating email:", error);
+          // TODO: Show error alert to user
         }
       } else if (editType === "phone") {
         try {
-          const phoneNumber = await user?.createPhoneNumber({
-            phoneNumber: phone.trim(),
-          });
+          // Check if the phone number already exists
+          const existingPhone = user?.phoneNumbers.find(
+            (phoneNum) => phoneNum.phoneNumber === phone.trim()
+          );
 
-          if (phoneNumber) {
-            await user?.update({
-              primaryPhoneNumberId: phoneNumber.id,
+          if (existingPhone) {
+            // If phone exists but isn't verified, send verification
+            if (existingPhone.verification?.status !== "verified") {
+              await existingPhone.prepareVerification();
+              setPhoneToVerify(existingPhone); // Store for verification
+              setVerificationSent(true);
+              setMessage("Enter the verification code sent to your phone.");
+            } else {
+              // If already verified, just set as primary
+              await user?.update({
+                primaryPhoneNumberId: existingPhone.id,
+              });
+              console.log("Phone set as primary successfully");
+              router.back();
+            }
+          } else {
+            // Create new phone number and send verification
+            const phoneNumber = await user?.createPhoneNumber({
+              phoneNumber: phone.trim(),
             });
+
+            if (phoneNumber) {
+              // Send verification SMS
+              await phoneNumber.prepareVerification();
+              setPhoneToVerify(phoneNumber); // Store for verification
+              setVerificationSent(true);
+              setMessage("Enter the verification code sent to your phone.");
+            }
           }
-          router.back();
+
+          if (!verificationSent) {
+            router.back();
+          }
         } catch (error) {
           console.log("Error updating phone:", error);
+          // TODO: Show error alert to user
         }
       }
     } catch (error) {
@@ -386,6 +497,19 @@ export default function EditPersonalInfo() {
         </Typo>
 
         {renderInputs()}
+        {message && (
+          <View style={{ gap: verticalScale(10) }}>
+            <Typo variant="body" color={THEME.text.muted}>
+              {message}
+            </Typo>
+            <ConfirmationCodeField
+              digitCount={6}
+              autoFocus
+              onCodeComplete={handleVerifyCode}
+              onCodeChange={setVerificationCode}
+            />
+          </View>
+        )}
       </View>
 
       <KeyboardStickyView offset={{ closed: 0, opened: verticalScale(50) }}>
@@ -395,7 +519,7 @@ export default function EditPersonalInfo() {
           style={[styles.saveButton, { opacity: isLoading ? 0.3 : 1 }]}
           onPress={handleSave}>
           <Typo variant="button" size={moderateScale(20)} color={COLORS.white}>
-            Save Changes
+            {verificationSent ? "Verify Code" : "Save Changes"}
           </Typo>
         </Button>
       </KeyboardStickyView>

@@ -73,22 +73,27 @@ export default function ConfirmationCodeField({
     <View style={[styles.container, containerStyle]}>
       {/* Visible digit cells */}
       <View style={styles.digitCellsContainer}>
-        {digitPositions.map((position) => (
-          <View
-            key={position}
-            style={[
-              styles.digitCell,
-              {
-                borderColor: getDigitCellBorderColor(position),
-                opacity: disabled ? 0.5 : 1,
-              },
-            ]}
-            onTouchEnd={handleDigitCellPress}>
-            <Typo variant="h3" color={COLORS.black}>
-              {getDigitValue(position)}
-            </Typo>
-          </View>
-        ))}
+        {digitPositions.map((position) => {
+          const isActive = getActiveDigitIndex() === position;
+          return (
+            <View
+              key={position}
+              style={[
+                styles.digitCell,
+                {
+                  borderColor: getDigitCellBorderColor(position),
+                  opacity: disabled ? 0.5 : 1,
+                },
+              ]}
+              onTouchEnd={handleDigitCellPress}>
+              <Typo
+                variant="h3"
+                color={isActive ? COLORS.gray["400"] : COLORS.black}>
+                {isActive ? "|" : getDigitValue(position)}
+              </Typo>
+            </View>
+          );
+        })}
       </View>
 
       {/* Hidden text input for actual input handling */}
@@ -115,7 +120,7 @@ const styles = StyleSheet.create({
   },
   digitCellsContainer: {
     flexDirection: "row",
-    gap: moderateScale(10),
+    gap: moderateScale(5),
   },
   digitCell: {
     flex: 1,

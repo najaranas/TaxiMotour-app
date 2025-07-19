@@ -28,7 +28,17 @@ export default function CheckSelfie() {
         <Typo variant="h3" style={{ textAlign: "center" }}>
           Personal Info
         </Typo>
-        <Button onPress={() => router.navigate("/screens/Profile/Selfie")}>
+        {/* <Button onPress={() => router.navigate("/screens/Profile/Selfie")}> */}
+        <Button
+          onPress={() =>
+            router.push({
+              pathname: "/screens/Auth/ConfirmVerfication",
+              params: {
+                contactType: "email",
+                contactValue: "anas.tn@gmail.Com",
+              },
+            })
+          }>
           <View
             style={{
               borderWidth: THEME.borderWidth.thin,
@@ -45,13 +55,10 @@ export default function CheckSelfie() {
               showEditIcon={true}
               editable={false}
             />
-            <Typo
-              variant="body"
-              // size={moderateScale(20)}
-              style={{ textAlign: "center" }}>
+            <Typo variant="body" style={{ textAlign: "center" }}>
               {user?.hasImage
-                ? "Change yout profile photo "
-                : "Add a profile photo so driver can recogniz you "}
+                ? "Change your profile photo"
+                : "Add a profile photo so driver can recognize you"}
             </Typo>
           </View>
         </Button>

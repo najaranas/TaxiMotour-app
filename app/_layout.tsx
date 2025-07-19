@@ -26,10 +26,7 @@ function AppNavigator() {
           name="screens/Auth/PhoneVerification"
           options={{ title: "phoneVerification" }}
         />
-        <Stack.Screen
-          name="screens/Auth/ConfirmVerfication"
-          options={{ title: "confirmVerification" }}
-        />
+
         <Stack.Screen
           name="screens/Auth/UserTypeSelection"
           options={{ title: "userTypeSelection" }}
