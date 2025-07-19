@@ -11,8 +11,11 @@ import { useEffect, useState } from "react";
 import { StyleSheet, View, Alert } from "react-native";
 
 export default function ConfirmVerification() {
-  const params = useLocalSearchParams();
-  console.log("params", params);
+  const { contactType, contactValue } = useLocalSearchParams() as {
+    contactType: "email" | "phone" | "whatsapp";
+    contactValue: string;
+  };
+  // console.log("params", contactType, contactValue);
   const [verificationCode, setVerificationCode] = useState<string>("");
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -58,8 +61,9 @@ export default function ConfirmVerification() {
   const handleResendCode = () => {
     startResendTimer();
   };
+
   const handleEditNumber = () => {
-    router.navigate("/screens/Auth/UserTypeSelection");
+    router.back();
   };
 
   return (
@@ -77,21 +81,25 @@ export default function ConfirmVerification() {
       <View style={styles.content}>
         <View style={styles.titleContainer}>
           <Typo color={THEME.text.primary} variant="h3">
-            Verify Your Phone
+            {contactType === "whatsapp" || contactType === "phone"
+              ? "Verify Your Phone"
+              : "Verify Your email"}
           </Typo>
           <View style={{ gap: verticalScale(5) }}>
             <Typo
               color={THEME.text.muted}
               variant="body"
               style={styles.infoText}>
-              Enter the verification code sent to your WhatsApp number.
+              {contactType === "whatsapp" || contactType === "phone"
+                ? "Enter the verification code sent to your WhatsApp number."
+                : "Enter the verification code sent to your email."}
             </Typo>
             <Typo
               variant="body"
               fontFamily={FONTS.bold}
               color={THEME.text.secondary}
               style={styles.infoText}>
-              +216 93 231 421
+              {contactValue}
             </Typo>
           </View>
         </View>
@@ -124,7 +132,9 @@ export default function ConfirmVerification() {
               fontFamily={FONTS.medium}
               color={THEME.text.secondary}
               style={styles.infoText}>
-              Edit phone number
+              {contactType === "whatsapp" || contactType === "phone"
+                ? "Edit phone number"
+                : "Edit email address"}
             </Typo>
           </View>
         </Button>
