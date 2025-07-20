@@ -17,37 +17,13 @@ export default function ConfirmVerification() {
     contactValue: string;
   };
 
-  const [verificationCode, setVerificationCode] = useState<string>("");
   const router = useRouter();
   const { user } = useUser();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [contactToVerify, setContactToVerify] = useState<any>(null);
   const resendTime = 20;
   const [timerId, setTimerId] = useState<number | null>(null);
   const [resendTimer, setResendTimer] = useState<number>(resendTime);
-
-  const handleVerifyCode = () => {
-    if (verificationCode.length < 4) {
-      Alert.alert("Error", "Please enter the complete verification code");
-      return;
-    }
-    setIsLoading(true);
-    // TODO: Implement verification logic here
-    console.log("Verifying code:", verificationCode);
-  };
-
-  useEffect(() => {
-    startResendTimer();
-    return () => {
-      if (timerId) clearInterval(timerId);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (resendTimer === 0 && timerId) {
-      clearInterval(timerId);
-      setTimerId(null);
-    }
-  }, [resendTimer, timerId]);
 
   const startResendTimer = () => {
     setResendTimer(resendTime);
@@ -58,68 +34,123 @@ export default function ConfirmVerification() {
     setTimerId(id as unknown as number);
   };
 
-  const handleResendCode = () => {
-    // if (onResendCode) {
-    //   onResendCode();
-    // }
+  useEffect(() => {
+    // Find the contact to verify on mount
+    if (contactType === "email") {
+      const emailToVerify = user?.emailAddresses.find(
+        (email) => email.emailAddress === contactValue
+      );
+      setContactToVerify(emailToVerify);
+    } else {
+      const phoneToVerify = user?.phoneNumbers.find(
+        (phone) => phone.phoneNumber === contactValue
+      );
+      setContactToVerify(phoneToVerify);
+    }
+  }, [contactType, contactValue, user?.emailAddresses, user?.phoneNumbers]);
 
+  useEffect(() => {
     startResendTimer();
-  };
+    return () => {
+      if (timerId) clearInterval(timerId);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (resendTimer === 0 && timerId) {
+      clearInterval(timerId);
+      setTimerId(null);
+    }
+  }, [resendTimer, timerId]);
 
   const handleEditNumber = () => {
     router.back();
   };
 
   const onCodeComplete = async (code: string) => {
+    setIsLoading(true);
     try {
-      const emailToVerify = user?.emailAddresses.find(
-        (email) => email.emailAddress === contactValue
-      );
-      const phoneToVerify = user?.phoneNumbers.find(
-        (phone) => phone.phoneNumber === contactValue
-      );
-      if (emailToVerify) {
+      if (!contactToVerify) {
+        Alert.alert(
+          "Error",
+          "Contact information not found. Please try again."
+        );
+        return;
+      }
+
+      if (contactType === "email") {
         // Verify email code
-        const verificationResult = await emailToVerify.attemptVerification({
+        const verificationResult = await contactToVerify.attemptVerification({
           code: code,
         });
         console.log("verificationResult", verificationResult);
         if (verificationResult.verification.status === "verified") {
           // Set as primary email after successful verification
-          console.log("emailResstart");
-
-          const emailRes = await user?.update({
-            primaryEmailAddressId: emailToVerify.id,
+          await user?.update({
+            primaryEmailAddressId: contactToVerify.id,
           });
-          console.log("emailRes", emailRes);
           console.log("Email verified and set as primary successfully");
-          router.navigate("/screens/Profile/PersonalInfo");
+
+          router.replace("/screens/Profile/PersonalInfo");
+        } else {
+          Alert.alert("Error", "Invalid verification code. Please try again.");
         }
-      } else if (phoneToVerify) {
+      } else if (contactType === "phone") {
         // Verify phone code
-        const verification = await phoneToVerify.attemptVerification({ code });
+        const verification = await contactToVerify.attemptVerification({
+          code,
+        });
         if (verification.verification.status === "verified") {
           // Set as primary phone after successful verification
           await user?.update({
-            primaryPhoneNumberId: phoneToVerify.id,
+            primaryPhoneNumberId: contactToVerify.id,
           });
           console.log("Phone verified and set as primary successfully");
+
           router.navigate("/screens/Profile/PersonalInfo");
+        } else {
+          Alert.alert("Error", "Invalid verification code. Please try again.");
         }
       }
     } catch (error) {
       console.log("Error verifying code:", error);
-      // TODO: Show error message to user
+      Alert.alert("Error", "Invalid verification code. Please try again.");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleResendCode = async () => {
+    try {
+      if (!contactToVerify) {
+        Alert.alert(
+          "Error",
+          "Contact information not found. Please try again."
+        );
+        return;
+      }
+
+      if (contactType === "email") {
+        await contactToVerify.prepareVerification({ strategy: "email_code" });
+        Alert.alert("Success", "Verification code sent to your email!");
+      } else if (contactType === "phone") {
+        await contactToVerify.prepareVerification();
+        Alert.alert("Success", "Verification code sent to your phone!");
+      }
+
+      startResendTimer();
+    } catch (error) {
+      console.log("Error resending code:", error);
+      Alert.alert("Error", "Failed to resend code. Please try again.");
     }
   };
 
   return (
     <ScreenWrapper
       safeArea
-      padding={horizontalScale(15)}
       scroll
+      padding={horizontalScale(15)}
       style={styles.container}
       contentContainerStyle={styles.scrollContent}
       keyboardShouldPersistTaps="handled"
@@ -131,8 +162,8 @@ export default function ConfirmVerification() {
         <View style={styles.titleContainer}>
           <Typo color={THEME.text.primary} variant="h3">
             {contactType === "whatsapp" || contactType === "phone"
-              ? "Verify Your Phone"
-              : "Verify Your email"}
+              ? "Verify Phone Number"
+              : "Verify Email Address"}
           </Typo>
           <View style={{ gap: verticalScale(5) }}>
             <Typo
@@ -140,8 +171,8 @@ export default function ConfirmVerification() {
               variant="body"
               style={styles.infoText}>
               {contactType === "whatsapp" || contactType === "phone"
-                ? "Enter the verification code sent to your WhatsApp number."
-                : "Enter the verification code sent to your email."}
+                ? "Enter the 6-digit verification code sent to your phone number."
+                : "Enter the 6-digit verification code sent to your email address."}
             </Typo>
             <Typo
               variant="body"
@@ -154,17 +185,24 @@ export default function ConfirmVerification() {
         </View>
 
         <ConfirmationCodeField
-          digitCount={4}
+          digitCount={6}
           autoFocus
-          // onCodeChange={onCodeChange}
-          // onCodeComplete={onCodeComplete}
+          onCodeComplete={onCodeComplete}
         />
+
+        {isLoading && (
+          <View style={styles.loadingContainer}>
+            <Typo variant="body" color={THEME.text.muted}>
+              Verifying your code...
+            </Typo>
+          </View>
+        )}
 
         <View style={styles.resendContainer}>
           {resendTimer === 0 ? (
-            <Button onPress={handleResendCode}>
+            <Button onPress={handleResendCode} disabled={isLoading}>
               <Typo variant="button" color={COLORS.secondary}>
-                Resend code
+                {isLoading ? "Sending..." : "Resend code"}
               </Typo>
             </Button>
           ) : (
@@ -174,7 +212,7 @@ export default function ConfirmVerification() {
           )}
         </View>
 
-        <Button onPress={handleEditNumber}>
+        <Button onPress={handleEditNumber} disabled={isLoading}>
           <View style={styles.editNumberContainer}>
             <EditIcon color={THEME.text.secondary} size={30} />
             <Typo
@@ -183,8 +221,8 @@ export default function ConfirmVerification() {
               color={THEME.text.secondary}
               style={styles.infoText}>
               {contactType === "whatsapp" || contactType === "phone"
-                ? "Edit phone number"
-                : "Edit email address"}
+                ? "Change phone number"
+                : "Change email address"}
             </Typo>
           </View>
         </Button>
@@ -214,6 +252,9 @@ const styles = StyleSheet.create({
   },
 
   resendContainer: {
+    marginTop: verticalScale(10),
+  },
+  loadingContainer: {
     marginTop: verticalScale(10),
   },
   editNumberContainer: {
