@@ -7,7 +7,8 @@ import Typo from "@/components/common/Typo";
 import THEME, { COLORS, FONTS } from "@/constants/theme";
 import { horizontalScale, verticalScale } from "@/utils/styling";
 import { useUser } from "@clerk/clerk-expo";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useNavigationState } from "@react-navigation/native";
+import { useLocalSearchParams, useRouter, useSegments } from "expo-router";
 import { useEffect, useState } from "react";
 import { StyleSheet, View, Alert } from "react-native";
 
@@ -16,7 +17,13 @@ export default function ConfirmVerification() {
     contactType: "email" | "phone" | "whatsapp";
     contactValue: string;
   };
+  const segments = useSegments();
 
+  const routes = useNavigationState((state) => state.routes);
+
+  console.log("Routes stack:", routes); // All routes in the current navigator
+
+  console.log("segments", segments);
   const router = useRouter();
   const { user } = useUser();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -92,7 +99,7 @@ export default function ConfirmVerification() {
           });
           console.log("Email verified and set as primary successfully");
 
-          router.replace("/screens/Profile/PersonalInfo");
+          router.replace("/(profile)/PersonalInfo");
         } else {
           Alert.alert("Error", "Invalid verification code. Please try again.");
         }
@@ -108,7 +115,7 @@ export default function ConfirmVerification() {
           });
           console.log("Phone verified and set as primary successfully");
 
-          router.navigate("/screens/Profile/PersonalInfo");
+          router.navigate("/(profile)/PersonalInfo");
         } else {
           Alert.alert("Error", "Invalid verification code. Please try again.");
         }

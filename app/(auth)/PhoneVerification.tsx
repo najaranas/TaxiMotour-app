@@ -98,7 +98,7 @@ export default function PhoneVerification() {
 
   const handleContinue = () => {
     // setLoading(true);
-    router.navigate("/screens/Auth/ConfirmVerfication");
+    router.navigate("/(common)/ConfirmVerfication");
     console.log("Phone number:", phoneNumber);
   };
 

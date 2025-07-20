@@ -65,8 +65,8 @@ export default function Selfie() {
       if (response) {
         console.log("entered");
         setSelfieImage(response);
-        router.navigate("/screens/Profile/CheckSelfie");
-        // router.navigate("/screens/Profile/Test");
+        router.navigate("/(profile)/CheckSelfie");
+        // router.navigate("/(profile)/Test");
       } else {
         console.log("aze");
       }

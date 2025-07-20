@@ -19,35 +19,52 @@ function AppNavigator() {
       {/* Splash screen - always accessible */}
       <Stack.Screen name="index" options={{ title: "splashScreen" }} />
 
-      {/* Auth screens - only accessible when not signed in */}
-      <Stack.Protected guard={!Boolean(isSignedIn)}>
-        <Stack.Screen name="screens/Auth/Login" options={{ title: "login" }} />
-        <Stack.Screen
-          name="screens/Auth/PhoneVerification"
-          options={{ title: "phoneVerification" }}
-        />
+      {/* Shared verification screen - accessible from both auth and main flows */}
+      <Stack.Screen
+        name="(common)/ConfirmVerfication"
+        options={{ title: "confirmVerification" }}
+      />
 
-        <Stack.Screen
-          name="screens/Auth/UserTypeSelection"
-          options={{ title: "userTypeSelection" }}
-        />
-      </Stack.Protected>
+      {/* Auth screens - only accessible when not signed in */}
+      {/* <Stack.Protected guard={!Boolean(isSignedIn)}> */}
+      <Stack.Screen name="(auth)/Login" options={{ title: "login" }} />
+      <Stack.Screen
+        name="(auth)/PhoneVerification"
+        options={{ title: "phoneVerification" }}
+      />
+      <Stack.Screen
+        name="(auth)/UserTypeSelection"
+        options={{ title: "userTypeSelection" }}
+      />
+      {/* </Stack.Protected> */}
 
       {/* Main app screens - only accessible when signed in */}
-      <Stack.Protected guard={Boolean(isSignedIn)}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="screens/Profile/Selfie"
-          options={{ animation: "slide_from_bottom" }}
-        />
-        <Stack.Screen
-          name="screens/Profile/Test"
-          options={{
-            title: "Test",
-            headerShown: true,
-          }}
-        />
-      </Stack.Protected>
+      {/* <Stack.Protected guard={Boolean(isSignedIn)}> */}
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="(profile)/PersonalInfo"
+        options={{ title: "Personal Info" }}
+      />
+      <Stack.Screen
+        name="(profile)/EditPersonalInfo"
+        options={{ title: "Edit Personal Info" }}
+      />
+      <Stack.Screen
+        name="(profile)/Selfie"
+        options={{ animation: "slide_from_bottom" }}
+      />
+      <Stack.Screen
+        name="(profile)/CheckSelfie"
+        options={{ title: "Check Selfie" }}
+      />
+      <Stack.Screen
+        name="(profile)/Test"
+        options={{
+          title: "Test",
+          headerShown: true,
+        }}
+      />
+      {/* </Stack.Protected> */}
     </Stack>
   );
 }

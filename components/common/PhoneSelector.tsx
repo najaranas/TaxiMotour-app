@@ -8,7 +8,7 @@ import { useRouter } from "expo-router";
 export default function PhoneSelector() {
   const router = useRouter();
   const handlePress = () => {
-    router.navigate("/screens/Auth/PhoneVerification");
+    router.navigate("/(auth)/PhoneVerification");
   };
   return (
     <Pressable onPress={() => handlePress()} style={styles.container}>

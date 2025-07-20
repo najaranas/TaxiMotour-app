@@ -34,7 +34,7 @@ export const profileMenuItems = [
     title: "Personal Info",
     icon: User,
     iconColor: THEME.text.primary,
-    route: "/screens/Profile/PersonalInfo",
+    route: "/(profile)/PersonalInfo",
     type: "navigation" as const,
     subtitle: undefined,
     isDanger: false,

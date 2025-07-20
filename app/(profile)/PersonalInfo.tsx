@@ -2,7 +2,7 @@ import { StyleSheet, View } from "react-native";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import BackButton from "@/components/common/BackButton";
-import { usePathname, useRouter, useSegments } from "expo-router";
+import { useRouter } from "expo-router";
 import Typo from "@/components/common/Typo";
 import THEME, { COLORS, FONTS } from "@/constants/theme";
 import Button from "@/components/common/Button";
@@ -27,7 +27,7 @@ export default function CheckSelfie() {
         <Typo variant="h3" style={{ textAlign: "center" }}>
           Personal Info
         </Typo>
-        <Button onPress={() => router.navigate("/screens/Profile/Selfie")}>
+        <Button onPress={() => router.navigate("/(profile)/Selfie")}>
           <View
             style={{
               borderWidth: THEME.borderWidth.thin,
@@ -58,7 +58,7 @@ export default function CheckSelfie() {
             style={styles.menuItem}
             onPress={() => {
               router.navigate({
-                pathname: "/screens/Profile/EditPersonalInfo",
+                pathname: "/(profile)/EditPersonalInfo",
                 params: {
                   editType: "name",
                   title: "Edit your name",
@@ -98,7 +98,7 @@ export default function CheckSelfie() {
             style={styles.menuItem}
             onPress={() =>
               router.navigate({
-                pathname: "/screens/Profile/EditPersonalInfo",
+                pathname: "/(profile)/EditPersonalInfo",
                 params: {
                   editType: "email",
                   title: "Edit your email",

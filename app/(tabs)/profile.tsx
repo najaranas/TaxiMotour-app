@@ -41,7 +41,7 @@ export default function ProfileScreen() {
 
   // Navigation handlers
   const navigateToProfilePhoto = () => {
-    router.navigate("/screens/Profile/Selfie");
+    router.navigate("/(profile)/Selfie");
   };
 
   // Bottom sheet handlers

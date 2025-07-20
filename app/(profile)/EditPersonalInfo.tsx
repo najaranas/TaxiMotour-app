@@ -37,13 +37,12 @@ export default function EditPersonalInfo() {
   );
   const [isLoading, setIsLoading] = useState(false);
   const [verificationSent, setVerificationSent] = useState(false);
-  const [message, setMessage] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
-  const [emailToVerify, setEmailToVerify] = useState<any>(null); // Store email address object for verification
-  const [phoneToVerify, setPhoneToVerify] = useState<any>(null); // Store phone number object for verification
 
-  console.log("verificationCode", verificationCode);
-  console.log("editType", editType);
+  // Store verification objects for later use
+  const [emailToVerify, setEmailToVerify] = useState<any>(null);
+  const [phoneToVerify, setPhoneToVerify] = useState<any>(null);
+
   // Input states
   const [focusedInput, setFocusedInput] = useState<InputType | null>(null);
 
@@ -127,11 +126,6 @@ export default function EditPersonalInfo() {
   };
 
   const handleSave = async () => {
-    // if (verificationSent && verificationCode) {
-    //   await handleVerifyCode(verificationCode);
-    //   return;
-    // }
-
     setIsLoading(true);
     try {
       if (editType === "name") {
@@ -150,6 +144,7 @@ export default function EditPersonalInfo() {
         await user?.update(updateData);
         router.back();
       } else if (editType === "email") {
+        console.log("Updating email");
         try {
           const existingEmail = user?.emailAddresses.find(
             (emailAd) => emailAd.emailAddress === email.trim()
@@ -160,13 +155,20 @@ export default function EditPersonalInfo() {
                 strategy: "email_code",
               });
               setEmailToVerify(existingEmail);
-              router.push({
-                pathname: "/screens/Auth/ConfirmVerfication",
-                params: {
-                  contactType: "email",
-                  contactValue: email.trim(),
-                },
-              });
+              console.log("Email verification prepared:", existingEmail);
+              console.log("About to navigate to confirmation screen");
+              try {
+                router.navigate({
+                  pathname: "/(common)/ConfirmVerfication",
+                  params: {
+                    contactType: "email",
+                    contactValue: email.trim(),
+                  },
+                });
+                console.log("Navigation command executed successfully");
+              } catch (navError) {
+                console.error("Navigation error:", navError);
+              }
             } else {
               // Already verified, set as primary
               await user?.update({
@@ -184,8 +186,9 @@ export default function EditPersonalInfo() {
                 strategy: "email_code",
               });
               setEmailToVerify(newEmailAddress);
+              console.log("New email verification prepared:", newEmailAddress);
               router.push({
-                pathname: "/screens/Auth/ConfirmVerfication",
+                pathname: "/(common)/ConfirmVerfication",
                 params: {
                   contactType: "email",
                   contactValue: email.trim(),
@@ -208,9 +211,8 @@ export default function EditPersonalInfo() {
             // If phone exists but isn't verified, send verification
             if (existingPhone.verification?.status !== "verified") {
               await existingPhone.prepareVerification();
-              setPhoneToVerify(existingPhone); // Store for verification
               router.push({
-                pathname: "/screens/Auth/ConfirmVerfication",
+                pathname: "/(common)/ConfirmVerfication",
                 params: {
                   contactType: "phone",
                   contactValue: phone.trim(),
@@ -233,9 +235,8 @@ export default function EditPersonalInfo() {
             if (phoneNumber) {
               // Send verification SMS
               await phoneNumber.prepareVerification();
-              setPhoneToVerify(phoneNumber); // Store for verification
               router.push({
-                pathname: "/screens/Auth/ConfirmVerfication",
+                pathname: "/(common)/ConfirmVerfication",
                 params: {
                   contactType: "phone",
                   contactValue: phone.trim(),
