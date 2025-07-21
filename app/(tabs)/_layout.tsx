@@ -6,19 +6,21 @@ import {
   MotoIcon,
   UserIcon,
 } from "@/components/common/SvgIcons";
-import { moderateScale } from "@/utils/styling";
+import { moderateScale, verticalScale } from "@/utils/styling";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export default function TabLayout() {
+  const { theme } = useTheme();
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: COLORS.primary,
-        tabBarInactiveTintColor: COLORS.gray[500],
+        tabBarActiveTintColor: theme.text.primary,
+        tabBarInactiveTintColor: theme.text.primary,
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: COLORS.white,
-          borderTopWidth: 1,
-          borderTopColor: COLORS.gray[200],
+          backgroundColor: theme.background,
+          borderTopWidth: theme.borderWidth.thin,
+          borderTopColor: COLORS.gray[100],
         },
       }}>
       <Tabs.Screen

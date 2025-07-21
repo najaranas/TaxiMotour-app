@@ -1,4 +1,3 @@
-import THEME, { COLORS } from "./theme";
 import { User, Globe, Moon, LogOut } from "lucide-react-native";
 
 /**
@@ -11,7 +10,6 @@ export const userTypes = [
     subtitle: "Book rides and travel comfortably",
     description: "Request rides, track your driver, and enjoy a safe journey.",
     icon: require("../assets/images/passenger.png"),
-    textColor: THEME.text.primary,
   },
   {
     id: "driver" as const,
@@ -20,7 +18,6 @@ export const userTypes = [
     description:
       "Accept ride requests, earn money, and manage your trips easily.",
     icon: require("../assets/images/driver.png"),
-    textColor: THEME.text.primary,
   },
 ];
 
@@ -33,7 +30,6 @@ export const profileMenuItems = [
     id: "personal-info",
     title: "Personal Info",
     icon: User,
-    iconColor: THEME.text.primary,
     route: "/(profile)/PersonalInfo",
     type: "navigation" as const,
     subtitle: undefined,
@@ -44,7 +40,6 @@ export const profileMenuItems = [
     title: "Language",
     subtitle: "English",
     icon: Globe,
-    iconColor: THEME.text.primary,
     type: "action" as const,
     action: "language_settings",
     isDanger: false,
@@ -53,7 +48,6 @@ export const profileMenuItems = [
     id: "dark-mode",
     title: "Dark Mode",
     icon: Moon,
-    iconColor: THEME.text.primary,
     type: "toggle" as const,
     action: "toggle_dark_mode",
     subtitle: undefined,
@@ -63,7 +57,6 @@ export const profileMenuItems = [
     id: "logout",
     title: "Logout",
     icon: LogOut,
-    iconColor: COLORS.danger,
     type: "action" as const,
     action: "logout",
     isDanger: true,

@@ -1,7 +1,8 @@
 import { View, Image, StyleSheet } from "react-native";
 import { horizontalScale, moderateScale } from "@/utils/styling";
 import { UserIcon } from "@/components/common/SvgIcons";
-import THEME, { COLORS } from "@/constants/theme";
+import { COLORS } from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 import Button from "@/components/common/Button";
 import { Pencil } from "lucide-react-native";
 
@@ -22,6 +23,7 @@ export default function UserProfileImage({
   showEditIcon = true,
   editable = true,
 }: UserProfileImageProps) {
+  const { theme } = useTheme();
   const imageSize = horizontalScale(size);
 
   const content = (
@@ -60,7 +62,11 @@ export default function UserProfileImage({
         </View>
       )}
       {showEditIcon && (
-        <View style={styles.profileEditIconWrapper}>
+        <View
+          style={[
+            styles.profileEditIconWrapper,
+            { backgroundColor: theme.background },
+          ]}>
           <View style={styles.profileEditIconInner}>
             <Pencil
               color={COLORS.white}
@@ -100,7 +106,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     right: -horizontalScale(5),
-    backgroundColor: THEME.background,
     borderRadius: 50,
     padding: horizontalScale(3),
   },

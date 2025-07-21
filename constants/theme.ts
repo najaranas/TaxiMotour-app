@@ -1,4 +1,6 @@
 // Taximotour Theme - Simplified
+import { ThemeType } from "@/types/Types";
+
 export const COLORS = {
   // Main Colors
   primary: "#10252A", // Main dark color
@@ -47,7 +49,7 @@ export const FONTS = {
 };
 
 // App Themes
-const THEMES = {
+const THEMES: Record<"light" | "dark", ThemeType> = {
   // Light Mode
   light: {
     // Backgrounds
@@ -71,15 +73,15 @@ const THEMES = {
       pill: 30,
       circle: 9999,
     },
-    // Border Width
+    // Border Width - Optimized for light mode (thinner borders look better)
+
     borderWidth: {
       none: 0,
       thin: 1,
       regular: 2,
       thick: 3,
-      extraThick: 5,
+      extraThick: 4,
     },
-
     // Buttons
     button: {
       primary: COLORS.secondary, // #FFB218
@@ -107,13 +109,13 @@ const THEMES = {
   // Dark Mode
   dark: {
     // Backgrounds
-    background: COLORS.primary, // #10252A
+    background: "#121212",
     surface: COLORS.gray[800],
     card: COLORS.gray[700],
 
     // Text
     text: {
-      primary: COLORS.white,
+      primary: "#DDDDDD",
       secondary: COLORS.gray[300],
       muted: COLORS.gray[500],
     },
@@ -127,13 +129,13 @@ const THEMES = {
       pill: 30,
       circle: 9999,
     },
-    // Border Width
+    // Border Width - Optimized for dark mode (thicker borders for better visibility)
     borderWidth: {
       none: 0,
-      thin: 1,
-      regular: 2,
-      thick: 3,
-      extraThick: 5,
+      thin: 0.2,
+      regular: 0.5,
+      thick: 1,
+      extraThick: 1.5,
     },
 
     // Buttons

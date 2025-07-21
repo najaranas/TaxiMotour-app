@@ -4,11 +4,12 @@ import ConfirmationCodeField from "@/components/common/ConfirmationCodeField";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import { EditIcon } from "@/components/common/SvgIcons";
 import Typo from "@/components/common/Typo";
-import THEME, { COLORS, FONTS } from "@/constants/theme";
+import { COLORS, FONTS } from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 import { horizontalScale, verticalScale } from "@/utils/styling";
 import { useUser } from "@clerk/clerk-expo";
 import { useNavigationState } from "@react-navigation/native";
-import { useLocalSearchParams, useRouter, useSegments } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { StyleSheet, View, Alert } from "react-native";
 
@@ -17,13 +18,9 @@ export default function ConfirmVerification() {
     contactType: "email" | "phone" | "whatsapp";
     contactValue: string;
   };
-  const segments = useSegments();
+  const { theme } = useTheme();
 
-  const routes = useNavigationState((state) => state.routes);
-
-  console.log("Routes stack:", routes); // All routes in the current navigator
-
-  console.log("segments", segments);
+  console.log("segments");
   const router = useRouter();
   const { user } = useUser();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -167,14 +164,14 @@ export default function ConfirmVerification() {
       {/* Content */}
       <View style={styles.content}>
         <View style={styles.titleContainer}>
-          <Typo color={THEME.text.primary} variant="h3">
+          <Typo color={theme.text.primary} variant="h3">
             {contactType === "whatsapp" || contactType === "phone"
               ? "Verify Phone Number"
               : "Verify Email Address"}
           </Typo>
           <View style={{ gap: verticalScale(5) }}>
             <Typo
-              color={THEME.text.muted}
+              color={theme.text.muted}
               variant="body"
               style={styles.infoText}>
               {contactType === "whatsapp" || contactType === "phone"
@@ -184,7 +181,7 @@ export default function ConfirmVerification() {
             <Typo
               variant="body"
               fontFamily={FONTS.bold}
-              color={THEME.text.secondary}
+              color={theme.text.secondary}
               style={styles.infoText}>
               {contactValue}
             </Typo>
@@ -199,7 +196,7 @@ export default function ConfirmVerification() {
 
         {isLoading && (
           <View style={styles.loadingContainer}>
-            <Typo variant="body" color={THEME.text.muted}>
+            <Typo variant="body" color={theme.text.muted}>
               Verifying your code...
             </Typo>
           </View>
@@ -213,19 +210,23 @@ export default function ConfirmVerification() {
               </Typo>
             </Button>
           ) : (
-            <Typo variant="body" color={THEME.text.muted}>
+            <Typo variant="body" color={theme.text.muted}>
               Resend Code in {resendTimer}
             </Typo>
           )}
         </View>
 
         <Button onPress={handleEditNumber} disabled={isLoading}>
-          <View style={styles.editNumberContainer}>
-            <EditIcon color={THEME.text.secondary} size={30} />
+          <View
+            style={[
+              styles.editNumberContainer,
+              { borderTopWidth: theme.borderWidth.thin },
+            ]}>
+            <EditIcon color={theme.text.secondary} size={30} />
             <Typo
               variant="body"
               fontFamily={FONTS.medium}
-              color={THEME.text.secondary}
+              color={theme.text.secondary}
               style={styles.infoText}>
               {contactType === "whatsapp" || contactType === "phone"
                 ? "Change phone number"
@@ -267,7 +268,6 @@ const styles = StyleSheet.create({
   editNumberContainer: {
     marginTop: verticalScale(20),
     paddingTop: verticalScale(10),
-    borderTopWidth: THEME.borderWidth.thin,
     borderTopColor: COLORS.gray["200"],
     flexDirection: "row",
     alignItems: "center",

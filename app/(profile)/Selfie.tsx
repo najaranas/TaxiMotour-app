@@ -4,7 +4,8 @@ import BackButton from "@/components/common/BackButton";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import Typo from "@/components/common/Typo";
 import { Flashlight, RefreshCcw, Zap, ZapOff } from "lucide-react-native";
-import THEME, { COLORS } from "@/constants/theme";
+import { COLORS } from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 import Button from "@/components/common/Button";
 import { CameraView } from "expo-camera";
 import { useRef, useState, useCallback } from "react";
@@ -14,33 +15,20 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
-import {
-  useFocusEffect,
-  usePathname,
-  useRouter,
-  useSegments,
-} from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { setSelfieImage } from "./selfieImageStore";
-import { useNavigationState } from "@react-navigation/native";
 
 const AnimatedRefreshCcw = Animated.createAnimatedComponent(RefreshCcw);
 
 export default function Selfie() {
-  // useSegments() shows the URL segments, not the navigation stack
-
-  const pathname = usePathname();
-
-  console.log("Current pathname:", pathname);
-  const navigationState = useNavigationState((state) => state);
-  console.log(navigationState?.routes?.map((r) => r.name)); // Should show the full stack
-
+  const { theme } = useTheme();
   const cameraRef = useRef<CameraView>(null);
   const [cameraFace, setCameraFace] = useState<"front" | "back">("front");
   const [isTorchActive, setIsTorchActive] = useState<boolean>(false);
   const [isTakeImgClicked, setIsTakeImgClicked] = useState<boolean>(false);
-  const router = useRouter();
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const router = useRouter();
 
   const rotate = useSharedValue(0);
   const animatedStyles = useAnimatedStyle(() => ({
@@ -124,7 +112,7 @@ export default function Selfie() {
           <Typo
             style={styles.instructionText}
             variant="body"
-            color={THEME.text.secondary}>
+            color={theme.text.secondary}>
             Make sure your face is centered and well-lit. Smile for the best
             result!
           </Typo>
@@ -133,7 +121,7 @@ export default function Selfie() {
           <Button onPress={handleSwitchCamera}>
             <View style={styles.iconButton}>
               <AnimatedRefreshCcw
-                color={THEME.text.primary}
+                color={theme.text.primary}
                 strokeWidth={1.5}
                 size={moderateScale(25)}
                 style={animatedStyles}
@@ -147,13 +135,14 @@ export default function Selfie() {
                 {
                   borderColor: isTakeImgClicked
                     ? COLORS.gray["300"]
-                    : COLORS.black,
+                    : theme.text.primary,
                 },
               ]}>
               <View
                 style={[
                   styles.captureButtonInner,
                   {
+                    backgroundColor: theme.text.primary,
                     opacity: isTakeImgClicked ? 0 : 1,
                   },
                 ]}
@@ -170,13 +159,13 @@ export default function Selfie() {
               ]}>
               {isTorchActive ? (
                 <Zap
-                  color={THEME.text.primary}
+                  color={theme.text.primary}
                   strokeWidth={1.5}
                   size={moderateScale(25)}
                 />
               ) : (
                 <ZapOff
-                  color={THEME.text.primary}
+                  color={theme.text.primary}
                   strokeWidth={1.5}
                   size={moderateScale(25)}
                 />
@@ -252,6 +241,5 @@ const styles = StyleSheet.create({
     width: horizontalScale(50),
     aspectRatio: 1,
     borderRadius: horizontalScale(50) / 2,
-    backgroundColor: COLORS.black,
   },
 });

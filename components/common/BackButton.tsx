@@ -2,7 +2,7 @@ import Button from "./Button";
 import { useRouter } from "expo-router";
 import { LeftArrowIcon } from "./SvgIcons";
 import { horizontalScale } from "@/utils/styling";
-import THEME from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 import React from "react";
 import { Text } from "react-native";
 
@@ -21,13 +21,14 @@ export default function BackButton({
   disabled = false,
 }: BackButtonProps) {
   const route = useRouter();
+  const { theme } = useTheme();
 
   return (
     <Button onPress={route.back} disabled={disabled}>
       {variant === "arrow" ? (
-        <LeftArrowIcon color={THEME.text.primary} size={horizontalScale(30)} />
+        <LeftArrowIcon color={theme.text.primary} size={horizontalScale(30)} />
       ) : (
-        <CloseIcon color={THEME.text.primary} size={horizontalScale(30)} />
+        <CloseIcon color={theme.text.primary} size={horizontalScale(30)} />
       )}
     </Button>
   );

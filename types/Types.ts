@@ -102,7 +102,6 @@ export interface ProfileMenuItemConfig {
   title: string;
   subtitle?: string;
   icon: LucideIcon; // Lucide icon component
-  iconColor: string;
   route?: string;
   type: "navigation" | "action" | "toggle";
   action?: string;
@@ -183,3 +182,52 @@ export interface locationProp {
 export interface MapProps {
   roadData?: locationProp[];
 }
+
+export type ThemeType = {
+  background: string;
+  surface: string;
+  card: string;
+  text: {
+    primary: string;
+    secondary: string;
+    muted: string;
+  };
+  borderRadius: {
+    none: number;
+    small: number;
+    medium: number;
+    large: number;
+    pill: number;
+    circle: number;
+  };
+  borderWidth: {
+    none: number;
+    thin: number;
+    regular: number;
+    thick: number;
+    extraThick: number;
+  };
+  button: {
+    primary: string;
+    secondary: string;
+    text: string;
+  };
+  input: {
+    background: string;
+    border: string;
+    text: string;
+    placeholder: string;
+  };
+  status: {
+    success: string;
+    error: string;
+    warning: string;
+    info: string;
+  };
+};
+
+export type ThemeContextType = {
+  themeName: "light" | "dark";
+  theme: ThemeType;
+  setTheme: (theme: "light" | "dark") => void;
+};

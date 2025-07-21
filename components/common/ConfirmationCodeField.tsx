@@ -1,6 +1,7 @@
 import { StyleSheet, TextInput, View } from "react-native";
 import React, { useState, useRef } from "react";
-import THEME, { COLORS } from "@/constants/theme";
+import { COLORS } from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 import { moderateScale } from "@/utils/styling";
 import Typo from "./Typo";
 import { ConfirmationCodeFieldProps } from "@/types/Types";
@@ -15,6 +16,19 @@ export default function ConfirmationCodeField({
 }: ConfirmationCodeFieldProps) {
   const [verificationCode, setVerificationCode] = useState<string>("");
   const hiddenInputRef = useRef<TextInput>(null);
+  const { theme } = useTheme();
+
+  const dynamicStyles = StyleSheet.create({
+    digitCell: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      padding: moderateScale(15),
+      borderWidth: theme.borderWidth.regular,
+      borderRadius: theme.borderRadius.medium,
+      backgroundColor: COLORS.white,
+    },
+  });
 
   // Generate array of digit positions
   const digitPositions = Array.from(
@@ -79,7 +93,7 @@ export default function ConfirmationCodeField({
             <View
               key={position}
               style={[
-                styles.digitCell,
+                dynamicStyles.digitCell,
                 {
                   borderColor: getDigitCellBorderColor(position),
                   opacity: disabled ? 0.5 : 1,
@@ -121,15 +135,6 @@ const styles = StyleSheet.create({
   digitCellsContainer: {
     flexDirection: "row",
     gap: moderateScale(5),
-  },
-  digitCell: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: moderateScale(15),
-    borderWidth: THEME.borderWidth.regular,
-    borderRadius: THEME.borderRadius.medium,
-    backgroundColor: COLORS.white,
   },
   hiddenInput: {
     position: "absolute",

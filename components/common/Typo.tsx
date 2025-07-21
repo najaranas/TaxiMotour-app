@@ -1,18 +1,22 @@
 import { TypoProps } from "@/types/Types";
 import { moderateScale } from "@/utils/styling";
-import THEME from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 import { Text, TextStyle } from "react-native";
 
 export default function Typo({
   size,
   fontFamily,
-  color = THEME.text.primary,
+  color,
   style,
   children,
   numberOfLines,
   variant = "body",
   ...props
 }: TypoProps) {
+  const { theme } = useTheme();
+
+  // Use theme text color as default if no color is provided
+  const textColor = color || theme.text.primary;
   // Typography variants
   const getVariantStyle = () => {
     switch (variant) {
@@ -38,7 +42,7 @@ export default function Typo({
   const textStyle: TextStyle = {
     fontFamily: fontFamily || variantStyle.fontFamily,
     fontSize: size ? moderateScale(size) : variantStyle.fontSize,
-    color,
+    color: textColor,
   };
 
   return (

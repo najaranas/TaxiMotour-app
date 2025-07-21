@@ -3,7 +3,8 @@ import { TextInput } from "react-native-gesture-handler";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import BackButton from "@/components/common/BackButton";
 import Typo from "@/components/common/Typo";
-import THEME, { COLORS } from "@/constants/theme";
+import { COLORS } from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import { CircleX } from "lucide-react-native";
 import Button from "@/components/common/Button";
@@ -30,6 +31,7 @@ export default function EditPersonalInfo() {
 
   const { user } = useUser();
   const router = useRouter();
+  const { theme } = useTheme();
   const segments = useSegments();
 
   const routes = useNavigationState((state) => state.routes);
@@ -296,15 +298,16 @@ export default function EditPersonalInfo() {
             {
               borderColor:
                 focusedInput === "firstName"
-                  ? COLORS.secondary
-                  : COLORS.gray["200"],
+                  ? theme.button.primary
+                  : theme.input.border,
+              borderRadius: theme.borderRadius.medium,
             },
           ]}
           pointerEvents="box-none">
           <View style={styles.inputField}>
             <Typo
               variant="body"
-              color={COLORS.gray["600"]}
+              color={theme.input.placeholder}
               size={moderateScale(12)}>
               First Name
             </Typo>
@@ -313,7 +316,7 @@ export default function EditPersonalInfo() {
               value={firstName}
               onChangeText={setFirstName}
               placeholder="Enter your first name"
-              placeholderTextColor={THEME.input.placeholder}
+              placeholderTextColor={theme.input.placeholder}
               onFocus={() => handleInputFocus("firstName")}
               onBlur={handleInputBlur}
               style={styles.textInput}
@@ -338,6 +341,7 @@ export default function EditPersonalInfo() {
                 focusedInput === "lastName"
                   ? COLORS.secondary
                   : COLORS.gray["200"],
+              borderRadius: theme.borderRadius.medium,
             },
           ]}>
           <View style={styles.inputField}>
@@ -352,7 +356,7 @@ export default function EditPersonalInfo() {
               value={lastName}
               onChangeText={setLastName}
               placeholder="Enter your last name"
-              placeholderTextColor={THEME.input.placeholder}
+              placeholderTextColor={theme.input.placeholder}
               onFocus={() => handleInputFocus("lastName")}
               onBlur={handleInputBlur}
               style={styles.textInput}
@@ -378,6 +382,7 @@ export default function EditPersonalInfo() {
           {
             borderColor:
               focusedInput === "email" ? COLORS.secondary : COLORS.gray["200"],
+            borderRadius: theme.borderRadius.medium,
           },
         ]}>
         <View style={styles.inputField}>
@@ -392,7 +397,7 @@ export default function EditPersonalInfo() {
             value={email}
             onChangeText={setEmail}
             placeholder="Enter your email"
-            placeholderTextColor={THEME.input.placeholder}
+            placeholderTextColor={theme.input.placeholder}
             keyboardType="email-address"
             autoCapitalize="none"
             onFocus={() => handleInputFocus("email")}
@@ -419,6 +424,7 @@ export default function EditPersonalInfo() {
           {
             borderColor:
               focusedInput === "phone" ? COLORS.secondary : COLORS.gray["200"],
+            borderRadius: theme.borderRadius.medium,
           },
         ]}>
         <View style={styles.inputField}>
@@ -433,7 +439,7 @@ export default function EditPersonalInfo() {
             value={phone}
             onChangeText={setPhone}
             placeholder="Enter your phone number"
-            placeholderTextColor={THEME.input.placeholder}
+            placeholderTextColor={theme.input.placeholder}
             keyboardType="phone-pad"
             onFocus={() => handleInputFocus("phone")}
             onBlur={handleInputBlur}
@@ -494,7 +500,13 @@ export default function EditPersonalInfo() {
         <Button
           loading={isLoading}
           disabled={isLoading || !getIsEnabled()}
-          style={[styles.saveButton, { opacity: isLoading ? 0.3 : 1 }]}
+          style={[
+            styles.saveButton,
+            {
+              borderRadius: theme.borderRadius.pill,
+              opacity: isLoading ? 0.3 : 1,
+            },
+          ]}
           onPress={handleSave}>
           <Typo variant="button" size={moderateScale(20)} color={COLORS.white}>
             Save Changes
@@ -522,8 +534,7 @@ const styles = StyleSheet.create({
     paddingInline: horizontalScale(15),
     paddingBlock: horizontalScale(8),
     backgroundColor: COLORS.gray["100"],
-    borderWidth: THEME.borderWidth.thick,
-    borderRadius: THEME.borderRadius.medium,
+    borderWidth: 1, // Use default borderWidth
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -541,7 +552,6 @@ const styles = StyleSheet.create({
     fontSize: moderateScale(16),
   },
   saveButton: {
-    borderRadius: THEME.borderRadius.pill,
     backgroundColor: COLORS.secondary,
     justifyContent: "center",
     alignItems: "center",

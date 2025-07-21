@@ -2,7 +2,8 @@ import React from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import THEME, { COLORS, FONTS } from "@/constants/theme";
+import { COLORS, FONTS } from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import Typo from "@/components/common/Typo";
 import Button from "@/components/common/Button";
@@ -22,6 +23,7 @@ interface NavigationDrawerProps {
 }
 
 export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
+  const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { user } = useUser();
@@ -51,7 +53,11 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
         styles.drawerContent,
         { paddingTop: insets.top + verticalScale(10) },
       ]}>
-      <View style={styles.drawerHeader}>
+      <View
+        style={[
+          styles.drawerHeader,
+          { borderBottomWidth: theme.borderWidth.thick },
+        ]}>
         <Button onPress={handleMyAccount} style={styles.userButton}>
           <View style={styles.avatar}>
             <UserIcon
@@ -76,19 +82,23 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
 
         <Button onPress={onClose}>
           <X
-            color={THEME.text.primary}
+            color={theme.text.primary}
             strokeWidth={1.5}
             size={moderateScale(25)}
           />
         </Button>
       </View>
 
-      <View style={styles.menuSection}>
+      <View
+        style={[
+          styles.menuSection,
+          { borderBottomWidth: theme.borderWidth.thick },
+        ]}>
         {menuItems.map((item, index) => (
           <Button key={index} onPress={item.onPress} style={styles.menuItem}>
             <View style={styles.menuItemRow}>
               <item.icon
-                color={THEME.text.primary}
+                color={theme.text.primary}
                 strokeWidth={1.5}
                 size={moderateScale(25)}
               />
@@ -121,7 +131,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: "100%",
     paddingBottom: horizontalScale(15),
-    borderBottomWidth: 3,
     borderBottomColor: COLORS.gray["200"],
   },
   userButton: {
@@ -141,7 +150,6 @@ const styles = StyleSheet.create({
     width: "100%",
     marginTop: verticalScale(20),
     paddingBottom: horizontalScale(15),
-    borderBottomWidth: 3,
     borderBottomColor: COLORS.gray["200"],
     flex: 1,
   },

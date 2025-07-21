@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { View, StyleSheet, Switch } from "react-native";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
-import THEME, { COLORS, FONTS } from "@/constants/theme";
+import { COLORS, FONTS } from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useClerk, useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
@@ -27,6 +28,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 export default function ProfileScreen() {
   const { signOut } = useClerk();
   const { user } = useUser();
+  const { theme, setTheme } = useTheme();
+
+  setTheme("light");
+
   const router = useRouter();
   const insets = useSafeAreaInsets();
 
@@ -38,6 +43,14 @@ export default function ProfileScreen() {
   // Ref for CustomBottomSheetModal
   const [bottomSheetRef, setBottomSheetRef] =
     useState<BottomSheetMethods | null>(null);
+
+  useEffect(() => {
+    if (isDarkModeEnabled) {
+      setTheme("dark");
+    } else {
+      setTheme("light");
+    }
+  }, [isDarkModeEnabled, setTheme]);
 
   // Navigation handlers
   const navigateToProfilePhoto = () => {
@@ -112,6 +125,7 @@ export default function ProfileScreen() {
     <View style={styles.menuContainer}>
       {profileMenuItems.map((item) => {
         const IconComponent = item.icon;
+        const color = item.isDanger ? COLORS.danger : theme.text.primary;
 
         return (
           <Button
@@ -120,26 +134,24 @@ export default function ProfileScreen() {
               styles.menuItem,
               item.subtitle && styles.menuItemWithSubtitle,
               item.isDanger && styles.menuItemDanger,
+              !item.isDanger && { borderBottomWidth: theme.borderWidth.thin },
             ]}
             onPress={() => handleMenuItemPress(item)}>
             <View style={styles.menuItemContent}>
               <IconComponent
-                color={item.iconColor}
+                color={color}
                 strokeWidth={1.5}
                 size={moderateScale(25)}
               />
               <View style={styles.menuItemTextContainer}>
-                <Typo
-                  variant="body"
-                  size={moderateScale(16)}
-                  color={item.isDanger ? COLORS.danger : THEME.text.primary}>
+                <Typo variant="body" size={moderateScale(16)} color={color}>
                   {item.title}
                 </Typo>
                 {item.subtitle && (
                   <Typo
                     variant="caption"
                     fontFamily={FONTS.regular}
-                    color={THEME.text.secondary}>
+                    color={theme.text.secondary}>
                     {item.subtitle}
                   </Typo>
                 )}
@@ -186,13 +198,24 @@ export default function ProfileScreen() {
           onPress={handleSignOut}
           loading={isSigningOut}
           disabled={isSigningOut}
-          style={styles.confirmLogoutButton}>
-          <Typo style={styles.buttonText} variant="button" color={COLORS.white}>
+          style={[
+            styles.confirmLogoutButton,
+            { borderRadius: theme.borderRadius.circle },
+          ]}>
+          <Typo
+            style={styles.buttonText}
+            variant="button"
+            color={theme.button.text}>
             Confirm Logout
           </Typo>
         </Button>
 
-        <Button onPress={hideLogoutModal} style={styles.cancelButton}>
+        <Button
+          onPress={hideLogoutModal}
+          style={[
+            styles.cancelButton,
+            { borderRadius: theme.borderRadius.circle },
+          ]}>
           <Typo
             style={styles.buttonText}
             variant="button"
@@ -206,14 +229,16 @@ export default function ProfileScreen() {
   return (
     <ScreenWrapper
       style={styles.container}
+      safeArea
+      scroll
       padding={horizontalScale(15)}
       contentContainerStyle={{ flex: 1 }}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}>
-      <View>
-        {renderProfileHeader()}
-        <ProfileMenuList />
-      </View>
+      {/* <View style={{ backgroundColor: "red" }}> */}
+      {renderProfileHeader()}
+      <ProfileMenuList />
+      {/* </View> */}
       {renderLogoutModal()}
     </ScreenWrapper>
   );
@@ -241,7 +266,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingVertical: verticalScale(20),
     paddingHorizontal: horizontalScale(10),
-    borderBottomWidth: 1,
     borderBottomColor: COLORS.gray["100"],
   },
   menuItemWithSubtitle: {
@@ -270,7 +294,6 @@ const styles = StyleSheet.create({
   confirmLogoutButton: {
     backgroundColor: COLORS.danger,
     padding: horizontalScale(10),
-    borderRadius: THEME.borderRadius.circle,
     width: "60%",
     justifyContent: "center",
     alignItems: "center",
@@ -280,7 +303,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.gray["200"],
     width: "60%",
     padding: horizontalScale(10),
-    borderRadius: THEME.borderRadius.circle,
     justifyContent: "center",
     alignItems: "center",
     minHeight: verticalScale(40),

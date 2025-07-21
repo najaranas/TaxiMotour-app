@@ -2,26 +2,18 @@ import { StyleSheet, View } from "react-native";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import BackButton from "@/components/common/BackButton";
-import { useRouter, useSegments } from "expo-router";
+import { useRouter } from "expo-router";
 import Typo from "@/components/common/Typo";
-import THEME, { COLORS, FONTS } from "@/constants/theme";
+import { COLORS, FONTS } from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 import Button from "@/components/common/Button";
 import { useUser } from "@clerk/clerk-expo";
 import UserProfileImage from "@/components/common/UserProfileImage";
 import { Mail, User } from "lucide-react-native";
-import { useNavigationState } from "@react-navigation/native";
-
-export default function CheckSelfie() {
+export default function PersonalInfo() {
   const { user } = useUser();
   const router = useRouter();
-
-  const segments = useSegments();
-
-  const routes = useNavigationState((state) => state.routes);
-
-  console.log("Routes stack:", routes); // All routes in the current navigator
-
-  console.log("segments", segments);
+  const { theme } = useTheme();
 
   return (
     <ScreenWrapper
@@ -39,7 +31,7 @@ export default function CheckSelfie() {
         <Button onPress={() => router.navigate("/(profile)/Selfie")}>
           <View
             style={{
-              borderWidth: THEME.borderWidth.thin,
+              borderWidth: theme.borderWidth.regular,
               borderColor: COLORS.gray["200"],
               padding: horizontalScale(20),
               justifyContent: "center",
@@ -64,7 +56,10 @@ export default function CheckSelfie() {
         <View style={styles.menuContainer}>
           {/* Personal Info */}
           <Button
-            style={styles.menuItem}
+            style={[
+              styles.menuItem,
+              { borderBottomWidth: theme.borderWidth.regular },
+            ]}
             onPress={() => {
               router.navigate({
                 pathname: "/(profile)/EditPersonalInfo",
@@ -78,7 +73,7 @@ export default function CheckSelfie() {
             }}>
             <View style={styles.menuItemContent}>
               <User
-                color={THEME.text.primary}
+                color={theme.text.primary}
                 strokeWidth={1.5}
                 size={moderateScale(25)}
               />
@@ -87,7 +82,7 @@ export default function CheckSelfie() {
                 style={{ flexShrink: 1 }}
                 numberOfLines={1}
                 size={moderateScale(17)}
-                color={THEME.text.primary}>
+                color={theme.text.primary}>
                 {user?.fullName}
               </Typo>
               <View style={{ flex: 1, alignItems: "flex-end" }}></View>
@@ -104,7 +99,10 @@ export default function CheckSelfie() {
           {/* email*/}
 
           <Button
-            style={styles.menuItem}
+            style={[
+              styles.menuItem,
+              { borderBottomWidth: theme.borderWidth.regular },
+            ]}
             onPress={() =>
               router.navigate({
                 pathname: "/(profile)/EditPersonalInfo",
@@ -118,7 +116,7 @@ export default function CheckSelfie() {
             }>
             <View style={styles.menuItemContent}>
               <Mail
-                color={THEME.text.primary}
+                color={theme.text.primary}
                 strokeWidth={1.5}
                 size={moderateScale(25)}
               />
@@ -127,7 +125,7 @@ export default function CheckSelfie() {
                 style={{ flexShrink: 1 }}
                 numberOfLines={1}
                 size={moderateScale(17)}
-                color={THEME.text.primary}>
+                color={theme.text.primary}>
                 {user?.primaryEmailAddress?.emailAddress}
               </Typo>
               <View style={{ flex: 1, alignItems: "flex-end" }}></View>
@@ -161,7 +159,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingVertical: verticalScale(20),
     paddingHorizontal: horizontalScale(10),
-    borderBottomWidth: 1,
     borderBottomColor: COLORS.gray["100"],
   },
   menuItemContent: {
