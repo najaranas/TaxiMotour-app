@@ -5,25 +5,38 @@ import { useEffect } from "react";
 import { Image, StatusBar, StyleSheet } from "react-native";
 import { useAuth } from "@clerk/clerk-expo";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
+import * as NavigationBar from "expo-navigation-bar";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export default function Index() {
   const router = useRouter();
+  const { theme, themeName } = useTheme();
   const { isSignedIn, isLoaded } = useAuth();
 
   useEffect(() => {
-    if (isLoaded) {
-      const timer = setTimeout(() => {
-        if (isSignedIn) {
-          router.replace("/(tabs)/Home");
-        } else {
-          router.replace("/(auth)/Login");
+    const changeNavigationBar = async () => {
+      try {
+        // Only set button style, avoid setBackgroundColorAsync
+        await NavigationBar.setButtonStyleAsync(
+          themeName === "dark" ? "light" : "dark" // Fix: should be "dark" for light theme
+        );
+
+        // Check if edge-to-edge is enabled before setting background
+        const behavior = await NavigationBar.getBehaviorAsync();
+        if (behavior !== "edge-to-edge") {
+          // Only set background color if not in edge-to-edge mode
+          await NavigationBar.setBackgroundColorAsync(
+            themeName === "dark" ? COLORS.dark : COLORS.light
+          );
         }
-      }, 2000);
+      } catch (error) {
+        console.log("Error changing navigation bar style:", error);
+      }
+    };
 
-      return () => clearTimeout(timer);
-    }
-  }, [isLoaded, isSignedIn, router]);
-
+    changeNavigationBar();
+    // ... rest of your effect
+  }, [isLoaded, isSignedIn, router, theme, themeName]);
   return (
     <ScreenWrapper style={styles.container}>
       <Image

@@ -30,8 +30,6 @@ export default function ProfileScreen() {
   const { user } = useUser();
   const { theme, setTheme } = useTheme();
 
-  setTheme("light");
-
   const router = useRouter();
   const insets = useSafeAreaInsets();
 

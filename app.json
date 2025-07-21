@@ -57,6 +57,15 @@
           "locationAlwaysAndWhenInUsePermission": "Allow Taximotour to use your location for taxi services."
         }
       ],
+      [
+        "react-native-edge-to-edge",
+        {
+          "android": {
+            "parentTheme": "Default",
+            "enforceNavigationBarContrast": false
+          }
+        }
+      ],
       "@maplibre/maplibre-react-native"
     ],
     "doctor": {
