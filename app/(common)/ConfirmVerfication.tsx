@@ -99,7 +99,7 @@ export default function ConfirmVerification() {
           });
           console.log("Email verified and set as primary successfully");
 
-          router.replace("/(profile)/PersonalInfo");
+          router.dismissTo("/(profile)/PersonalInfo");
         } else {
           Alert.alert("Error", "Invalid verification code. Please try again.");
         }
@@ -115,7 +115,7 @@ export default function ConfirmVerification() {
           });
           console.log("Phone verified and set as primary successfully");
 
-          router.navigate("/(profile)/PersonalInfo");
+          router.dismissTo("/(profile)/PersonalInfo");
         } else {
           Alert.alert("Error", "Invalid verification code. Please try again.");
         }

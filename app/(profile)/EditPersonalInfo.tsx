@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import BackButton from "@/components/common/BackButton";
@@ -10,8 +10,13 @@ import Button from "@/components/common/Button";
 import { useRef, useState } from "react";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 import { useUser } from "@clerk/clerk-expo";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter, useSegments } from "expo-router";
 import ConfirmationCodeField from "@/components/common/ConfirmationCodeField";
+import {
+  CommonActions,
+  useNavigation,
+  useNavigationState,
+} from "@react-navigation/native";
 
 type EditType = "name" | "email" | "phone";
 type InputType = "firstName" | "lastName" | "email" | "phone";
@@ -25,6 +30,13 @@ export default function EditPersonalInfo() {
 
   const { user } = useUser();
   const router = useRouter();
+  const segments = useSegments();
+
+  const routes = useNavigationState((state) => state.routes);
+
+  console.log("Routes stack:", routes); // All routes in the current navigator
+
+  console.log("segments", segments);
 
   // Form states
   const [firstName, setFirstName] = useState(user?.firstName || "");
@@ -157,18 +169,14 @@ export default function EditPersonalInfo() {
               setEmailToVerify(existingEmail);
               console.log("Email verification prepared:", existingEmail);
               console.log("About to navigate to confirmation screen");
-              try {
-                router.navigate({
-                  pathname: "/(common)/ConfirmVerfication",
-                  params: {
-                    contactType: "email",
-                    contactValue: email.trim(),
-                  },
-                });
-                console.log("Navigation command executed successfully");
-              } catch (navError) {
-                console.error("Navigation error:", navError);
-              }
+              router.navigate({
+                pathname: "/(common)/ConfirmVerfication",
+                params: {
+                  contactType: "email",
+                  contactValue: email.trim(),
+                },
+              });
+              console.log("Navigation command executed successfully");
             } else {
               // Already verified, set as primary
               await user?.update({
@@ -187,7 +195,7 @@ export default function EditPersonalInfo() {
               });
               setEmailToVerify(newEmailAddress);
               console.log("New email verification prepared:", newEmailAddress);
-              router.push({
+              router.navigate({
                 pathname: "/(common)/ConfirmVerfication",
                 params: {
                   contactType: "email",
@@ -455,6 +463,8 @@ export default function EditPersonalInfo() {
         return null;
     }
   };
+
+  const navigation = useNavigation();
 
   return (
     <ScreenWrapper

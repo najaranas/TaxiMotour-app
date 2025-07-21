@@ -2,17 +2,26 @@ import { StyleSheet, View } from "react-native";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import BackButton from "@/components/common/BackButton";
-import { useRouter } from "expo-router";
+import { useRouter, useSegments } from "expo-router";
 import Typo from "@/components/common/Typo";
 import THEME, { COLORS, FONTS } from "@/constants/theme";
 import Button from "@/components/common/Button";
 import { useUser } from "@clerk/clerk-expo";
 import UserProfileImage from "@/components/common/UserProfileImage";
 import { Mail, User } from "lucide-react-native";
+import { useNavigationState } from "@react-navigation/native";
 
 export default function CheckSelfie() {
   const { user } = useUser();
   const router = useRouter();
+
+  const segments = useSegments();
+
+  const routes = useNavigationState((state) => state.routes);
+
+  console.log("Routes stack:", routes); // All routes in the current navigator
+
+  console.log("segments", segments);
 
   return (
     <ScreenWrapper
