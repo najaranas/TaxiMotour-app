@@ -91,7 +91,7 @@ const THEMES: Record<"light" | "dark", ThemeType> = {
 
     // Inputs
     input: {
-      background: COLORS.white,
+      background: COLORS.gray[100],
       border: COLORS.gray[300],
       text: COLORS.black,
       placeholder: COLORS.gray[400],

@@ -5,6 +5,7 @@ import { COLORS } from "@/constants/theme";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import { geocodingService } from "@/services/api";
 import Button from "../common/Button";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface LocationData {
   place?: string;
@@ -38,6 +39,8 @@ export default function LocationSearchInput({
     await fetchSuggestions(text);
   };
 
+  const { theme } = useTheme();
+
   const fetchSuggestions = async (text: string) => {
     if (!text) return;
     try {
@@ -55,10 +58,11 @@ export default function LocationSearchInput({
       style={[
         styles.inputContainer,
         {
+          backgroundColor: theme.input.background,
           borderColor: isFocused ? COLORS.secondary : "transparent",
         },
       ]}>
-      <SearchIcon size={horizontalScale(20)} />
+      <SearchIcon color={theme.text.secondary} size={horizontalScale(20)} />
       <TextInput
         ref={inputRef}
         value={displayValue}
@@ -66,7 +70,8 @@ export default function LocationSearchInput({
         onFocus={onFocus}
         onBlur={onBlur}
         placeholder={placeholder}
-        style={styles.textInput}
+        placeholderTextColor={theme.input.placeholder}
+        style={[styles.textInput, { color: theme.text.primary }]}
       />
       <Button
         onPress={() => {
@@ -77,7 +82,7 @@ export default function LocationSearchInput({
           });
           inputRef?.current?.focus();
         }}>
-        <CloseIcon size={horizontalScale(15)} />
+        <CloseIcon color={theme.text.secondary} size={horizontalScale(15)} />
       </Button>
     </View>
   );
@@ -85,7 +90,6 @@ export default function LocationSearchInput({
 
 const styles = StyleSheet.create({
   inputContainer: {
-    backgroundColor: COLORS.gray["100"],
     paddingVertical: verticalScale(6),
     paddingInline: horizontalScale(10),
     borderRadius: 10,

@@ -8,7 +8,7 @@ import Typo from "@/components/common/Typo";
 import THEME, { COLORS, FONTS } from "@/constants/theme";
 import Button from "@/components/common/Button";
 import { useUser } from "@clerk/clerk-expo";
-import { getSelfieImage, setSelfieImage } from "./selfieImageStore";
+import { getSelfieImage, setSelfieImage } from "../../store/selfieImageStore";
 
 export default function CheckSelfie() {
   const selfieImage = getSelfieImage();

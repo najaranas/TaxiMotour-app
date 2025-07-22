@@ -1,9 +1,9 @@
 import React, { useRef, useCallback, useEffect } from "react";
-import { StatusBar } from "react-native";
 import { BottomSheetModal, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import { CustomBottomSheetProps } from "@/types/Types";
 import { COLORS } from "@/constants/theme";
 import { horizontalScale, verticalScale } from "@/utils/styling";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export default function CustomBottomSheetModal({
   snapPoints = [],
@@ -21,6 +21,8 @@ export default function CustomBottomSheetModal({
   showBackdrop = true, // Default to true for backward compatibility
 }: CustomBottomSheetProps & { isVisible?: boolean }) {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+  const { theme, themeName } = useTheme();
 
   // Pass the bottom sheet methods to parent component through callback
   useEffect(() => {
@@ -65,7 +67,7 @@ export default function CustomBottomSheetModal({
           {...props}
           disappearsOnIndex={-1}
           appearsOnIndex={0}
-          opacity={0.3}
+          opacity={themeName === "dark" ? 0.7 : 0.4}
           pressBehavior="close"
         />
       </>
@@ -93,6 +95,7 @@ export default function CustomBottomSheetModal({
             }
           : { display: "none" }
       }
+      backgroundStyle={{ backgroundColor: theme.background }}
       onChange={handleSheetChanges}
       enableOverDrag={enableOverDrag}
       enableContentPanningGesture={enableContentPanningGesture}

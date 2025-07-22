@@ -16,7 +16,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { useFocusEffect, useRouter } from "expo-router";
-import { setSelfieImage } from "./selfieImageStore";
+import { setSelfieImage } from "../../store/selfieImageStore";
 
 const AnimatedRefreshCcw = Animated.createAnimatedComponent(RefreshCcw);
 

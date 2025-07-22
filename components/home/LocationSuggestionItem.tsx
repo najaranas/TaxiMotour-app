@@ -6,6 +6,7 @@ import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import Typo from "@/components/common/Typo";
 import Button from "@/components/common/Button";
 import { MapTilerFeature } from "@/types/Types";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface LocationSuggestionItemProps {
   item: MapTilerFeature;
@@ -22,6 +23,7 @@ export default function LocationSuggestionItem({
   onSelect,
   onRefine,
 }: LocationSuggestionItemProps) {
+  const { theme } = useTheme();
   return (
     <Button onPress={() => onSelect(item)}>
       <View
@@ -29,10 +31,10 @@ export default function LocationSuggestionItem({
           styles.suggestionItem,
           {
             paddingTop: index === 0 ? 0 : verticalScale(20),
-            borderBottomWidth: isLast ? 0 : 1,
+            borderBottomWidth: isLast ? 0 : theme.borderWidth.regular,
           },
         ]}>
-        <LocationIcon size={horizontalScale(25)} />
+        <LocationIcon color={theme.text.secondary} size={horizontalScale(25)} />
         <View style={styles.textContainer}>
           <Typo
             numberOfLines={1}
@@ -44,7 +46,7 @@ export default function LocationSuggestionItem({
           </Typo>
           <Typo
             numberOfLines={1}
-            color={COLORS.gray["600"]}
+            color={theme.text.muted}
             variant="body"
             size={moderateScale(13)}>
             {item.place_name}

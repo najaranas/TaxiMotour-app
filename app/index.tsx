@@ -2,49 +2,41 @@ import { COLORS } from "@/constants/theme";
 import { verticalScale } from "@/utils/styling";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
-import { Image, StatusBar, StyleSheet } from "react-native";
+import { Image, StyleSheet } from "react-native";
 import { useAuth } from "@clerk/clerk-expo";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
-import * as NavigationBar from "expo-navigation-bar";
+import { SystemBars } from "react-native-edge-to-edge";
 import { useTheme } from "@/contexts/ThemeContext";
 
 export default function Index() {
   const router = useRouter();
-  const { theme, themeName } = useTheme();
+  const { themeName } = useTheme();
   const { isSignedIn, isLoaded } = useAuth();
 
   useEffect(() => {
-    const changeNavigationBar = async () => {
-      try {
-        // Only set button style, avoid setBackgroundColorAsync
-        await NavigationBar.setButtonStyleAsync(
-          themeName === "dark" ? "light" : "dark" // Fix: should be "dark" for light theme
-        );
-
-        // Check if edge-to-edge is enabled before setting background
-        const behavior = await NavigationBar.getBehaviorAsync();
-        if (behavior !== "edge-to-edge") {
-          // Only set background color if not in edge-to-edge mode
-          await NavigationBar.setBackgroundColorAsync(
-            themeName === "dark" ? COLORS.dark : COLORS.light
-          );
+    if (isLoaded) {
+      const timer = setTimeout(() => {
+        if (isSignedIn) {
+          router.replace("/(tabs)/Home");
+        } else {
+          router.replace("/(auth)/Login");
         }
-      } catch (error) {
-        console.log("Error changing navigation bar style:", error);
-      }
-    };
+      }, 2000);
 
-    changeNavigationBar();
-    // ... rest of your effect
-  }, [isLoaded, isSignedIn, router, theme, themeName]);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoaded, isSignedIn, router]);
+
   return (
-    <ScreenWrapper style={styles.container}>
+    <ScreenWrapper
+      style={styles.container}
+      systemBarsStyle="light"
+      statusBarStyle="light-content">
       <Image
         resizeMode="contain"
         source={require("../assets/images/logo.png")}
         style={styles.logo}
       />
-      <StatusBar barStyle={"light-content"} />
     </ScreenWrapper>
   );
 }

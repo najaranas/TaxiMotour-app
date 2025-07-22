@@ -5,6 +5,7 @@ import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import Animated, { FadeInRight, FadeOutLeft } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { COLORS } from "@/constants/theme";
+import { useTheme } from "@/contexts/ThemeContext";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import Typo from "@/components/common/Typo";
 import Button from "@/components/common/Button";
@@ -39,6 +40,7 @@ export default function RideBookingSheet({
   onDestinationLocationChange,
   onRoadDataChange,
 }: RideBookingSheetProps) {
+  const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   const [locationInputFocused, setLocationInputFocused] = useState(false);
   const [destinationInputFocused, setDestinationInputFocused] = useState(false);
@@ -138,13 +140,22 @@ export default function RideBookingSheet({
           marginTop: verticalScale(5),
           paddingHorizontal: horizontalScale(15),
           padding: horizontalScale(16),
+          backgroundColor: theme.background,
         }}>
         <Animated.View
           entering={FadeInRight.duration(300)}
           exiting={FadeOutLeft}>
           <Typo variant="h3">Let&apos;s go places.</Typo>
-          <Button onPress={() => onSnapToIndex(2)} style={styles.searchButton}>
-            <SearchIcon size={horizontalScale(20)} />
+          <Button
+            onPress={() => onSnapToIndex(2)}
+            style={[
+              styles.searchButton,
+              { backgroundColor: theme.input.background },
+            ]}>
+            <SearchIcon
+              color={theme.text.secondary}
+              size={horizontalScale(20)}
+            />
             <Typo variant="body">Where to go ?</Typo>
           </Button>
         </Animated.View>
@@ -157,15 +168,28 @@ export default function RideBookingSheet({
       <Animated.View
         entering={FadeInRight.duration(300)}
         exiting={FadeOutLeft}
-        style={[styles.header, { paddingTop: insets.top }]}>
+        style={[
+          styles.header,
+          {
+            paddingTop: insets.top,
+            backgroundColor: theme.background,
+            borderBottomColor: theme.input.border,
+          },
+        ]}>
         <View style={styles.headerContent}>
           <Button onPress={handleClose}>
-            <CloseIcon size={horizontalScale(25)} />
+            <CloseIcon size={horizontalScale(25)} color={theme.text.primary} />
           </Button>
-          <Typo variant="h3">Take a ride</Typo>
+          <Typo variant="h3" color={theme.text.primary}>
+            Take a ride
+          </Typo>
         </View>
 
-        <View style={styles.inputSection}>
+        <View
+          style={[
+            styles.inputSection,
+            { borderBottomColor: theme.input.border },
+          ]}>
           <LocationSearchInput
             placeholder="Current location"
             value={currentLocation}
@@ -191,7 +215,7 @@ export default function RideBookingSheet({
 
       <BottomSheetKeyboardAwareScrollView
         key="view2"
-        style={styles.scrollView}
+        style={[styles.scrollView, { backgroundColor: theme.background }]}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled">
@@ -223,17 +247,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: horizontalScale(15),
-    gap: horizontalScale(5),
+    gap: horizontalScale(15),
   },
   inputSection: {
     gap: verticalScale(10),
     borderBottomWidth: 2,
-    borderBottomColor: COLORS.gray["200"],
     paddingBottom: verticalScale(15),
     paddingHorizontal: horizontalScale(15),
   },
   searchButton: {
-    backgroundColor: COLORS.gray["100"],
     padding: horizontalScale(15),
     borderRadius: 10,
     flexDirection: "row",

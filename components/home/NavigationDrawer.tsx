@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { COLORS, FONTS } from "@/constants/theme";
@@ -51,29 +51,43 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
     <View
       style={[
         styles.drawerContent,
-        { paddingTop: insets.top + verticalScale(10) },
+        {
+          paddingTop: insets.top + verticalScale(10),
+          backgroundColor: theme.background,
+        },
       ]}>
       <View
         style={[
           styles.drawerHeader,
-          { borderBottomWidth: theme.borderWidth.thick },
+          {
+            borderBottomWidth: theme.borderWidth.thin,
+            borderBottomColor: theme.input.border,
+          },
         ]}>
         <Button onPress={handleMyAccount} style={styles.userButton}>
-          <View style={styles.avatar}>
+          <View
+            style={[
+              styles.avatar,
+              { backgroundColor: theme.input.background },
+            ]}>
             <UserIcon
               bold
-              color={COLORS.gray["500"]}
+              color={theme.text.secondary}
               size={horizontalScale(25)}
             />
           </View>
           <View style={{ flexShrink: 1 }}>
-            <Typo variant="body" numberOfLines={1} fontFamily={FONTS.medium}>
+            <Typo
+              variant="body"
+              numberOfLines={1}
+              fontFamily={FONTS.medium}
+              color={theme.text.primary}>
               {user?.fullName}
             </Typo>
             <Typo
               variant="body"
               size={moderateScale(13)}
-              color={COLORS.primary}
+              color={theme.text.secondary}
               fontFamily={FONTS.regular}>
               My account
             </Typo>
@@ -92,7 +106,10 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
       <View
         style={[
           styles.menuSection,
-          { borderBottomWidth: theme.borderWidth.thick },
+          {
+            borderBottomWidth: theme.borderWidth.thin,
+            borderBottomColor: theme.input.border,
+          },
         ]}>
         {menuItems.map((item, index) => (
           <Button key={index} onPress={item.onPress} style={styles.menuItem}>
@@ -102,17 +119,34 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
                 strokeWidth={1.5}
                 size={moderateScale(25)}
               />
-              <Text style={styles.menuText}>{item.title}</Text>
+              <Typo
+                variant="body"
+                size={moderateScale(16)}
+                color={theme.text.primary}
+                fontFamily={FONTS.medium}>
+                {item.title}
+              </Typo>
             </View>
           </Button>
         ))}
       </View>
 
-      <View style={styles.drawerFooter}>
-        <Text style={styles.creatorText}>
+      <View
+        style={[styles.drawerFooter, { backgroundColor: theme.background }]}>
+        <Typo
+          variant="body"
+          size={moderateScale(14)}
+          color={theme.text.primary}
+          fontFamily={FONTS.medium}>
           Created by {APP_CONFIG.CREATOR_NAME}
-        </Text>
-        <Text style={styles.versionText}>Version {APP_CONFIG.APP_VERSION}</Text>
+        </Typo>
+        <Typo
+          variant="caption"
+          size={moderateScale(12)}
+          color={theme.text.secondary}
+          fontFamily={FONTS.regular}>
+          Version {APP_CONFIG.APP_VERSION}
+        </Typo>
       </View>
     </View>
   );
@@ -120,7 +154,6 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
 
 const styles = StyleSheet.create({
   drawerContent: {
-    backgroundColor: COLORS.white,
     padding: horizontalScale(15),
     flex: 1,
     alignItems: "flex-start",
@@ -131,7 +164,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: "100%",
     paddingBottom: horizontalScale(15),
-    borderBottomColor: COLORS.gray["200"],
   },
   userButton: {
     flexDirection: "row",
@@ -144,13 +176,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: horizontalScale(8),
     borderRadius: horizontalScale(25),
-    backgroundColor: COLORS.gray["100"],
   },
   menuSection: {
     width: "100%",
     marginTop: verticalScale(20),
     paddingBottom: horizontalScale(15),
-    borderBottomColor: COLORS.gray["200"],
     flex: 1,
   },
   menuItem: {
@@ -165,26 +195,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: horizontalScale(10),
   },
-  menuText: {
-    fontSize: moderateScale(16),
-    color: COLORS.gray[700],
-    fontFamily: FONTS.medium,
-  },
   drawerFooter: {
     width: "100%",
     marginTop: "auto",
     paddingTop: verticalScale(20),
     alignItems: "center",
-  },
-  creatorText: {
-    fontSize: moderateScale(14),
-    color: COLORS.primary,
-    fontFamily: FONTS.medium,
-    marginBottom: verticalScale(8),
-  },
-  versionText: {
-    fontSize: moderateScale(12),
-    color: COLORS.gray[500],
-    fontFamily: FONTS.regular,
   },
 });

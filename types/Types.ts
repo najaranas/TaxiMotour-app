@@ -6,7 +6,9 @@ import {
   TextStyle,
   ScrollViewProps,
   TextProps,
+  StatusBarStyle,
 } from "react-native";
+import { SystemBarStyle } from "react-native-edge-to-edge";
 
 export interface ScreenWrapperProps extends ScrollViewProps {
   children: React.ReactNode;
@@ -15,6 +17,8 @@ export interface ScreenWrapperProps extends ScrollViewProps {
   padding?: number;
   safeArea?: boolean;
   scroll?: boolean;
+  systemBarsStyle?: SystemBarStyle;
+  statusBarStyle?: StatusBarStyle;
 }
 
 export interface TypoProps extends TextProps {

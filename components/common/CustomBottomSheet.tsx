@@ -3,6 +3,7 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import { CustomBottomSheetProps } from "@/types/Types";
 import { COLORS } from "@/constants/theme";
 import { horizontalScale, verticalScale } from "@/utils/styling";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export default function CustomBottomSheet({
   snapPoints,
@@ -19,6 +20,7 @@ export default function CustomBottomSheet({
   zindex,
 }: CustomBottomSheetProps) {
   const bottomSheetRef = useRef<BottomSheet>(null);
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (onRef && bottomSheetRef.current) {
@@ -63,6 +65,7 @@ export default function CustomBottomSheet({
             }
           : { display: "none" }
       }
+      backgroundStyle={{ backgroundColor: theme.background }}
       onChange={handleSheetChanges}
       enableOverDrag={enableOverDrag}
       enableContentPanningGesture={enableContentPanningGesture}

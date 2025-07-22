@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import React, { useCallback, useState } from "react";
+import { StatusBar, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useFocusEffect } from "expo-router";
 
@@ -19,6 +19,8 @@ import RideBookingSheet from "@/components/home/RideBookingSheet";
 import { COLORS } from "@/constants/theme";
 import { horizontalScale, verticalScale } from "@/utils/styling";
 import { apiUtils } from "@/services/api";
+import { LinearGradient } from "expo-linear-gradient";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface LocationData {
   place?: string;
@@ -41,6 +43,7 @@ export default function Home() {
   const [roadData, setRoadData] = useState<LocationData[]>([]);
 
   const insets = useSafeAreaInsets();
+  const { theme, themeName } = useTheme();
 
   // Handlers
   const handleSnapToIndex = (index: number) => {
@@ -73,7 +76,7 @@ export default function Home() {
 
   // Cleanup on focus change
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       return () => isDrawerOpen && setIsDrawerOpen(false);
     }, [isDrawerOpen])
   );
@@ -95,6 +98,23 @@ export default function Home() {
       {/* Enhanced Map Component */}
       <Map roadData={roadData} />
 
+      {themeName === "dark" && (
+        <LinearGradient
+          colors={["rgba(0, 0, 0, 0.3)", "transparent"]}
+          dither={false}
+          locations={[0.5, 1]}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            width: "100%",
+            height: insets.top + verticalScale(10),
+            zIndex: 30,
+          }}
+        />
+      )}
+
       {/* Navigation Drawer */}
 
       <View
@@ -115,8 +135,9 @@ export default function Home() {
           { top: insets.top + verticalScale(20) },
         ]}>
         <Button onPress={() => setIsDrawerOpen(true)}>
-          <View style={styles.menuButton}>
-            <MenuIcon color={COLORS.black} size={horizontalScale(25)} />
+          <View
+            style={[styles.menuButton, { backgroundColor: theme.background }]}>
+            <MenuIcon color={theme.text.secondary} size={horizontalScale(25)} />
           </View>
         </Button>
       </View>
@@ -155,7 +176,6 @@ const styles = StyleSheet.create({
     zIndex: 5,
   },
   menuButton: {
-    backgroundColor: COLORS.white,
     alignItems: "center",
     justifyContent: "center",
     padding: horizontalScale(12),

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { View, StyleSheet, Switch } from "react-native";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import { COLORS, FONTS } from "@/constants/theme";
@@ -183,6 +183,7 @@ export default function ProfileScreen() {
       onClose={() => setIsLogoutModalVisible(false)}
       onRef={setBottomSheetRef}
       enablePanDownToClose={true}
+      enableOverDrag={true}
       showIndicator={true}
       showBackdrop={true}>
       <BottomSheetView
@@ -190,7 +191,9 @@ export default function ProfileScreen() {
           styles.logoutModalContent,
           { paddingBottom: insets.bottom + verticalScale(20) },
         ]}>
-        <Typo variant="h3">Log out?</Typo>
+        <Typo color={theme.text.primary} variant="h3">
+          Log out?
+        </Typo>
 
         <Button
           onPress={handleSignOut}
@@ -233,10 +236,8 @@ export default function ProfileScreen() {
       contentContainerStyle={{ flex: 1 }}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}>
-      {/* <View style={{ backgroundColor: "red" }}> */}
       {renderProfileHeader()}
       <ProfileMenuList />
-      {/* </View> */}
       {renderLogoutModal()}
     </ScreenWrapper>
   );
