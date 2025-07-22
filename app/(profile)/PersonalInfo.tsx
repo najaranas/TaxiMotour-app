@@ -28,7 +28,7 @@ export default function PersonalInfo() {
       <BackButton variant="arrow" />
       <View style={styles.mainContent}>
         <Typo variant="h3" style={{ textAlign: "center" }}>
-          Personal Info
+          {t("profile.personalInfo")}
         </Typo>
         <Button onPress={() => router.navigate("/(profile)/Selfie")}>
           <View
@@ -49,8 +49,8 @@ export default function PersonalInfo() {
             />
             <Typo variant="body" style={{ textAlign: "center" }}>
               {user?.hasImage
-                ? "Change your profile photo"
-                : "Add a profile photo so driver can recognize you"}
+                ? t("profile.changeProfilePhoto")
+                : t("profile.addProfilePhoto")}
             </Typo>
           </View>
         </Button>
@@ -92,7 +92,7 @@ export default function PersonalInfo() {
                 size={moderateScale(17)}
                 fontFamily={FONTS.medium}
                 color={COLORS.secondary}>
-                Edit
+                {t("profile.edit")}
               </Typo>
             </View>
           </Button>
@@ -134,7 +134,7 @@ export default function PersonalInfo() {
                 size={moderateScale(17)}
                 fontFamily={FONTS.medium}
                 color={COLORS.secondary}>
-                Edit
+                {t("profile.edit")}
               </Typo>
             </View>
           </Button>

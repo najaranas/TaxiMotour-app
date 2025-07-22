@@ -11,7 +11,8 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { ThemeProvider } from "@/contexts/ThemeContext";
+import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
+import StorageManager from "@/utils/storage";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -88,6 +89,7 @@ export default function RootLayout() {
     "Roboto-Thin": require("../assets/fonts/Roboto-Thin.ttf"),
     "Roboto-ExtraBold": require("../assets/fonts/Roboto-ExtraBold.ttf"),
   });
+  const { setTheme } = useTheme();
 
   useEffect(() => {
     if (fontsLoaded) {
@@ -96,9 +98,11 @@ export default function RootLayout() {
   }, [fontsLoaded]);
 
   useEffect(() => {
-    // Initialize language from storage when the app starts
+    StorageManager.retrieveThemePreference();
+
+    setTheme(StorageManager.retrieveThemePreference() || "light");
     initializeLanguage();
-  }, []);
+  }, [setTheme]);
 
   if (!fontsLoaded) {
     return null;

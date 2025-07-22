@@ -8,7 +8,6 @@ import { COLORS, FONTS } from "@/constants/theme";
 import { useTheme } from "@/contexts/ThemeContext";
 import { horizontalScale, verticalScale } from "@/utils/styling";
 import { useUser } from "@clerk/clerk-expo";
-import { useNavigationState } from "@react-navigation/native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { StyleSheet, View, Alert } from "react-native";
@@ -205,7 +204,7 @@ export default function ConfirmVerification() {
             </Button>
           ) : (
             <Typo variant="body" color={theme.text.muted}>
-              {t("auth.resendCode")} in {resendTimer}
+              {t("auth.resendCodeIn", { seconds: resendTimer })}
             </Typo>
           )}
         </View>

@@ -18,6 +18,7 @@
     "verificationCodeSent": "Nous avons envoyé un code de vérification à",
     "enterCode": "Entrez le code à 6 chiffres",
     "resendCode": "Renvoyer le code",
+    "resendCodeIn": "Renvoyer le code dans {{seconds}}",
     "verifyCode": "Vérifier le code",
     "changePhoneNumber": "Changer le numéro de téléphone",
     "changeEmailAddress": "Changer l'adresse e-mail"

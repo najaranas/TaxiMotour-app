@@ -1,13 +1,6 @@
 import i18n from "../../i18n";
 import StorageManager from "../storage";
-
-export type SupportedLanguage = "en" | "ar" | "fr";
-
-export const SUPPORTED_LANGUAGES = [
-  { code: "en", name: "English", nativeName: "English" },
-  { code: "ar", name: "Arabic", nativeName: "العربية" },
-  { code: "fr", name: "French", nativeName: "Français" },
-] as const;
+import { SUPPORTED_LANGUAGES, SupportedLanguage } from "@/constants/language";
 
 /**
  * Change the app language and persist it to storage

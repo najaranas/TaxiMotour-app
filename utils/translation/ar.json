@@ -18,7 +18,8 @@
     "verificationCodeSent": "لقد أرسلنا رمز التحقق إلى",
     "enterCode": "أدخل الرمز المكون من 6 أرقام",
     "resendCode": "إعادة إرسال الرمز",
-    "verifyCode": "التحقق من الرمز",
+    "resendCodeIn": "إعادة إرسال الرمز خلال {{seconds}}",
+    "verifyCode": "تحقق من الرمز",
     "changePhoneNumber": "تغيير رقم الهاتف",
     "changeEmailAddress": "تغيير عنوان البريد الإلكتروني"
   },

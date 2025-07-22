@@ -242,7 +242,6 @@ export default function ProfileScreen() {
       safeArea
       scroll
       padding={horizontalScale(15)}
-      contentContainerStyle={{ flex: 1 }}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}>
       {renderProfileHeader()}

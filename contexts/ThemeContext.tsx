@@ -1,4 +1,5 @@
 import { THEMES } from "@/constants/theme";
+import { initializeTheme } from "@/utils/themeUtils";
 import { ThemeContextType } from "@/types/Types";
 import StorageManager from "@/utils/storage";
 import { createContext, useContext, useState, ReactNode } from "react";
@@ -22,7 +23,9 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider = ({ children }: ThemeProviderProps) => {
-  const [themeName, setThemeName] = useState<"light" | "dark">("light");
+  const [themeName, setThemeName] = useState<"light" | "dark">(
+    initializeTheme()
+  );
 
   const setTheme = (newTheme: "light" | "dark") => {
     StorageManager.storeThemePreference(newTheme);

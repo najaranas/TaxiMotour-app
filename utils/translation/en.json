@@ -17,8 +17,9 @@
     "confirmVerification": "Confirm Verification",
     "verificationCodeSent": "We've sent a verification code to",
     "enterCode": "Enter the 6-digit code",
-    "resendCode": "Resend Code",
-    "verifyCode": "Verify Code",
+    "resendCode": "Resend code",
+    "resendCodeIn": "Resend code in {{seconds}}",
+    "verifyCode": "Verify code",
     "changePhoneNumber": "Change phone number",
     "changeEmailAddress": "Change email address"
   },

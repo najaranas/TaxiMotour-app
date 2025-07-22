@@ -8,11 +8,10 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import { useTranslation } from "react-i18next";
 import {
-  SUPPORTED_LANGUAGES,
   changeLanguage,
   getCurrentLanguage,
-  type SupportedLanguage,
 } from "@/utils/translation/languageUtils";
+import { SUPPORTED_LANGUAGES, SupportedLanguage } from "@/constants/language";
 import { COLORS } from "@/constants/theme";
 import { Check } from "lucide-react-native";
 import * as Updates from "expo-updates";
@@ -36,11 +35,7 @@ export default function Languages() {
 
   console.log(I18nManager.isRTL);
   return (
-    <ScreenWrapper
-      safeArea
-      scroll
-      padding={horizontalScale(15)}
-      contentContainerStyle={styles.container}>
+    <ScreenWrapper safeArea scroll padding={horizontalScale(15)}>
       <BackButton variant="arrow" />
 
       <View style={styles.content}>
@@ -95,7 +90,7 @@ export default function Languages() {
                     <Check
                       size={moderateScale(20)}
                       color={COLORS.secondary}
-                      strokeWidth={2}
+                      strokeWidth={3}
                     />
                   )}
                 </View>
@@ -114,15 +109,12 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingTop: verticalScale(20),
+    gap: verticalScale(20),
   },
   title: {
     textAlign: "center",
-    marginBottom: verticalScale(10),
   },
   description: {
-    textAlign: "center",
-    marginBottom: verticalScale(30),
     lineHeight: moderateScale(22),
   },
   languageList: {
