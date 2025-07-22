@@ -1,0 +1,109 @@
+{
+  "auth": {
+    "selectUserType": "اختر نوع المستخدم",
+    "userTypeDescription": "اختر كيف تريد استخدام التطبيق. يمكنك دائماً تغيير هذا لاحقاً في إعدادات الملف الشخصي.",
+    "passenger": "راكب",
+    "passengerSubtitle": "احجز الرحلات وسافر براحة",
+    "passengerDescription": "اطلب الرحلات، تتبع السائق، واستمتع برحلة آمنة.",
+    "driver": "سائق",
+    "driverSubtitle": "اكسب المال من القيادة",
+    "driverDescription": "اقبل طلبات الرحلات، اكسب المال، وأدر رحلاتك بسهولة.",
+    "continue": "متابعة",
+    "phoneVerification": "أدخل رقمك",
+    "phoneVerificationDescription": "سنرسل رمز التحقق إلى هذا الرقم",
+    "whatsappNotification": "سنرسل رمز التحقق إلى رقم الواتساب الخاص بك.",
+    "phonePlaceholder": "9X XXX XXX",
+    "sendCode": "إرسال الرمز",
+    "confirmVerification": "تأكيد التحقق",
+    "verificationCodeSent": "لقد أرسلنا رمز التحقق إلى",
+    "enterCode": "أدخل الرمز المكون من 6 أرقام",
+    "resendCode": "إعادة إرسال الرمز",
+    "verifyCode": "التحقق من الرمز",
+    "changePhoneNumber": "تغيير رقم الهاتف",
+    "changeEmailAddress": "تغيير عنوان البريد الإلكتروني"
+  },
+  "profile": {
+    "personalInfo": "المعلومات الشخصية",
+    "language": "اللغة",
+    "checkSelfie": "فحص الصورة الشخصية",
+    "english": "العربية",
+    "darkMode": "الوضع المظلم",
+    "logout": "تسجيل الخروج",
+    "logoutConfirmation": "تسجيل الخروج؟",
+    "confirmLogout": "تأكيد تسجيل الخروج",
+    "cancel": "إلغاء",
+    "welcome": "مرحباً!",
+    "hiUser": "أهلاً، {{name}}!",
+    "editPersonalInfo": "تعديل المعلومات الشخصية",
+    "editYourName": "تعديل اسمك",
+    "editYourEmail": "تعديل بريدك الإلكتروني",
+    "editYourPhone": "تعديل رقم هاتفك",
+    "nameDescription": "يرجى إدخال اسمك كما يظهر في الهوية الشخصية",
+    "emailDescription": "يرجى إدخال عنوان بريد إلكتروني صالح لإشعارات الحساب",
+    "phoneDescription": "يرجى إدخال رقم هاتفك",
+    "updateDescription": "يرجى تحديث معلوماتك أدناه.",
+    "firstName": "الاسم الأول",
+    "lastName": "اسم العائلة",
+    "emailAddress": "عنوان البريد الإلكتروني",
+    "phoneNumber": "رقم الهاتف",
+    "enterFirstName": "أدخل اسمك الأول",
+    "enterLastName": "أدخل اسم العائلة",
+    "enterEmail": "أدخل بريدك الإلكتروني",
+    "enterPhoneNumber": "أدخل رقم هاتفك",
+    "saveChanges": "حفظ التغييرات",
+    "edit": "تعديل",
+    "changeProfilePhoto": "تغيير صورة الملف الشخصي",
+    "addProfilePhoto": "أضف صورة شخصية حتى يتمكن السائق من التعرف عليك",
+    "updateInfoDescription": "يرجى تحديث معلوماتك أدناه.",
+    "reviewSelfie": "مراجعة صورتك الشخصية",
+    "selfieReviewInstructions": "إذا كنت راضياً عن صورتك، اضغط على تأكيد. وإلا، أعد التقاط صورتك الشخصية.",
+    "confirmSelfie": "تأكيد الصورة الشخصية",
+    "retakeSelfie": "إعادة التقاط الصورة الشخصية"
+  },
+  "selfie": {
+    "instructions": "تأكد من أن وجهك في المنتصف ومضاء جيداً. ابتسم للحصول على أفضل نتيجة!"
+  },
+  "tabs": {
+    "home": "الرئيسية",
+    "rides": "الرحلات",
+    "earnings": "الأرباح",
+    "profile": "الملف الشخصي"
+  },
+  "home": {
+    "whereToGo": "إلى أين تريد الذهاب؟",
+    "takeARide": "احجز رحلة"
+  },
+  "earnings": {
+    "title": "شاشة الأرباح",
+    "subtitle": "تتبع أرباحك ومدفوعاتك"
+  },
+  "placeholders": {
+    "searchLocation": "البحث عن موقع",
+    "currentLocation": "الموقع الحالي",
+    "destination": "إلى أين؟"
+  },
+  "errors": {
+    "error": "خطأ",
+    "success": "نجح",
+    "invalidVerificationCode": "رمز التحقق غير صالح. يرجى المحاولة مرة أخرى.",
+    "verificationCodeSentEmail": "تم إرسال رمز التحقق إلى بريدك الإلكتروني!",
+    "verificationCodeSentPhone": "تم إرسال رمز التحقق إلى هاتفك!",
+    "failedToResendCode": "فشل في إعادة إرسال الرمز. يرجى المحاولة مرة أخرى.",
+    "sessionExpired": "انتهت صلاحية الجلسة. يرجى المحاولة مرة أخرى.",
+    "verificationFailed": "فشل التحقق. يرجى المحاولة مرة أخرى."
+  },
+  "common": {
+    "loading": "جاري التحميل...",
+    "retry": "إعادة المحاولة",
+    "done": "تم",
+    "back": "رجوع",
+    "next": "التالي",
+    "submit": "إرسال",
+    "confirm": "تأكيد",
+    "save": "حفظ",
+    "saveChanges": "حفظ التغييرات",
+    "delete": "حذف",
+    "close": "إغلاق",
+    "ok": "موافق"
+  }
+}

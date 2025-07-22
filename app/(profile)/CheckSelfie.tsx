@@ -1,5 +1,9 @@
-import { Image, StyleSheet, Text, View } from "react-native";
-import React, { useState } from "react";
+import { Image, StyleSheet, Text, View } from "react-native";          <Typo
+            style={styles.instructionText}
+            variant="body"
+            color={theme.text.secondary}>
+            {t('profile.selfieReviewInstructions')}
+          </Typo>t React, { useState } from "react";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import BackButton from "@/components/common/BackButton";
@@ -9,12 +13,16 @@ import THEME, { COLORS, FONTS } from "@/constants/theme";
 import Button from "@/components/common/Button";
 import { useUser } from "@clerk/clerk-expo";
 import { getSelfieImage } from "../../store/selfieImageStore";
+import { useTheme } from "@/contexts/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 export default function CheckSelfie() {
   const selfieImage = getSelfieImage();
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const { user } = useUser();
+  const { theme } = useTheme();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const handleRetake = () => {
     router.back();
@@ -46,7 +54,7 @@ export default function CheckSelfie() {
       <BackButton disabled={isUploading} variant="arrow" />
       <View style={styles.mainContent}>
         <Typo variant="h3" style={{ textAlign: "center" }}>
-          Review Your Selfie
+          {t("profile.reviewSelfie")}
         </Typo>
         <View>
           <View style={styles.imageContainer}>
@@ -58,7 +66,7 @@ export default function CheckSelfie() {
           <Typo
             style={styles.instructionText}
             variant="body"
-            color={THEME.text.secondary}>
+            color={theme.text.secondary}>
             If you’re happy with your photo, tap Confirm. Otherwise, retake your
             selfie.
           </Typo>
@@ -76,7 +84,7 @@ export default function CheckSelfie() {
               size={moderateScale(17)}
               fontFamily={FONTS.bold}
               color={COLORS.white}>
-              Confirm Selfie
+              {t("profile.confirmSelfie")}
             </Typo>
           </Button>
           <Button
@@ -90,7 +98,7 @@ export default function CheckSelfie() {
               size={moderateScale(17)}
               fontFamily={FONTS.medium}
               color={COLORS.black}>
-              Retake Selfie
+              {t("profile.retakeSelfie")}
             </Typo>
           </Button>
         </View>

@@ -10,10 +10,12 @@ import Button from "@/components/common/Button";
 import { useUser } from "@clerk/clerk-expo";
 import UserProfileImage from "@/components/common/UserProfileImage";
 import { Mail, User } from "lucide-react-native";
+import { useTranslation } from "react-i18next";
 export default function PersonalInfo() {
   const { user } = useUser();
   const router = useRouter();
   const { theme } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <ScreenWrapper
@@ -65,9 +67,8 @@ export default function PersonalInfo() {
                 pathname: "/(profile)/EditPersonalInfo",
                 params: {
                   editType: "name",
-                  title: "Edit your name",
-                  description:
-                    "Please enter your name as it appears on your\u00A0ID",
+                  title: t("profile.editYourName"),
+                  description: t("profile.nameDescription"),
                 },
               });
             }}>
@@ -108,9 +109,8 @@ export default function PersonalInfo() {
                 pathname: "/(profile)/EditPersonalInfo",
                 params: {
                   editType: "email",
-                  title: "Edit your email",
-                  description:
-                    "Please enter a valid email address for account notifications",
+                  title: t("profile.editYourEmail"),
+                  description: t("profile.emailDescription"),
                 },
               })
             }>

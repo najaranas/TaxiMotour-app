@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, View, ScrollView } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Button from "@/components/common/Button";
 import Typo from "@/components/common/Typo";
 import THEME, { COLORS, FONTS } from "@/constants/theme";
@@ -9,12 +9,14 @@ import ScreenWrapper from "@/components/common/ScreenWrapper";
 import UserTypeCard from "@/components/common/UserTypeCard";
 import { userTypes } from "@/constants/data";
 import BackButton from "@/components/common/BackButton";
+import { useTranslation } from "react-i18next";
 
 type UserType = "driver" | "passenger" | null;
 
 export default function UserTypeSelection() {
   const [selectedType, setSelectedType] = useState<UserType>(null);
   const router = useRouter();
+  const { t } = useTranslation();
 
   const handleContinue = () => {
     router.dismissAll();
@@ -22,7 +24,8 @@ export default function UserTypeSelection() {
       // router.replace("/screens/Passenger/Home/PassengerHomeScreen");
       router.replace("/(tabs)/Home");
     } else {
-      router.replace("/screens/Driver/Home/DriverHomeScreen");
+      // router.replace("/screens/Driver/Home/DriverHomeScreen");
+      router.replace("/(tabs)/Home"); // For now, redirect to the same home
     }
   };
   return (
@@ -46,14 +49,13 @@ export default function UserTypeSelection() {
             textAlign: "left",
             marginBottom: 6,
           }}>
-          Select user type
+          {t("auth.selectUserType")}
         </Typo>
         <Typo
           variant="body"
           color={THEME.text.secondary}
           style={styles.headerSubtitle}>
-          Choose how you want to use the app. You can always change this later
-          in your profile settings.
+          {t("auth.userTypeDescription")}
         </Typo>
       </View>
 
@@ -64,9 +66,9 @@ export default function UserTypeSelection() {
           <UserTypeCard
             key={type.id}
             icon={type.icon}
-            title={type.title}
-            subtitle={type.subtitle}
-            description={type.description}
+            title={t(`auth.${type.id}`)}
+            subtitle={t(`auth.${type.id}Subtitle`)}
+            description={t(`auth.${type.id}Description`)}
             isSelected={isSelected}
             onPress={() => setSelectedType(type.id)}
           />
@@ -90,7 +92,7 @@ export default function UserTypeSelection() {
           size={moderateScale(18)}
           fontFamily={FONTS.medium}
           color={COLORS.white}>
-          Continue
+          {t("auth.continue")}
         </Typo>
       </Button>
     </ScreenWrapper>

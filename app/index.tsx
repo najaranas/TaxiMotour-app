@@ -5,12 +5,12 @@ import { useEffect } from "react";
 import { Image, StyleSheet } from "react-native";
 import { useAuth } from "@clerk/clerk-expo";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
-import { SystemBars } from "react-native-edge-to-edge";
 import { useTheme } from "@/contexts/ThemeContext";
+import StorageManager from "@/utils/storage";
 
 export default function Index() {
   const router = useRouter();
-  const { themeName } = useTheme();
+  const { setTheme } = useTheme();
   const { isSignedIn, isLoaded } = useAuth();
 
   useEffect(() => {
@@ -26,6 +26,12 @@ export default function Index() {
       return () => clearTimeout(timer);
     }
   }, [isLoaded, isSignedIn, router]);
+
+  useEffect(() => {
+    StorageManager.retrieveThemePreference();
+
+    setTheme(StorageManager.retrieveThemePreference() || "light");
+  }, [setTheme]);
 
   return (
     <ScreenWrapper

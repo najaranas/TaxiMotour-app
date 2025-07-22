@@ -1,5 +1,6 @@
 import { THEMES } from "@/constants/theme";
 import { ThemeContextType } from "@/types/Types";
+import StorageManager from "@/utils/storage";
 import { createContext, useContext, useState, ReactNode } from "react";
 
 const ThemeContext = createContext<ThemeContextType>({
@@ -24,6 +25,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
   const [themeName, setThemeName] = useState<"light" | "dark">("light");
 
   const setTheme = (newTheme: "light" | "dark") => {
+    StorageManager.storeThemePreference(newTheme);
     setThemeName(newTheme);
   };
 

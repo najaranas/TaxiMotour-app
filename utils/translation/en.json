@@ -1,0 +1,109 @@
+{
+  "auth": {
+    "selectUserType": "Select user type",
+    "userTypeDescription": "Choose how you want to use the app. You can always change this later in your profile settings.",
+    "passenger": "Passenger",
+    "passengerSubtitle": "Book rides and travel comfortably",
+    "passengerDescription": "Request rides, track your driver, and enjoy a safe journey.",
+    "driver": "Driver",
+    "driverSubtitle": "Earn money by driving",
+    "driverDescription": "Accept ride requests, earn money, and manage your trips easily.",
+    "continue": "Continue",
+    "phoneVerification": "Enter your number",
+    "phoneVerificationDescription": "We'll send a verification code to this number",
+    "whatsappNotification": "We'll send a verification code to your WhatsApp number.",
+    "phonePlaceholder": "9X XXX XXX",
+    "sendCode": "Send Code",
+    "confirmVerification": "Confirm Verification",
+    "verificationCodeSent": "We've sent a verification code to",
+    "enterCode": "Enter the 6-digit code",
+    "resendCode": "Resend Code",
+    "verifyCode": "Verify Code",
+    "changePhoneNumber": "Change phone number",
+    "changeEmailAddress": "Change email address"
+  },
+  "profile": {
+    "personalInfo": "Personal Info",
+    "language": "Language",
+    "checkSelfie": "Check Selfie",
+    "english": "English",
+    "darkMode": "Dark Mode",
+    "logout": "Logout",
+    "logoutConfirmation": "Log out?",
+    "confirmLogout": "Confirm Logout",
+    "cancel": "Cancel",
+    "welcome": "Welcome!",
+    "hiUser": "Hi, {{name}}!",
+    "editPersonalInfo": "Edit Personal Info",
+    "editYourName": "Edit your name",
+    "editYourEmail": "Edit your email",
+    "editYourPhone": "Edit your phone",
+    "nameDescription": "Please enter your name as it appears on your ID",
+    "emailDescription": "Please enter a valid email address for account notifications",
+    "phoneDescription": "Please enter your phone number",
+    "updateDescription": "Please update your information below.",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "emailAddress": "Email Address",
+    "phoneNumber": "Phone Number",
+    "enterFirstName": "Enter your first name",
+    "enterLastName": "Enter your last name",
+    "enterEmail": "Enter your email",
+    "enterPhoneNumber": "Enter your phone number",
+    "saveChanges": "Save Changes",
+    "edit": "Edit",
+    "changeProfilePhoto": "Change your profile photo",
+    "addProfilePhoto": "Add a profile photo so driver can recognize you",
+    "updateInfoDescription": "Please update your information below.",
+    "reviewSelfie": "Review Your Selfie",
+    "selfieReviewInstructions": "If you're happy with your photo, tap Confirm. Otherwise, retake your selfie.",
+    "confirmSelfie": "Confirm Selfie",
+    "retakeSelfie": "Retake Selfie"
+  },
+  "selfie": {
+    "instructions": "Make sure your face is centered and well-lit. Smile for the best result!"
+  },
+  "tabs": {
+    "home": "Home",
+    "rides": "Rides",
+    "earnings": "Earnings",
+    "profile": "Profile"
+  },
+  "home": {
+    "whereToGo": "Where to go?",
+    "takeARide": "Take a ride"
+  },
+  "earnings": {
+    "title": "Earnings Screen",
+    "subtitle": "Track your earnings and payments"
+  },
+  "placeholders": {
+    "searchLocation": "Search location",
+    "currentLocation": "Current location",
+    "destination": "Where to?"
+  },
+  "errors": {
+    "error": "Error",
+    "success": "Success",
+    "invalidVerificationCode": "Invalid verification code. Please try again.",
+    "verificationCodeSentEmail": "Verification code sent to your email!",
+    "verificationCodeSentPhone": "Verification code sent to your phone!",
+    "failedToResendCode": "Failed to resend code. Please try again.",
+    "sessionExpired": "Session expired. Please try again.",
+    "verificationFailed": "Verification failed. Please try again."
+  },
+  "common": {
+    "loading": "Loading...",
+    "retry": "Retry",
+    "done": "Done",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "confirm": "Confirm",
+    "save": "Save",
+    "saveChanges": "Save Changes",
+    "delete": "Delete",
+    "close": "Close",
+    "ok": "OK"
+  }
+}

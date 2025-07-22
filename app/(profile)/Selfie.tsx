@@ -17,11 +17,13 @@ import Animated, {
 } from "react-native-reanimated";
 import { useFocusEffect, useRouter } from "expo-router";
 import { setSelfieImage } from "../../store/selfieImageStore";
+import { useTranslation } from "react-i18next";
 
 const AnimatedRefreshCcw = Animated.createAnimatedComponent(RefreshCcw);
 
 export default function Selfie() {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const cameraRef = useRef<CameraView>(null);
   const [cameraFace, setCameraFace] = useState<"front" | "back">("front");
   const [isTorchActive, setIsTorchActive] = useState<boolean>(false);
@@ -113,8 +115,7 @@ export default function Selfie() {
             style={styles.instructionText}
             variant="body"
             color={theme.text.secondary}>
-            Make sure your face is centered and well-lit. Smile for the best
-            result!
+            {t("selfie.instructions")}
           </Typo>
         </View>
         <View style={styles.buttonRow}>

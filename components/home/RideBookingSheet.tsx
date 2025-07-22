@@ -14,6 +14,7 @@ import LocationSearchInput from "./LocationSearchInput";
 import LocationSuggestionItem from "./LocationSuggestionItem";
 import { MapTilerFeature } from "@/types/Types";
 import BottomSheetKeyboardAwareScrollView from "../common/BottomSheetKeyboardAwareScrollView";
+import { useTranslation } from "react-i18next";
 
 interface LocationData {
   place?: string;
@@ -41,6 +42,7 @@ export default function RideBookingSheet({
   onRoadDataChange,
 }: RideBookingSheetProps) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [locationInputFocused, setLocationInputFocused] = useState(false);
   const [destinationInputFocused, setDestinationInputFocused] = useState(false);
@@ -156,7 +158,7 @@ export default function RideBookingSheet({
               color={theme.text.secondary}
               size={horizontalScale(20)}
             />
-            <Typo variant="body">Where to go ?</Typo>
+            <Typo variant="body">{t('home.whereToGo')}</Typo>
           </Button>
         </Animated.View>
       </BottomSheetView>
@@ -181,7 +183,7 @@ export default function RideBookingSheet({
             <CloseIcon size={horizontalScale(25)} color={theme.text.primary} />
           </Button>
           <Typo variant="h3" color={theme.text.primary}>
-            Take a ride
+            {t('home.takeARide')}
           </Typo>
         </View>
 
@@ -191,7 +193,7 @@ export default function RideBookingSheet({
             { borderBottomColor: theme.input.border },
           ]}>
           <LocationSearchInput
-            placeholder="Current location"
+            placeholder={t('placeholders.currentLocation')}
             value={currentLocation}
             onValueChange={onCurrentLocationChange}
             onFocus={() => handleLocationFocus("location")}
@@ -201,7 +203,7 @@ export default function RideBookingSheet({
             onSearchDataChange={setSearchData}
           />
           <LocationSearchInput
-            placeholder="Where to go?"
+            placeholder={t('placeholders.destination')}
             value={destinationLocation}
             onValueChange={onDestinationLocationChange}
             onFocus={() => handleLocationFocus("destination")}

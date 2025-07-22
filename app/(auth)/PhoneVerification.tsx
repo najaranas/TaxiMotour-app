@@ -19,6 +19,7 @@ import { useRouter, useFocusEffect, Link } from "expo-router";
 import { useSignUp, useSSO } from "@clerk/clerk-expo";
 import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
+import { useTranslation } from "react-i18next";
 
 export default function PhoneVerification() {
   const inputRef = useRef<TextInput>(null);
@@ -26,6 +27,7 @@ export default function PhoneVerification() {
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
+  const { t } = useTranslation();
 
   const { isLoaded, signUp, setActive } = useSignUp();
 
@@ -125,7 +127,7 @@ export default function PhoneVerification() {
         </TouchableOpacity>
         <View style={styles.titleContainer}>
           <Typo color={THEME.text.primary} variant="h3">
-            Enter your number
+            {t("auth.phoneVerification")}
           </Typo>
 
           <View style={styles.whatsappInfo}>
@@ -134,7 +136,7 @@ export default function PhoneVerification() {
               color={THEME.text.muted}
               variant="body"
               style={styles.whatsappText}>
-              We&apos;ll send a verification code to your WhatsApp number.
+              {t("auth.whatsappNotification")}
             </Typo>
           </View>
         </View>
@@ -163,7 +165,7 @@ export default function PhoneVerification() {
               onFocus={() => setIsInputOnFocus(true)}
               onBlur={() => setIsInputOnFocus(false)}
               keyboardType="numeric"
-              placeholder="9X XXX XXX"
+              placeholder={t("auth.phonePlaceholder")}
               placeholderTextColor={THEME.text.secondary}
               maxLength={8}
               style={styles.textInput}
@@ -185,7 +187,7 @@ export default function PhoneVerification() {
             size={moderateScale(20)}
             fontFamily={FONTS.medium}
             color={COLORS.white}>
-            Continue
+            {t("auth.sendCode")}
           </Typo>
         </Button>
       </KeyboardStickyView>

@@ -1,23 +1,18 @@
-import { StyleSheet, Text, View } from "react-native";
-import { TextInput } from "react-native-gesture-handler";
+import { StyleSheet, View } from "react-native";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import BackButton from "@/components/common/BackButton";
 import Typo from "@/components/common/Typo";
+import SearchInput from "@/components/common/SearchInput";
 import { COLORS } from "@/constants/theme";
 import { useTheme } from "@/contexts/ThemeContext";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
-import { CircleX } from "lucide-react-native";
 import Button from "@/components/common/Button";
-import { useRef, useState } from "react";
+import { useState, useRef } from "react";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 import { useUser } from "@clerk/clerk-expo";
 import { useLocalSearchParams, useRouter, useSegments } from "expo-router";
-import ConfirmationCodeField from "@/components/common/ConfirmationCodeField";
-import {
-  CommonActions,
-  useNavigation,
-  useNavigationState,
-} from "@react-navigation/native";
+import { useNavigationState } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 
 type EditType = "name" | "email" | "phone";
 type InputType = "firstName" | "lastName" | "email" | "phone";
@@ -33,6 +28,7 @@ export default function EditPersonalInfo() {
   const router = useRouter();
   const { theme } = useTheme();
   const segments = useSegments();
+  const { t } = useTranslation();
 
   const routes = useNavigationState((state) => state.routes);
 
@@ -50,49 +46,31 @@ export default function EditPersonalInfo() {
     user?.primaryPhoneNumber?.phoneNumber || ""
   );
   const [isLoading, setIsLoading] = useState(false);
-  const [verificationSent, setVerificationSent] = useState(false);
-  const [verificationCode, setVerificationCode] = useState("");
-
-  // Store verification objects for later use
-  const [emailToVerify, setEmailToVerify] = useState<any>(null);
-  const [phoneToVerify, setPhoneToVerify] = useState<any>(null);
 
   // Input states
   const [focusedInput, setFocusedInput] = useState<InputType | null>(null);
-
-  // Input refs
-  const firstNameRef = useRef<TextInput>(null);
-  const lastNameRef = useRef<TextInput>(null);
-  const emailRef = useRef<TextInput>(null);
-  const phoneRef = useRef<TextInput>(null);
+  const blurTimeoutRef = useRef<number | null>(null);
 
   // Focus management
   const handleInputFocus = (inputType: InputType) => {
+    // Clear any pending blur timeout when focusing a new input
+    if (blurTimeoutRef.current) {
+      clearTimeout(blurTimeoutRef.current);
+      blurTimeoutRef.current = null;
+    }
     setFocusedInput(inputType);
   };
 
   const handleInputBlur = () => {
-    // Check after a short delay to avoid race conditions during input switching
-    setTimeout(() => {
-      const isAnyInputFocused =
-        firstNameRef.current?.isFocused() ||
-        lastNameRef.current?.isFocused() ||
-        emailRef.current?.isFocused() ||
-        phoneRef.current?.isFocused();
-
-      if (!isAnyInputFocused) {
-        setFocusedInput(null);
-      }
+    // Set a timeout to clear focus, but it can be cancelled by handleInputFocus
+    blurTimeoutRef.current = setTimeout(() => {
+      setFocusedInput(null);
+      blurTimeoutRef.current = null;
     }, 100);
   };
 
   // Validation logic
   const getIsEnabled = (): boolean => {
-    if (verificationSent) {
-      // During verification, enable if code is entered
-      return verificationCode.length === 6;
-    }
-
     switch (editType) {
       case "name":
         return (
@@ -117,27 +95,6 @@ export default function EditPersonalInfo() {
   };
 
   // Verification function
-
-  const clearInput = (inputType: InputType) => {
-    switch (inputType) {
-      case "firstName":
-        setFirstName("");
-        firstNameRef.current?.focus();
-        break;
-      case "lastName":
-        setLastName("");
-        lastNameRef.current?.focus();
-        break;
-      case "email":
-        setEmail("");
-        emailRef.current?.focus();
-        break;
-      case "phone":
-        setPhone("");
-        phoneRef.current?.focus();
-        break;
-    }
-  };
 
   const handleSave = async () => {
     setIsLoading(true);
@@ -168,7 +125,6 @@ export default function EditPersonalInfo() {
               await existingEmail.prepareVerification({
                 strategy: "email_code",
               });
-              setEmailToVerify(existingEmail);
               console.log("Email verification prepared:", existingEmail);
               console.log("About to navigate to confirmation screen");
               router.navigate({
@@ -195,7 +151,6 @@ export default function EditPersonalInfo() {
               await newEmailAddress.prepareVerification({
                 strategy: "email_code",
               });
-              setEmailToVerify(newEmailAddress);
               console.log("New email verification prepared:", newEmailAddress);
               router.navigate({
                 pathname: "/(common)/ConfirmVerfication",
@@ -254,10 +209,6 @@ export default function EditPersonalInfo() {
               });
             }
           }
-
-          if (!verificationSent) {
-            router.back();
-          }
         } catch (error) {
           console.log("Error updating phone:", error);
           // TODO: Show error alert to user
@@ -270,196 +221,55 @@ export default function EditPersonalInfo() {
     }
   };
 
-  const focusInput = (inputType: InputType) => {
-    setFocusedInput(inputType);
-
-    switch (inputType) {
-      case "firstName":
-        firstNameRef.current?.focus();
-        break;
-      case "lastName":
-        lastNameRef.current?.focus();
-        break;
-      case "email":
-        emailRef.current?.focus();
-        break;
-      case "phone":
-        phoneRef.current?.focus();
-        break;
-    }
-  };
-
   const renderNameInputs = () => (
     <>
-      <Button activeOpacity={1} onPress={() => focusInput("firstName")}>
-        <View
-          style={[
-            styles.inputContainer,
+      <SearchInput
+        label={t("profile.firstName")}
+        value={firstName}
+        onChangeText={setFirstName}
+        placeholder={t("profile.enterFirstName")}
+        isFocused={focusedInput === "firstName"}
+        onFocus={() => handleInputFocus("firstName")}
+        onBlur={handleInputBlur}
+      />
 
-            {
-              borderColor:
-                focusedInput === "firstName"
-                  ? theme.button.primary
-                  : theme.input.border,
-              borderRadius: theme.borderRadius.medium,
-              backgroundColor: theme.input.background,
-            },
-          ]}
-          pointerEvents="box-none">
-          <View style={styles.inputField}>
-            <Typo
-              variant="body"
-              color={theme.input.placeholder}
-              size={moderateScale(12)}>
-              First Name
-            </Typo>
-            <TextInput
-              ref={firstNameRef}
-              value={firstName}
-              onChangeText={setFirstName}
-              placeholder="Enter your first name"
-              placeholderTextColor={theme.input.placeholder}
-              onFocus={() => handleInputFocus("firstName")}
-              onBlur={handleInputBlur}
-              style={[styles.textInput, { color: theme.text.primary }]}
-            />
-          </View>
-          <Button onPress={() => clearInput("firstName")}>
-            <CircleX
-              color={COLORS.gray["600"]}
-              strokeWidth={1.5}
-              size={moderateScale(25)}
-            />
-          </Button>
-        </View>
-      </Button>
-
-      <Button activeOpacity={1} onPress={() => focusInput("lastName")}>
-        <View
-          style={[
-            styles.inputContainer,
-            {
-              borderColor:
-                focusedInput === "lastName"
-                  ? COLORS.secondary
-                  : theme.input.border,
-              borderRadius: theme.borderRadius.medium,
-              backgroundColor: theme.input.background,
-            },
-          ]}>
-          <View style={styles.inputField}>
-            <Typo
-              variant="body"
-              color={COLORS.gray["600"]}
-              size={moderateScale(12)}>
-              Last Name
-            </Typo>
-            <TextInput
-              ref={lastNameRef}
-              value={lastName}
-              onChangeText={setLastName}
-              placeholder="Enter your last name"
-              placeholderTextColor={theme.input.placeholder}
-              onFocus={() => handleInputFocus("lastName")}
-              onBlur={handleInputBlur}
-              style={[styles.textInput, { color: theme.text.primary }]}
-            />
-          </View>
-          <Button onPress={() => clearInput("lastName")}>
-            <CircleX
-              color={COLORS.gray["600"]}
-              strokeWidth={1.5}
-              size={moderateScale(25)}
-            />
-          </Button>
-        </View>
-      </Button>
+      <SearchInput
+        label={t("profile.lastName")}
+        value={lastName}
+        onChangeText={setLastName}
+        placeholder={t("profile.enterLastName")}
+        isFocused={focusedInput === "lastName"}
+        onFocus={() => handleInputFocus("lastName")}
+        onBlur={handleInputBlur}
+      />
     </>
   );
 
   const renderEmailInput = () => (
-    <Button activeOpacity={1} onPress={() => focusInput("email")}>
-      <View
-        style={[
-          styles.inputContainer,
-          {
-            borderColor:
-              focusedInput === "email" ? COLORS.secondary : theme.input.border,
-            borderRadius: theme.borderRadius.medium,
-            backgroundColor: theme.input.background,
-          },
-        ]}>
-        <View style={styles.inputField}>
-          <Typo
-            variant="body"
-            color={COLORS.gray["600"]}
-            size={moderateScale(12)}>
-            Email Address
-          </Typo>
-          <TextInput
-            ref={emailRef}
-            value={email}
-            onChangeText={setEmail}
-            placeholder="Enter your email"
-            placeholderTextColor={theme.input.placeholder}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            onFocus={() => handleInputFocus("email")}
-            onBlur={handleInputBlur}
-            style={[styles.textInput, { color: theme.text.primary }]}
-          />
-        </View>
-        <Button onPress={() => clearInput("email")}>
-          <CircleX
-            color={COLORS.gray["600"]}
-            strokeWidth={1.5}
-            size={moderateScale(25)}
-          />
-        </Button>
-      </View>
-    </Button>
+    <SearchInput
+      label={t("profile.emailAddress")}
+      value={email}
+      onChangeText={setEmail}
+      placeholder={t("profile.enterEmail")}
+      isFocused={focusedInput === "email"}
+      onFocus={() => handleInputFocus("email")}
+      onBlur={handleInputBlur}
+      keyboardType="email-address"
+      autoCapitalize="none"
+    />
   );
 
   const renderPhoneInput = () => (
-    <Button activeOpacity={1} onPress={() => focusInput("phone")}>
-      <View
-        style={[
-          styles.inputContainer,
-          {
-            borderColor:
-              focusedInput === "phone" ? COLORS.secondary : theme.input.border,
-            borderRadius: theme.borderRadius.medium,
-            backgroundColor: theme.input.background,
-          },
-        ]}>
-        <View style={styles.inputField}>
-          <Typo
-            variant="body"
-            color={COLORS.gray["600"]}
-            size={moderateScale(12)}>
-            Phone Number
-          </Typo>
-          <TextInput
-            ref={phoneRef}
-            value={phone}
-            onChangeText={setPhone}
-            placeholder="Enter your phone number"
-            placeholderTextColor={theme.input.placeholder}
-            keyboardType="phone-pad"
-            onFocus={() => handleInputFocus("phone")}
-            onBlur={handleInputBlur}
-            style={[styles.textInput, { color: theme.text.primary }]}
-          />
-        </View>
-        <Button onPress={() => clearInput("phone")}>
-          <CircleX
-            color={COLORS.gray["600"]}
-            strokeWidth={1.5}
-            size={moderateScale(25)}
-          />
-        </Button>
-      </View>
-    </Button>
+    <SearchInput
+      label={t("profile.phoneNumber")}
+      value={phone}
+      onChangeText={setPhone}
+      placeholder={t("profile.enterPhoneNumber")}
+      isFocused={focusedInput === "phone"}
+      onFocus={() => handleInputFocus("phone")}
+      onBlur={handleInputBlur}
+      keyboardType="phone-pad"
+    />
   );
 
   const renderInputs = () => {
@@ -486,14 +296,14 @@ export default function EditPersonalInfo() {
 
       <View style={styles.mainContent}>
         <Typo variant="h3" style={styles.title}>
-          {title || "Edit Personal Info"}
+          {title || t("profile.editPersonalInfo")}
         </Typo>
 
         <Typo
           variant="body"
-          color={COLORS.gray["600"]}
+          color={theme.text.secondary}
           style={styles.description}>
-          {description || "Please update your information below."}
+          {description || t("profile.updateInfoDescription")}
         </Typo>
 
         {renderInputs()}
@@ -511,7 +321,7 @@ export default function EditPersonalInfo() {
           ]}
           onPress={handleSave}>
           <Typo variant="button" size={moderateScale(20)} color={COLORS.white}>
-            Save Changes
+            {t("common.saveChanges")}
           </Typo>
         </Button>
       </KeyboardStickyView>

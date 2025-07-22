@@ -21,6 +21,7 @@ import { horizontalScale, verticalScale } from "@/utils/styling";
 import { apiUtils } from "@/services/api";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 interface LocationData {
   place?: string;
@@ -33,7 +34,7 @@ export default function Home() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [bottomSheetMethods, setBottomSheetMethods] = useState<any>(null);
   const [activeBottomSheetIndex, setActiveBottomSheetIndex] =
-    useState<number>(0); // Start at index 1 (100%) instead of 0 (10%)
+    useState<number>(0);
   const [currentLocation, setCurrentLocation] = useState<LocationData | string>(
     ""
   );
@@ -44,6 +45,7 @@ export default function Home() {
 
   const insets = useSafeAreaInsets();
   const { theme, themeName } = useTheme();
+  const { t } = useTranslation();
 
   // Handlers
   const handleSnapToIndex = (index: number) => {

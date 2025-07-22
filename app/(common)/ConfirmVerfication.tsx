@@ -12,6 +12,7 @@ import { useNavigationState } from "@react-navigation/native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { StyleSheet, View, Alert } from "react-native";
+import { useTranslation } from "react-i18next";
 
 export default function ConfirmVerification() {
   const { contactType, contactValue } = useLocalSearchParams() as unknown as {
@@ -19,6 +20,7 @@ export default function ConfirmVerification() {
     contactValue: string;
   };
   const { theme } = useTheme();
+  const { t } = useTranslation();
 
   console.log("segments");
   const router = useRouter();
@@ -76,10 +78,7 @@ export default function ConfirmVerification() {
     setIsLoading(true);
     try {
       if (!contactToVerify) {
-        Alert.alert(
-          "Error",
-          "Contact information not found. Please try again."
-        );
+        Alert.alert(t("errors.error"), t("errors.sessionExpired"));
         return;
       }
 
@@ -98,7 +97,7 @@ export default function ConfirmVerification() {
 
           router.dismissTo("/(profile)/PersonalInfo");
         } else {
-          Alert.alert("Error", "Invalid verification code. Please try again.");
+          Alert.alert(t("errors.error"), t("errors.invalidVerificationCode"));
         }
       } else if (contactType === "phone") {
         // Verify phone code
@@ -114,12 +113,12 @@ export default function ConfirmVerification() {
 
           router.dismissTo("/(profile)/PersonalInfo");
         } else {
-          Alert.alert("Error", "Invalid verification code. Please try again.");
+          Alert.alert(t("errors.error"), t("errors.invalidVerificationCode"));
         }
       }
     } catch (error) {
       console.log("Error verifying code:", error);
-      Alert.alert("Error", "Invalid verification code. Please try again.");
+      Alert.alert(t("errors.error"), t("errors.invalidVerificationCode"));
     } finally {
       setIsLoading(false);
     }
@@ -128,25 +127,22 @@ export default function ConfirmVerification() {
   const handleResendCode = async () => {
     try {
       if (!contactToVerify) {
-        Alert.alert(
-          "Error",
-          "Contact information not found. Please try again."
-        );
+        Alert.alert(t("errors.error"), t("errors.sessionExpired"));
         return;
       }
 
       if (contactType === "email") {
         await contactToVerify.prepareVerification({ strategy: "email_code" });
-        Alert.alert("Success", "Verification code sent to your email!");
+        Alert.alert(t("errors.success"), t("errors.verificationCodeSentEmail"));
       } else if (contactType === "phone") {
         await contactToVerify.prepareVerification();
-        Alert.alert("Success", "Verification code sent to your phone!");
+        Alert.alert(t("errors.success"), t("errors.verificationCodeSentPhone"));
       }
 
       startResendTimer();
     } catch (error) {
       console.log("Error resending code:", error);
-      Alert.alert("Error", "Failed to resend code. Please try again.");
+      Alert.alert(t("errors.error"), t("errors.failedToResendCode"));
     }
   };
 
@@ -166,17 +162,15 @@ export default function ConfirmVerification() {
         <View style={styles.titleContainer}>
           <Typo color={theme.text.primary} variant="h3">
             {contactType === "whatsapp" || contactType === "phone"
-              ? "Verify Phone Number"
-              : "Verify Email Address"}
+              ? t("auth.confirmVerification")
+              : t("auth.confirmVerification")}
           </Typo>
           <View style={{ gap: verticalScale(5) }}>
             <Typo
               color={theme.text.muted}
               variant="body"
               style={styles.infoText}>
-              {contactType === "whatsapp" || contactType === "phone"
-                ? "Enter the 6-digit verification code sent to your phone number."
-                : "Enter the 6-digit verification code sent to your email address."}
+              {t("auth.enterCode")}
             </Typo>
             <Typo
               variant="body"
@@ -197,7 +191,7 @@ export default function ConfirmVerification() {
         {isLoading && (
           <View style={styles.loadingContainer}>
             <Typo variant="body" color={theme.text.muted}>
-              Verifying your code...
+              {t("common.loading")}
             </Typo>
           </View>
         )}
@@ -206,12 +200,12 @@ export default function ConfirmVerification() {
           {resendTimer === 0 ? (
             <Button onPress={handleResendCode} disabled={isLoading}>
               <Typo variant="button" color={COLORS.secondary}>
-                {isLoading ? "Sending..." : "Resend code"}
+                {isLoading ? t("common.loading") : t("auth.resendCode")}
               </Typo>
             </Button>
           ) : (
             <Typo variant="body" color={theme.text.muted}>
-              Resend Code in {resendTimer}
+              {t("auth.resendCode")} in {resendTimer}
             </Typo>
           )}
         </View>
@@ -229,8 +223,8 @@ export default function ConfirmVerification() {
               color={theme.text.secondary}
               style={styles.infoText}>
               {contactType === "whatsapp" || contactType === "phone"
-                ? "Change phone number"
-                : "Change email address"}
+                ? t("auth.changePhoneNumber")
+                : t("auth.changeEmailAddress")}
             </Typo>
           </View>
         </Button>

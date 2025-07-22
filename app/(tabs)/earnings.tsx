@@ -2,13 +2,16 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import { COLORS } from "@/constants/theme";
+import { useTranslation } from "react-i18next";
 
 export default function EarningsScreen() {
+  const { t } = useTranslation();
+
   return (
     <ScreenWrapper>
       <View style={styles.container}>
-        <Text style={styles.title}>Earnings Screen</Text>
-        <Text style={styles.subtitle}>Track your earnings and payments</Text>
+        <Text style={styles.title}>{t("earnings.title")}</Text>
+        <Text style={styles.subtitle}>{t("earnings.subtitle")}</Text>
       </View>
     </ScreenWrapper>
   );

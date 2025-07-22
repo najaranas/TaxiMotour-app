@@ -2,6 +2,10 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
+import "../i18n";
+import { initializeLanguage } from "@/utils/translation/languageUtils";
+import { useTranslation } from "react-i18next";
+
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
@@ -14,6 +18,7 @@ SplashScreen.preventAutoHideAsync();
 // Inner component that uses useAuth
 function AppNavigator() {
   const { isSignedIn } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <Stack screenOptions={{ animation: "ios_from_right", headerShown: false }}>
@@ -44,11 +49,11 @@ function AppNavigator() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
           name="(profile)/PersonalInfo"
-          options={{ title: "Personal Info" }}
+          options={{ title: t("profile.personalInfo") }}
         />
         <Stack.Screen
           name="(profile)/EditPersonalInfo"
-          options={{ title: "Edit Personal Info" }}
+          options={{ title: t("profile.editPersonalInfo") }}
         />
         <Stack.Screen
           name="(profile)/Selfie"
@@ -56,7 +61,11 @@ function AppNavigator() {
         />
         <Stack.Screen
           name="(profile)/CheckSelfie"
-          options={{ title: "Check Selfie" }}
+          options={{ title: t("profile.checkSelfie") }}
+        />
+        <Stack.Screen
+          name="(profile)/Languages"
+          options={{ title: t("profile.language") }}
         />
         <Stack.Screen
           name="(profile)/Test"
@@ -85,6 +94,11 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
+
+  useEffect(() => {
+    // Initialize language from storage when the app starts
+    initializeLanguage();
+  }, []);
 
   if (!fontsLoaded) {
     return null;

@@ -1,0 +1,109 @@
+{
+  "auth": {
+    "selectUserType": "Sélectionner le type d'utilisateur",
+    "userTypeDescription": "Choisissez comment vous voulez utiliser l'application. Vous pouvez toujours changer cela plus tard dans les paramètres de profil.",
+    "passenger": "Passager",
+    "passengerSubtitle": "Réserver des trajets et voyager confortablement",
+    "passengerDescription": "Demandez des trajets, suivez votre chauffeur et profitez d'un voyage sûr.",
+    "driver": "Chauffeur",
+    "driverSubtitle": "Gagner de l'argent en conduisant",
+    "driverDescription": "Acceptez les demandes de trajets, gagnez de l'argent et gérez vos trajets facilement.",
+    "continue": "Continuer",
+    "phoneVerification": "Entrez votre numéro",
+    "phoneVerificationDescription": "Nous enverrons un code de vérification à ce numéro",
+    "whatsappNotification": "Nous enverrons un code de vérification à votre numéro WhatsApp.",
+    "phonePlaceholder": "9X XXX XXX",
+    "sendCode": "Envoyer le code",
+    "confirmVerification": "Confirmer la vérification",
+    "verificationCodeSent": "Nous avons envoyé un code de vérification à",
+    "enterCode": "Entrez le code à 6 chiffres",
+    "resendCode": "Renvoyer le code",
+    "verifyCode": "Vérifier le code",
+    "changePhoneNumber": "Changer le numéro de téléphone",
+    "changeEmailAddress": "Changer l'adresse e-mail"
+  },
+  "profile": {
+    "personalInfo": "Informations personnelles",
+    "language": "Langue",
+    "checkSelfie": "Vérifier selfie",
+    "english": "Français",
+    "darkMode": "Mode sombre",
+    "logout": "Se déconnecter",
+    "logoutConfirmation": "Se déconnecter ?",
+    "confirmLogout": "Confirmer la déconnexion",
+    "cancel": "Annuler",
+    "welcome": "Bienvenue !",
+    "hiUser": "Salut, {{name}} !",
+    "editPersonalInfo": "Modifier les informations personnelles",
+    "editYourName": "Modifier votre nom",
+    "editYourEmail": "Modifier votre e-mail",
+    "editYourPhone": "Modifier votre téléphone",
+    "nameDescription": "Veuillez entrer votre nom tel qu'il apparaît sur votre pièce d'identité",
+    "emailDescription": "Veuillez entrer une adresse e-mail valide pour les notifications de compte",
+    "phoneDescription": "Veuillez entrer votre numéro de téléphone",
+    "updateDescription": "Veuillez mettre à jour vos informations ci-dessous.",
+    "firstName": "Prénom",
+    "lastName": "Nom de famille",
+    "emailAddress": "Adresse e-mail",
+    "phoneNumber": "Numéro de téléphone",
+    "enterFirstName": "Entrez votre prénom",
+    "enterLastName": "Entrez votre nom de famille",
+    "enterEmail": "Entrez votre e-mail",
+    "enterPhoneNumber": "Entrez votre numéro de téléphone",
+    "saveChanges": "Enregistrer les modifications",
+    "edit": "Modifier",
+    "changeProfilePhoto": "Changer votre photo de profil",
+    "addProfilePhoto": "Ajoutez une photo de profil pour que le chauffeur puisse vous reconnaître",
+    "updateInfoDescription": "Veuillez mettre à jour vos informations ci-dessous.",
+    "reviewSelfie": "Examiner votre selfie",
+    "selfieReviewInstructions": "Si vous êtes satisfait de votre photo, appuyez sur Confirmer. Sinon, reprenez votre selfie.",
+    "confirmSelfie": "Confirmer le selfie",
+    "retakeSelfie": "Reprendre le selfie"
+  },
+  "selfie": {
+    "instructions": "Assurez-vous que votre visage est centré et bien éclairé. Souriez pour le meilleur résultat !"
+  },
+  "tabs": {
+    "home": "Accueil",
+    "rides": "Trajets",
+    "earnings": "Gains",
+    "profile": "Profil"
+  },
+  "home": {
+    "whereToGo": "Où voulez-vous aller ?",
+    "takeARide": "Prendre un trajet"
+  },
+  "earnings": {
+    "title": "Écran des gains",
+    "subtitle": "Suivez vos gains et paiements"
+  },
+  "placeholders": {
+    "searchLocation": "Rechercher un lieu",
+    "currentLocation": "Position actuelle",
+    "destination": "Où aller ?"
+  },
+  "errors": {
+    "error": "Erreur",
+    "success": "Succès",
+    "invalidVerificationCode": "Code de vérification invalide. Veuillez réessayer.",
+    "verificationCodeSentEmail": "Code de vérification envoyé à votre e-mail !",
+    "verificationCodeSentPhone": "Code de vérification envoyé à votre téléphone !",
+    "failedToResendCode": "Échec de renvoi du code. Veuillez réessayer.",
+    "sessionExpired": "Session expirée. Veuillez réessayer.",
+    "verificationFailed": "Vérification échouée. Veuillez réessayer."
+  },
+  "common": {
+    "loading": "Chargement...",
+    "retry": "Réessayer",
+    "done": "Terminé",
+    "back": "Retour",
+    "next": "Suivant",
+    "submit": "Soumettre",
+    "confirm": "Confirmer",
+    "save": "Enregistrer",
+    "saveChanges": "Enregistrer les modifications",
+    "delete": "Supprimer",
+    "close": "Fermer",
+    "ok": "OK"
+  }
+}

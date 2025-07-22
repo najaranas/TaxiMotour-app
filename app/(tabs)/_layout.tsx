@@ -15,9 +15,11 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 
 export default function TabLayout() {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   return (
     <Tabs
       screenOptions={{
@@ -53,7 +55,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="Home"
         options={{
-          title: "Home",
+          title: t("tabs.home"),
           tabBarIcon: ({ color, focused }) => (
             <HomeIcon size={moderateScale(27)} color={color} bold={focused} />
           ),
@@ -62,7 +64,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="rides"
         options={{
-          title: "Rides",
+          title: t("tabs.rides"),
           tabBarIcon: ({ color, focused }) => (
             <MotoIcon size={moderateScale(27)} color={color} bold={focused} />
           ),
@@ -71,7 +73,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="earnings"
         options={{
-          title: "Earnings",
+          title: t("tabs.earnings"),
           tabBarIcon: ({ color, focused }) => (
             <BagIcon size={moderateScale(27)} color={color} bold={focused} />
           ),
@@ -80,7 +82,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: "Profile",
+          title: t("tabs.profile"),
           tabBarIcon: ({ color, focused }) => (
             <UserIcon size={moderateScale(27)} color={color} bold={focused} />
           ),

@@ -14,6 +14,8 @@ import { ProfileMenuItemConfig, BottomSheetMethods } from "@/types/Types";
 import { profileMenuItems } from "@/constants/data";
 import CustomBottomSheetModal from "@/components/common/CustomBottomSheetModal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import StorageManager from "@/utils/storage";
+import { useTranslation } from "react-i18next";
 
 /**
  * ProfileScreen - Main profile screen component
@@ -28,7 +30,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 export default function ProfileScreen() {
   const { signOut } = useClerk();
   const { user } = useUser();
-  const { theme, setTheme } = useTheme();
+  const { theme, themeName, setTheme } = useTheme();
+  const { t } = useTranslation();
 
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -42,15 +45,18 @@ export default function ProfileScreen() {
   const [bottomSheetRef, setBottomSheetRef] =
     useState<BottomSheetMethods | null>(null);
 
-  console.log("isDarkModeEnabled:", isDarkModeEnabled);
-
   useEffect(() => {
-    if (isDarkModeEnabled) {
-      setTheme("dark");
+    if (themeName === "dark") {
+      setIsDarkModeEnabled(true);
     } else {
-      setTheme("light");
+      setIsDarkModeEnabled(false);
     }
-  }, [isDarkModeEnabled, setTheme]);
+  }, [themeName]);
+
+  const handlethemeToggle = (value: boolean) => {
+    setIsDarkModeEnabled((prev) => !prev);
+    setTheme(value ? "dark" : "light");
+  };
 
   // Navigation handlers
   const navigateToProfilePhoto = () => {
@@ -93,7 +99,9 @@ export default function ProfileScreen() {
         editable={true}
       />
       <Typo style={styles.profileGreeting} variant="h3">
-        {user?.firstName ? `Hi, ${user.firstName}!` : "Welcome!"}
+        {user?.firstName
+          ? t("profile.hiUser", { name: user.firstName })
+          : t("profile.welcome")}
       </Typo>
     </View>
   );
@@ -105,8 +113,7 @@ export default function ProfileScreen() {
         showLogoutModal();
         break;
       case "language_settings":
-        // TODO: Implement language selection
-        console.log("Language settings pressed");
+        router.navigate("/(profile)/Languages");
         break;
       case "toggle_dark_mode":
         // TODO: Implement dark mode toggle
@@ -145,14 +152,14 @@ export default function ProfileScreen() {
               />
               <View style={styles.menuItemTextContainer}>
                 <Typo variant="body" size={moderateScale(16)} color={color}>
-                  {item.title}
+                  {t(item.title)}
                 </Typo>
                 {item.subtitle && (
                   <Typo
                     variant="caption"
                     fontFamily={FONTS.regular}
                     color={theme.text.secondary}>
-                    {item.subtitle}
+                    {t(item.subtitle)}
                   </Typo>
                 )}
               </View>
@@ -161,7 +168,7 @@ export default function ProfileScreen() {
             {item.type === "toggle" && (
               <Switch
                 value={isDarkModeEnabled}
-                onValueChange={setIsDarkModeEnabled}
+                onValueChange={handlethemeToggle}
                 trackColor={{
                   false: COLORS.gray["100"],
                   true: COLORS.secondary,
@@ -194,7 +201,7 @@ export default function ProfileScreen() {
           { paddingBottom: insets.bottom + verticalScale(20) },
         ]}>
         <Typo color={theme.text.primary} variant="h3">
-          Log out?
+          {t("profile.logoutConfirmation")}
         </Typo>
 
         <Button
@@ -209,7 +216,7 @@ export default function ProfileScreen() {
             style={styles.buttonText}
             variant="button"
             color={theme.button.text}>
-            Confirm Logout
+            {t("profile.confirmLogout")}
           </Typo>
         </Button>
 
@@ -223,7 +230,7 @@ export default function ProfileScreen() {
             style={styles.buttonText}
             variant="button"
             color={COLORS.gray["600"]}>
-            Cancel
+            {t("profile.cancel")}
           </Typo>
         </Button>
       </BottomSheetView>

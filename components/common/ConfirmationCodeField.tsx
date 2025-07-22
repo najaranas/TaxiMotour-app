@@ -24,7 +24,7 @@ export default function ConfirmationCodeField({
       alignItems: "center",
       justifyContent: "center",
       padding: moderateScale(15),
-      borderWidth: theme.borderWidth.regular,
+      borderWidth: theme.borderWidth.thick,
       borderRadius: theme.borderRadius.medium,
       backgroundColor: COLORS.white,
     },
@@ -97,12 +97,11 @@ export default function ConfirmationCodeField({
                 {
                   borderColor: getDigitCellBorderColor(position),
                   opacity: disabled ? 0.5 : 1,
+                  backgroundColor: theme.input.background || COLORS.white,
                 },
               ]}
               onTouchEnd={handleDigitCellPress}>
-              <Typo
-                variant="h3"
-                color={isActive ? COLORS.gray["400"] : COLORS.black}>
+              <Typo variant="h3" color={theme.text.primary}>
                 {isActive ? "|" : getDigitValue(position)}
               </Typo>
             </View>
