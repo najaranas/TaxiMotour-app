@@ -33,7 +33,7 @@ export default function Home() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [bottomSheetMethods, setBottomSheetMethods] = useState<any>(null);
   const [activeBottomSheetIndex, setActiveBottomSheetIndex] =
-    useState<number>(1); // Start at index 1 (100%) instead of 0 (10%)
+    useState<number>(0); // Start at index 1 (100%) instead of 0 (10%)
   const [currentLocation, setCurrentLocation] = useState<LocationData | string>(
     ""
   );
@@ -80,18 +80,6 @@ export default function Home() {
       return () => isDrawerOpen && setIsDrawerOpen(false);
     }, [isDrawerOpen])
   );
-
-  // Auto-snap to full screen when bottom sheet is ready
-  React.useEffect(() => {
-    if (bottomSheetMethods) {
-      // Delay to ensure bottom sheet is fully initialized
-      const timer = setTimeout(() => {
-        bottomSheetMethods.snapToIndex(-1);
-      }, 100);
-
-      return () => clearTimeout(timer);
-    }
-  }, [bottomSheetMethods]);
 
   return (
     <ScreenWrapper safeArea={false} style={styles.container}>
@@ -147,7 +135,7 @@ export default function Home() {
         enableOverDrag={false}
         enablePanDownToClose={false}
         onRef={setBottomSheetMethods}
-        snapPoints={["25%", "100%"]}
+        snapPoints={["30%", "100%"]}
         index={0}
         zindex={10}
         onChange={setActiveBottomSheetIndex}>

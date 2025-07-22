@@ -110,7 +110,7 @@ const THEMES: Record<"light" | "dark", ThemeType> = {
   dark: {
     // Backgrounds
     background: "#121212",
-    surface: COLORS.gray[800],
+    surface: COLORS.gray[900],
     card: COLORS.gray[700],
 
     // Text
@@ -147,7 +147,7 @@ const THEMES: Record<"light" | "dark", ThemeType> = {
 
     // Inputs
     input: {
-      background: COLORS.gray[800],
+      background: COLORS.gray[900],
       border: COLORS.gray[600],
       text: COLORS.white,
       placeholder: COLORS.gray[400],

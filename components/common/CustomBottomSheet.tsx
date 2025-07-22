@@ -65,7 +65,10 @@ export default function CustomBottomSheet({
             }
           : { display: "none" }
       }
-      backgroundStyle={{ backgroundColor: theme.background }}
+      backgroundStyle={{
+        backgroundColor: theme.background,
+        borderRadius: theme.borderRadius.pill,
+      }}
       onChange={handleSheetChanges}
       enableOverDrag={enableOverDrag}
       enableContentPanningGesture={enableContentPanningGesture}

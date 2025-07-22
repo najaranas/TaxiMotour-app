@@ -295,12 +295,14 @@ export default function EditPersonalInfo() {
         <View
           style={[
             styles.inputContainer,
+
             {
               borderColor:
                 focusedInput === "firstName"
                   ? theme.button.primary
                   : theme.input.border,
               borderRadius: theme.borderRadius.medium,
+              backgroundColor: theme.input.background,
             },
           ]}
           pointerEvents="box-none">
@@ -319,7 +321,7 @@ export default function EditPersonalInfo() {
               placeholderTextColor={theme.input.placeholder}
               onFocus={() => handleInputFocus("firstName")}
               onBlur={handleInputBlur}
-              style={styles.textInput}
+              style={[styles.textInput, { color: theme.text.primary }]}
             />
           </View>
           <Button onPress={() => clearInput("firstName")}>
@@ -340,8 +342,9 @@ export default function EditPersonalInfo() {
               borderColor:
                 focusedInput === "lastName"
                   ? COLORS.secondary
-                  : COLORS.gray["200"],
+                  : theme.input.border,
               borderRadius: theme.borderRadius.medium,
+              backgroundColor: theme.input.background,
             },
           ]}>
           <View style={styles.inputField}>
@@ -359,7 +362,7 @@ export default function EditPersonalInfo() {
               placeholderTextColor={theme.input.placeholder}
               onFocus={() => handleInputFocus("lastName")}
               onBlur={handleInputBlur}
-              style={styles.textInput}
+              style={[styles.textInput, { color: theme.text.primary }]}
             />
           </View>
           <Button onPress={() => clearInput("lastName")}>
@@ -381,8 +384,9 @@ export default function EditPersonalInfo() {
           styles.inputContainer,
           {
             borderColor:
-              focusedInput === "email" ? COLORS.secondary : COLORS.gray["200"],
+              focusedInput === "email" ? COLORS.secondary : theme.input.border,
             borderRadius: theme.borderRadius.medium,
+            backgroundColor: theme.input.background,
           },
         ]}>
         <View style={styles.inputField}>
@@ -402,7 +406,7 @@ export default function EditPersonalInfo() {
             autoCapitalize="none"
             onFocus={() => handleInputFocus("email")}
             onBlur={handleInputBlur}
-            style={styles.textInput}
+            style={[styles.textInput, { color: theme.text.primary }]}
           />
         </View>
         <Button onPress={() => clearInput("email")}>
@@ -423,8 +427,9 @@ export default function EditPersonalInfo() {
           styles.inputContainer,
           {
             borderColor:
-              focusedInput === "phone" ? COLORS.secondary : COLORS.gray["200"],
+              focusedInput === "phone" ? COLORS.secondary : theme.input.border,
             borderRadius: theme.borderRadius.medium,
+            backgroundColor: theme.input.background,
           },
         ]}>
         <View style={styles.inputField}>
@@ -443,7 +448,7 @@ export default function EditPersonalInfo() {
             keyboardType="phone-pad"
             onFocus={() => handleInputFocus("phone")}
             onBlur={handleInputBlur}
-            style={styles.textInput}
+            style={[styles.textInput, { color: theme.text.primary }]}
           />
         </View>
         <Button onPress={() => clearInput("phone")}>
@@ -469,8 +474,6 @@ export default function EditPersonalInfo() {
         return null;
     }
   };
-
-  const navigation = useNavigation();
 
   return (
     <ScreenWrapper
@@ -504,7 +507,6 @@ export default function EditPersonalInfo() {
             styles.saveButton,
             {
               borderRadius: theme.borderRadius.pill,
-              opacity: isLoading ? 0.3 : 1,
             },
           ]}
           onPress={handleSave}>
@@ -533,7 +535,6 @@ const styles = StyleSheet.create({
   inputContainer: {
     paddingInline: horizontalScale(15),
     paddingBlock: horizontalScale(8),
-    backgroundColor: COLORS.gray["100"],
     borderWidth: 1, // Use default borderWidth
     flexDirection: "row",
     alignItems: "center",

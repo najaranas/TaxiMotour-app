@@ -42,6 +42,8 @@ export default function ProfileScreen() {
   const [bottomSheetRef, setBottomSheetRef] =
     useState<BottomSheetMethods | null>(null);
 
+  console.log("isDarkModeEnabled:", isDarkModeEnabled);
+
   useEffect(() => {
     if (isDarkModeEnabled) {
       setTheme("dark");

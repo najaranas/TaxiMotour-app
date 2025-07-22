@@ -8,6 +8,13 @@ import {
 } from "@/components/common/SvgIcons";
 import { moderateScale, verticalScale } from "@/utils/styling";
 import { useTheme } from "@/contexts/ThemeContext";
+import {
+  Platform,
+  Pressable,
+  TouchableHighlight,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 
 export default function TabLayout() {
   const { theme } = useTheme();
@@ -17,11 +24,31 @@ export default function TabLayout() {
         tabBarActiveTintColor: theme.text.primary,
         tabBarInactiveTintColor: theme.text.primary,
         headerShown: false,
+
         tabBarStyle: {
           backgroundColor: theme.background,
           borderTopWidth: theme.borderWidth.thin,
           borderTopColor: COLORS.gray[100],
         },
+        tabBarButton: (props) => (
+          <Pressable
+            {...(props as React.ComponentPropsWithRef<typeof Pressable>)}
+            android_ripple={{
+              color: theme.surface,
+              radius: moderateScale(45),
+            }}
+            style={({ pressed }) => ({
+              flex: 1,
+              justifyContent: "center",
+              borderRadius: theme.borderRadius.pill,
+              alignItems: "center",
+              // Platform-specific effects
+              ...(Platform.OS === "ios" && {
+                backgroundColor: pressed ? theme.surface : "transparent",
+              }),
+            })}
+          />
+        ),
       }}>
       <Tabs.Screen
         name="Home"

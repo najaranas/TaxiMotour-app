@@ -38,6 +38,7 @@ export default function UserProfileImage({
           style={[
             styles.profileImage,
             {
+              backgroundColor: theme.surface,
               width: imageSize,
               height: imageSize,
               borderRadius: imageSize / 2,
@@ -49,6 +50,7 @@ export default function UserProfileImage({
           style={[
             styles.profileImagePlaceholder,
             {
+              backgroundColor: theme.surface,
               width: imageSize,
               height: imageSize,
               borderRadius: imageSize / 2,
@@ -93,12 +95,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   profileImage: {
-    backgroundColor: COLORS.gray["100"],
     alignItems: "center",
     justifyContent: "center",
   },
   profileImagePlaceholder: {
-    backgroundColor: COLORS.gray["100"],
     alignItems: "center",
     justifyContent: "center",
   },

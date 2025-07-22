@@ -3,12 +3,12 @@ import React, { useState } from "react";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import BackButton from "@/components/common/BackButton";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import Typo from "@/components/common/Typo";
 import THEME, { COLORS, FONTS } from "@/constants/theme";
 import Button from "@/components/common/Button";
 import { useUser } from "@clerk/clerk-expo";
-import { getSelfieImage, setSelfieImage } from "../../store/selfieImageStore";
+import { getSelfieImage } from "../../store/selfieImageStore";
 
 export default function CheckSelfie() {
   const selfieImage = getSelfieImage();
@@ -32,7 +32,7 @@ export default function CheckSelfie() {
       console.log(error);
     } finally {
       setIsUploading(false);
-      router.replace("/profile");
+      router.replace("/(tabs)/profile");
     }
   };
   return (

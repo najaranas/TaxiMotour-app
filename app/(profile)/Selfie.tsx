@@ -119,9 +119,10 @@ export default function Selfie() {
         </View>
         <View style={styles.buttonRow}>
           <Button onPress={handleSwitchCamera}>
-            <View style={styles.iconButton}>
+            <View
+              style={[styles.iconButton, { backgroundColor: theme.surface }]}>
               <AnimatedRefreshCcw
-                color={theme.text.primary}
+                color={theme.text.secondary}
                 strokeWidth={1.5}
                 size={moderateScale(25)}
                 style={animatedStyles}
@@ -155,6 +156,7 @@ export default function Selfie() {
             <View
               style={[
                 styles.iconButton,
+                { backgroundColor: theme.surface },
                 cameraFace === "front" && styles.iconButtonDisabled,
               ]}>
               {isTorchActive ? (
@@ -220,7 +222,6 @@ const styles = StyleSheet.create({
   iconButton: {
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: COLORS.gray["100"],
     padding: horizontalScale(10),
     borderRadius: 50,
   },

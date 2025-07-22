@@ -35,8 +35,6 @@ export default function ScreenWrapper({
   const defaultStatusBarsstyle: StatusBarStyle =
     themeName === "dark" ? "light-content" : "dark-content";
 
-  console.log("test", statusBarStyle || defaultStatusBarsstyle);
-  console.log("statusBarStyle", statusBarStyle);
   return (
     <>
       <SystemBars

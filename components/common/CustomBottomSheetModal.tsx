@@ -95,7 +95,10 @@ export default function CustomBottomSheetModal({
             }
           : { display: "none" }
       }
-      backgroundStyle={{ backgroundColor: theme.background }}
+      backgroundStyle={{
+        backgroundColor: theme.surface,
+        borderRadius: theme.borderRadius.pill,
+      }}
       onChange={handleSheetChanges}
       enableOverDrag={enableOverDrag}
       enableContentPanningGesture={enableContentPanningGesture}
