@@ -25,6 +25,7 @@
   "profile": {
     "personalInfo": "Informations personnelles",
     "language": "Langue",
+    "choosePreferredLanguage": "Choisissez votre langue préférée pour l'application",
     "checkSelfie": "Vérifier selfie",
     "english": "Français",
     "darkMode": "Mode sombre",
@@ -61,7 +62,8 @@
     "retakeSelfie": "Reprendre le selfie"
   },
   "selfie": {
-    "instructions": "Assurez-vous que votre visage est centré et bien éclairé. Souriez pour le meilleur résultat !"
+    "instructions": "Assurez-vous que votre visage est centré et bien éclairé. Souriez pour un meilleur résultat !",
+    "snapClearSelfie": "Prenez un selfie clair"
   },
   "tabs": {
     "home": "Accueil",
@@ -71,7 +73,17 @@
   },
   "home": {
     "whereToGo": "Où voulez-vous aller ?",
-    "takeARide": "Prendre un trajet"
+    "takeARide": "Prendre un trajet",
+    "letsGoPlaces": "Allons-y, explorons de nouveaux endroits."
+  },
+  "drawer": {
+    "myAccount": "Mon compte",
+    "history": "Historique",
+    "about": "À propos",
+    "safety": "Sécurité",
+    "settings": "Paramètres",
+    "createdBy": "Créé par {{creator}}",
+    "version": "Version {{version}}"
   },
   "earnings": {
     "title": "Écran des gains",

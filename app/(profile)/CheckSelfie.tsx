@@ -1,9 +1,5 @@
-import { Image, StyleSheet, Text, View } from "react-native";          <Typo
-            style={styles.instructionText}
-            variant="body"
-            color={theme.text.secondary}>
-            {t('profile.selfieReviewInstructions')}
-          </Typo>t React, { useState } from "react";
+import { Image, StyleSheet, Text, View } from "react-native";
+import React, { useState } from "react";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import BackButton from "@/components/common/BackButton";
@@ -67,8 +63,7 @@ export default function CheckSelfie() {
             style={styles.instructionText}
             variant="body"
             color={theme.text.secondary}>
-            If you’re happy with your photo, tap Confirm. Otherwise, retake your
-            selfie.
+            {t("profile.selfieReviewInstructions")}
           </Typo>
         </View>
         <View style={styles.buttonColumn}>

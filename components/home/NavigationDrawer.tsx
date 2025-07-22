@@ -17,6 +17,7 @@ import {
 } from "lucide-react-native";
 import { APP_CONFIG, ROUTE_CONFIG } from "@/constants/app";
 import { useUser } from "@clerk/clerk-expo";
+import { useTranslation } from "react-i18next";
 
 interface NavigationDrawerProps {
   onClose: () => void;
@@ -27,6 +28,7 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { user } = useUser();
+  const { t } = useTranslation();
   const handleMyAccount = () => {
     router.navigate(ROUTE_CONFIG.PROFILE);
     onClose();
@@ -42,7 +44,7 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
 
     return {
       icon: iconMap[item.id as keyof typeof iconMap],
-      title: item.title,
+      title: t(`drawer.${item.id}`),
       onPress: () => console.log(`${item.title} pressed`),
     };
   });
@@ -89,7 +91,7 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
               size={moderateScale(13)}
               color={theme.text.secondary}
               fontFamily={FONTS.regular}>
-              My account
+              {t("drawer.myAccount")}
             </Typo>
           </View>
         </Button>
@@ -138,14 +140,14 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
           size={moderateScale(14)}
           color={theme.text.primary}
           fontFamily={FONTS.medium}>
-          Created by {APP_CONFIG.CREATOR_NAME}
+          {t("drawer.createdBy", { creator: APP_CONFIG.CREATOR_NAME })}
         </Typo>
         <Typo
           variant="caption"
           size={moderateScale(12)}
           color={theme.text.secondary}
           fontFamily={FONTS.regular}>
-          Version {APP_CONFIG.APP_VERSION}
+          {t("drawer.version", { version: APP_CONFIG.APP_VERSION })}
         </Typo>
       </View>
     </View>

@@ -147,7 +147,7 @@ export default function RideBookingSheet({
         <Animated.View
           entering={FadeInRight.duration(300)}
           exiting={FadeOutLeft}>
-          <Typo variant="h3">Let&apos;s go places.</Typo>
+          <Typo variant="h3">{t("home.letsGoPlaces")}</Typo>
           <Button
             onPress={() => onSnapToIndex(2)}
             style={[
@@ -158,7 +158,7 @@ export default function RideBookingSheet({
               color={theme.text.secondary}
               size={horizontalScale(20)}
             />
-            <Typo variant="body">{t('home.whereToGo')}</Typo>
+            <Typo variant="body">{t("home.whereToGo")}</Typo>
           </Button>
         </Animated.View>
       </BottomSheetView>
@@ -183,7 +183,7 @@ export default function RideBookingSheet({
             <CloseIcon size={horizontalScale(25)} color={theme.text.primary} />
           </Button>
           <Typo variant="h3" color={theme.text.primary}>
-            {t('home.takeARide')}
+            {t("home.takeARide")}
           </Typo>
         </View>
 
@@ -193,7 +193,7 @@ export default function RideBookingSheet({
             { borderBottomColor: theme.input.border },
           ]}>
           <LocationSearchInput
-            placeholder={t('placeholders.currentLocation')}
+            placeholder={t("placeholders.currentLocation")}
             value={currentLocation}
             onValueChange={onCurrentLocationChange}
             onFocus={() => handleLocationFocus("location")}
@@ -203,7 +203,7 @@ export default function RideBookingSheet({
             onSearchDataChange={setSearchData}
           />
           <LocationSearchInput
-            placeholder={t('placeholders.destination')}
+            placeholder={t("placeholders.destination")}
             value={destinationLocation}
             onValueChange={onDestinationLocationChange}
             onFocus={() => handleLocationFocus("destination")}

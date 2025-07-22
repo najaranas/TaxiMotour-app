@@ -25,6 +25,7 @@
   "profile": {
     "personalInfo": "Personal Info",
     "language": "Language",
+    "choosePreferredLanguage": "Choose your preferred language for the app",
     "checkSelfie": "Check Selfie",
     "english": "English",
     "darkMode": "Dark Mode",
@@ -61,7 +62,8 @@
     "retakeSelfie": "Retake Selfie"
   },
   "selfie": {
-    "instructions": "Make sure your face is centered and well-lit. Smile for the best result!"
+    "instructions": "Make sure your face is centered and well-lit. Smile for the best result!",
+    "snapClearSelfie": "Snap a Clear Selfie"
   },
   "tabs": {
     "home": "Home",
@@ -71,7 +73,17 @@
   },
   "home": {
     "whereToGo": "Where to go?",
-    "takeARide": "Take a ride"
+    "takeARide": "Take a ride",
+    "letsGoPlaces": "Let's go places."
+  },
+  "drawer": {
+    "myAccount": "My account",
+    "history": "History",
+    "about": "About",
+    "safety": "Safety",
+    "settings": "Settings",
+    "createdBy": "Created by {{creator}}",
+    "version": "Version {{version}}"
   },
   "earnings": {
     "title": "Earnings Screen",

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, I18nManager } from "react-native";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import BackButton from "@/components/common/BackButton";
 import Typo from "@/components/common/Typo";
@@ -15,6 +15,7 @@ import {
 } from "@/utils/translation/languageUtils";
 import { COLORS } from "@/constants/theme";
 import { Check } from "lucide-react-native";
+import * as Updates from "expo-updates";
 
 export default function Languages() {
   const { theme } = useTheme();
@@ -24,11 +25,16 @@ export default function Languages() {
   const handleLanguageChange = async (languageCode: SupportedLanguage) => {
     const success = await changeLanguage(languageCode);
     if (success) {
-      // Optionally show a success message or navigate back
-      console.log(`Language changed to ${languageCode}`);
+      if (languageCode === "ar") {
+        I18nManager.forceRTL(true);
+      } else {
+        I18nManager.forceRTL(false);
+      }
+      await Updates.reloadAsync();
     }
   };
 
+  console.log(I18nManager.isRTL);
   return (
     <ScreenWrapper
       safeArea
@@ -46,7 +52,7 @@ export default function Languages() {
           variant="body"
           color={theme.text.secondary}
           style={styles.description}>
-          Choose your preferred language for the app
+          {t("profile.choosePreferredLanguage")}
         </Typo>
 
         <View style={styles.languageList}>

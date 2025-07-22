@@ -90,7 +90,7 @@ export default function Selfie() {
       <BackButton variant="close" />
       <View style={styles.mainContent}>
         <Typo variant="h3" style={{ textAlign: "center" }}>
-          Snap a Clear Selfie
+          {t("selfie.snapClearSelfie")}
         </Typo>
         <View>
           <View style={styles.cameraContainer}>

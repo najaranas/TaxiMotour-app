@@ -25,6 +25,7 @@
   "profile": {
     "personalInfo": "المعلومات الشخصية",
     "language": "اللغة",
+    "choosePreferredLanguage": "اختر لغتك المفضلة للتطبيق",
     "checkSelfie": "فحص الصورة الشخصية",
     "english": "العربية",
     "darkMode": "الوضع المظلم",
@@ -61,7 +62,8 @@
     "retakeSelfie": "إعادة التقاط الصورة الشخصية"
   },
   "selfie": {
-    "instructions": "تأكد من أن وجهك في المنتصف ومضاء جيداً. ابتسم للحصول على أفضل نتيجة!"
+    "instructions": "تأكد من أن وجهك في المنتصف ومضاء جيداً. ابتسم للحصول على أفضل نتيجة!",
+    "snapClearSelfie": "التقط صورة شخصية واضحة"
   },
   "tabs": {
     "home": "الرئيسية",
@@ -71,7 +73,17 @@
   },
   "home": {
     "whereToGo": "إلى أين تريد الذهاب؟",
-    "takeARide": "احجز رحلة"
+    "takeARide": "احجز رحلة",
+    "letsGoPlaces": "هيا لنذهب إلى أماكن جديدة."
+  },
+  "drawer": {
+    "myAccount": "حسابي",
+    "history": "التاريخ",
+    "about": "حول",
+    "safety": "الأمان",
+    "settings": "الإعدادات",
+    "createdBy": "تطوير {{creator}}",
+    "version": "الإصدار {{version}}"
   },
   "earnings": {
     "title": "شاشة الأرباح",
