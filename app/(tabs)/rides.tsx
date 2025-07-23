@@ -41,7 +41,33 @@ export default function RidesScreen() {
               borderColor: theme.gray.border,
               padding: horizontalScale(20),
             }}>
-            <View></View>
+            <View>
+              <View
+                style={{
+                  gap: verticalScale(5),
+                  justifyContent: "space-between",
+                }}>
+                <View style={{ gap: verticalScale(5), alignItems: "center" }}>
+                  <Typo variant="body" color={theme.text.primary}>
+                    Pickedup Point
+                  </Typo>
+                  <Typo
+                    variant="caption"
+                    size={moderateScale(10)}
+                    color={theme.text.secondary}>
+                    Destination
+                  </Typo>
+                </View>
+                <View style={{ gap: verticalScale(5), alignItems: "center" }}>
+                  <Typo variant="caption" color={theme.text.muted}>
+                    Distance
+                  </Typo>
+                  <Typo variant="caption" color={theme.text.secondary}>
+                    12Km
+                  </Typo>
+                </View>
+              </View>
+            </View>
             <View
               style={{
                 justifyContent: "space-between",
