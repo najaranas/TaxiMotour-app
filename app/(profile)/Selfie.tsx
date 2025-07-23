@@ -1,16 +1,15 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import BackButton from "@/components/common/BackButton";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import Typo from "@/components/common/Typo";
-import { Flashlight, RefreshCcw, Zap, ZapOff } from "lucide-react-native";
+import { RefreshCcw, Zap, ZapOff } from "lucide-react-native";
 import { COLORS } from "@/constants/theme";
 import { useTheme } from "@/contexts/ThemeContext";
 import Button from "@/components/common/Button";
 import { CameraView } from "expo-camera";
 import { useRef, useState, useCallback } from "react";
 import Animated, {
-  Easing,
   useAnimatedStyle,
   useSharedValue,
   withTiming,

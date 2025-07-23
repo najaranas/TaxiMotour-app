@@ -1,5 +1,4 @@
 import StorageManager from "@/utils/storage";
-import { THEMES } from "@/constants/theme";
 
 /**
  * Initialize theme from storage

@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { COLORS } from "@/constants/theme";
+import { COLORS, FONTS } from "@/constants/theme";
 import {
   BagIcon,
   HomeIcon,
@@ -11,26 +11,44 @@ import { useTheme } from "@/contexts/ThemeContext";
 import {
   Platform,
   Pressable,
+  Text,
   TouchableHighlight,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
 import { useTranslation } from "react-i18next";
+import {
+  CalendarCheck,
+  CalendarCheck2,
+  HandCoins,
+  House,
+  User,
+} from "lucide-react-native";
 
 export default function TabLayout() {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const role: "rider" | "passenger" = "passenger";
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: theme.text.primary,
         tabBarInactiveTintColor: theme.text.primary,
+
         headerShown: false,
 
         tabBarStyle: {
           backgroundColor: theme.background,
           borderTopWidth: theme.borderWidth.thin,
           borderTopColor: COLORS.gray[100],
+          height: verticalScale(110),
+        },
+
+        tabBarItemStyle: {
+          height: "100%",
+          width: "100%",
+          padding: 0,
+          margin: 0,
         },
         tabBarButton: (props) => (
           <Pressable
@@ -57,7 +75,22 @@ export default function TabLayout() {
         options={{
           title: t("tabs.home"),
           tabBarIcon: ({ color, focused }) => (
-            <HomeIcon size={moderateScale(27)} color={color} bold={focused} />
+            <House
+              size={moderateScale(27)}
+              color={color}
+              strokeWidth={focused ? 1.8 : 1.3}
+            />
+          ),
+
+          tabBarLabel: ({ color, focused }) => (
+            <Text
+              style={{
+                color: color,
+                fontFamily: focused ? FONTS.bold : FONTS.medium,
+                fontSize: moderateScale(10),
+              }}>
+              {t("tabs.home")}
+            </Text>
           ),
         }}
       />
@@ -66,25 +99,71 @@ export default function TabLayout() {
         options={{
           title: t("tabs.rides"),
           tabBarIcon: ({ color, focused }) => (
-            <MotoIcon size={moderateScale(27)} color={color} bold={focused} />
+            <CalendarCheck
+              size={moderateScale(27)}
+              color={color}
+              strokeWidth={focused ? 1.8 : 1.3}
+            />
+          ),
+          tabBarLabel: ({ color, focused }) => (
+            <Text
+              style={{
+                color: color,
+                fontFamily: focused ? FONTS.bold : FONTS.medium,
+                fontSize: moderateScale(10),
+              }}>
+              {t("tabs.rides")}
+            </Text>
           ),
         }}
       />
+
       <Tabs.Screen
         name="earnings"
+        redirect={role === "passenger"}
         options={{
           title: t("tabs.earnings"),
+          headerTitleStyle: { color: "red" },
           tabBarIcon: ({ color, focused }) => (
-            <BagIcon size={moderateScale(27)} color={color} bold={focused} />
+            <HandCoins
+              size={moderateScale(27)}
+              color={color}
+              strokeWidth={focused ? 1.8 : 1.3}
+            />
+          ),
+          tabBarLabel: ({ color, focused }) => (
+            <Text
+              style={{
+                color: color,
+                fontFamily: focused ? FONTS.bold : FONTS.medium,
+                fontSize: moderateScale(10),
+              }}>
+              {t("tabs.earnings")}
+            </Text>
           ),
         }}
       />
+
       <Tabs.Screen
         name="profile"
         options={{
           title: t("tabs.profile"),
           tabBarIcon: ({ color, focused }) => (
-            <UserIcon size={moderateScale(27)} color={color} bold={focused} />
+            <User
+              size={moderateScale(27)}
+              color={color}
+              strokeWidth={focused ? 1.8 : 1.3}
+            />
+          ),
+          tabBarLabel: ({ color, focused }) => (
+            <Text
+              style={{
+                color: color,
+                fontFamily: focused ? FONTS.bold : FONTS.medium,
+                fontSize: moderateScale(10),
+              }}>
+              {t("tabs.profile")}
+            </Text>
           ),
         }}
       />
