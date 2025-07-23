@@ -14,7 +14,6 @@ import { ProfileMenuItemConfig, BottomSheetMethods } from "@/types/Types";
 import { profileMenuItems } from "@/constants/data";
 import CustomBottomSheetModal from "@/components/common/CustomBottomSheetModal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import StorageManager from "@/utils/storage";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -207,8 +206,11 @@ export default function ProfileScreen() {
           loading={isSigningOut}
           disabled={isSigningOut}
           style={[
-            styles.confirmLogoutButton,
-            { borderRadius: theme.borderRadius.circle },
+            styles.logouButton,
+            {
+              borderRadius: theme.borderRadius.circle,
+              backgroundColor: COLORS.danger,
+            },
           ]}>
           <Typo
             style={styles.buttonText}
@@ -221,8 +223,11 @@ export default function ProfileScreen() {
         <Button
           onPress={hideLogoutModal}
           style={[
-            styles.cancelButton,
-            { borderRadius: theme.borderRadius.circle },
+            styles.logouButton,
+            {
+              borderRadius: theme.borderRadius.circle,
+              backgroundColor: theme.gray.surface,
+            },
           ]}>
           <Typo
             style={styles.buttonText}
@@ -296,21 +301,13 @@ const styles = StyleSheet.create({
     padding: horizontalScale(20),
     gap: verticalScale(10),
   },
-  confirmLogoutButton: {
-    backgroundColor: COLORS.danger,
-    padding: horizontalScale(10),
-    width: "60%",
-    justifyContent: "center",
-    alignItems: "center",
-    minHeight: verticalScale(40),
-  },
-  cancelButton: {
-    backgroundColor: COLORS.gray["200"],
+
+  logouButton: {
     width: "60%",
     padding: horizontalScale(10),
     justifyContent: "center",
     alignItems: "center",
-    minHeight: verticalScale(40),
+    minHeight: verticalScale(50),
   },
   buttonText: {
     textAlign: "center",

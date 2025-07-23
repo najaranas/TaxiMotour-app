@@ -1,15 +1,6 @@
-import {
-  ScrollView,
-  StyleSheet,
-  View,
-  Alert,
-  TouchableHighlight,
-  Text,
-} from "react-native";
-import PhoneSelector from "@/components/common/PhoneSelector";
+import { StyleSheet, View, Alert } from "react-native";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import Typo from "@/components/common/Typo";
-import theme, { COLORS } from "@/constants/theme";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import Button from "@/components/common/Button";
 import {
@@ -30,9 +21,10 @@ WebBrowser.maybeCompleteAuthSession();
 export default function Login() {
   const router = useRouter();
   const { theme, setTheme } = useTheme();
-  const [googleLoading, setGoogleLoading] = useState(false);
-  const [facebookLoading, setFacebookLoading] = useState(false);
-  const [appleLoading, setAppleLoading] = useState(false);
+  const [loginLoading, setLoginLoading] = useState<
+    "google" | "facebook" | "appgle" | null
+  >(null);
+
   setTheme("dark");
   const { startSSOFlow } = useSSO();
 
@@ -48,14 +40,13 @@ export default function Login() {
     type: "oauth_google" | "oauth_apple" | "oauth_facebook"
   ) => {
     // Prevent multiple simultaneous requests
-    if (googleLoading || facebookLoading || appleLoading) return;
-
+    if (loginLoading) return;
     if (type === "oauth_apple") {
-      setAppleLoading(true);
+      setLoginLoading("appgle");
     } else if (type === "oauth_facebook") {
-      setFacebookLoading(true);
+      setLoginLoading("facebook");
     } else {
-      setGoogleLoading(true);
+      setLoginLoading("google");
     }
 
     const providerName = type.replace("oauth_", "");
@@ -116,13 +107,7 @@ export default function Login() {
         console.log(`User cancelled ${providerName} OAuth`);
       }
     } finally {
-      if (type === "oauth_apple") {
-        setAppleLoading(false);
-      } else if (type === "oauth_facebook") {
-        setFacebookLoading(false);
-      } else {
-        setGoogleLoading(false);
-      }
+      setLoginLoading(null); // Reset loading state
     }
   };
 
@@ -172,7 +157,7 @@ export default function Login() {
                 borderColor: theme.gray.border,
               },
             ]}
-            loading={googleLoading}>
+            loading={loginLoading === "google"}>
             <GoolgeIcon size={verticalScale(30)} />
             <Typo variant="body">Sign in with Google</Typo>
           </Button>
@@ -186,7 +171,7 @@ export default function Login() {
                 borderColor: theme.gray.border,
               },
             ]}
-            loading={appleLoading}>
+            loading={loginLoading === "appgle"}>
             <AppleIcon size={verticalScale(30)} color={theme.text.primary} />
             <Typo variant="body">Sign in with Apple</Typo>
           </Button>
@@ -200,7 +185,7 @@ export default function Login() {
                 borderColor: theme.gray.border,
               },
             ]}
-            loading={facebookLoading}>
+            loading={loginLoading === "facebook"}>
             <FacebookIcon size={verticalScale(30)} />
             <Typo variant="body">Sign in with Facebook</Typo>
           </Button>

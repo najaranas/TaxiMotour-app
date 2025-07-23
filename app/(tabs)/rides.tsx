@@ -1,14 +1,30 @@
-import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
-import { COLORS } from "@/constants/theme";
+import Typo from "@/components/common/Typo";
+import { Bell } from "lucide-react-native";
+import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export default function RidesScreen() {
+  const { theme } = useTheme();
   return (
     <ScreenWrapper>
       <View style={styles.container}>
-        <Text style={styles.title}>Rides Screen</Text>
-        <Text style={styles.subtitle}>Your ride history and active rides</Text>
+        <View style={styles.header}>
+          <View style={{ gap: verticalScale(5) }}>
+            <Typo variant="body">Rides History</Typo>
+            <Typo variant="body" color={theme.text.secondary}>
+              Showing all your rides
+            </Typo>
+          </View>
+          <View>
+            <Bell
+              color={theme.text.primary}
+              strokeWidth={1.5}
+              size={moderateScale(25)}
+            />
+          </View>
+        </View>
       </View>
     </ScreenWrapper>
   );
@@ -21,15 +37,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: COLORS.primary,
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: COLORS.gray[600],
-    textAlign: "center",
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: horizontalScale(10),
   },
 });
