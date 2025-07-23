@@ -40,12 +40,12 @@ export const COLORS = {
 
 // Font Families
 export const FONTS = {
-  regular: "Roboto-Regular",
-  bold: "Roboto-Bold",
-  medium: "Roboto-Medium",
-  light: "Roboto-Light",
-  thin: "Roboto-Thin",
-  extraBold: "Roboto-ExtraBold",
+  regular: "Regular",
+  bold: "Bold",
+  medium: "Medium",
+  light: "Light",
+  thin: "Thin",
+  extraBold: "ExtraBold",
 };
 
 // App Themes
@@ -104,6 +104,15 @@ const THEMES: Record<"light" | "dark", ThemeType> = {
       warning: COLORS.warning,
       info: COLORS.info,
     },
+
+    gray: {
+      background: COLORS.gray[100], // #F0F0F0
+      surface: COLORS.gray[200], // #E0E0E0
+      border: COLORS.gray[300], // #C2C2C2
+      text: COLORS.gray[600], // #666666
+      mutedText: COLORS.gray[500], // #858585
+      placeholder: COLORS.gray[400], // #A3A3A3
+    },
   },
 
   // Dark Mode
@@ -159,6 +168,15 @@ const THEMES: Record<"light" | "dark", ThemeType> = {
       error: COLORS.danger,
       warning: COLORS.warning,
       info: COLORS.info,
+    },
+
+    gray: {
+      background: COLORS.gray[900], // #1A1A1A
+      surface: COLORS.gray[800], // #333333
+      border: COLORS.gray[300], // #C2C2C2 ✅ more visible like light
+      text: COLORS.gray[200], // #E0E0E0 ✅ brighter text
+      mutedText: COLORS.gray[400], // #A3A3A3 ✅ better contrast
+      placeholder: COLORS.gray[400], // #A3A3A3
     },
   },
 };

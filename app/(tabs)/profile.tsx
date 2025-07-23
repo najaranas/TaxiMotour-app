@@ -115,10 +115,7 @@ export default function ProfileScreen() {
       case "language_settings":
         router.navigate("/(profile)/Languages");
         break;
-      case "toggle_dark_mode":
-        // TODO: Implement dark mode toggle
-        console.log("Dark mode toggle pressed");
-        break;
+
       default:
         if (item.route) {
           router.navigate(item.route as any);
@@ -136,6 +133,7 @@ export default function ProfileScreen() {
 
         return (
           <Button
+            activeOpacity={item.type === "toggle" ? 1 : 0.5}
             key={item.id}
             style={[
               styles.menuItem,

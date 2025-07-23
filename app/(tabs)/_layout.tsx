@@ -1,34 +1,16 @@
 import { Tabs } from "expo-router";
 import { COLORS, FONTS } from "@/constants/theme";
-import {
-  BagIcon,
-  HomeIcon,
-  MotoIcon,
-  UserIcon,
-} from "@/components/common/SvgIcons";
+
 import { moderateScale, verticalScale } from "@/utils/styling";
 import { useTheme } from "@/contexts/ThemeContext";
-import {
-  Platform,
-  Pressable,
-  Text,
-  TouchableHighlight,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
+import { Platform, Pressable, Text } from "react-native";
 import { useTranslation } from "react-i18next";
-import {
-  CalendarCheck,
-  CalendarCheck2,
-  HandCoins,
-  House,
-  User,
-} from "lucide-react-native";
+import { CalendarCheck, HandCoins, House, User } from "lucide-react-native";
 
 export default function TabLayout() {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const role: "rider" | "passenger" = "passenger";
+  const role = "passenger";
   return (
     <Tabs
       screenOptions={{
@@ -95,7 +77,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="rides"
+        name="Rides"
         options={{
           title: t("tabs.rides"),
           tabBarIcon: ({ color, focused }) => (
@@ -119,9 +101,11 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="earnings"
-        redirect={role === "passenger"}
+        name="Earnings"
+        // redirect={role === "passenger"}
         options={{
+          href: role === "passenger" ? null : undefined,
+
           title: t("tabs.earnings"),
           headerTitleStyle: { color: "red" },
           tabBarIcon: ({ color, focused }) => (
@@ -145,7 +129,7 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="profile"
+        name="Profile"
         options={{
           title: t("tabs.profile"),
           tabBarIcon: ({ color, focused }) => (

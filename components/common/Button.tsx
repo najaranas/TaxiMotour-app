@@ -13,7 +13,7 @@ export default function Button({
   indicatorStyle,
   onPress,
 }: ButtonProps) {
-  const { themeName } = useTheme();
+  const { themeName, theme } = useTheme();
   return (
     <TouchableOpacity
       disabled={disabled || loading}
@@ -28,7 +28,7 @@ export default function Button({
       {loading ? (
         <MaterialIndicator
           size={indicatorStyle?.size || 25}
-          color={indicatorStyle?.color || COLORS.primary}
+          color={indicatorStyle?.color || theme.text.secondary}
           key="loading"
         />
       ) : (

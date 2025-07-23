@@ -1,15 +1,9 @@
 import Button from "./Button";
 import { useRouter } from "expo-router";
-import { LeftArrowIcon } from "./SvgIcons";
-import { horizontalScale } from "@/utils/styling";
+import { moderateScale } from "@/utils/styling";
 import { useTheme } from "@/contexts/ThemeContext";
-import React from "react";
-import { Text } from "react-native";
-
-// Placeholder for CloseIcon; replace with your actual icon if available
-const CloseIcon = (props: { color: string; size: number }) => (
-  <Text style={{ color: props.color, fontSize: props.size }}>×</Text>
-);
+import { I18nManager } from "react-native";
+import { ArrowLeft, ArrowRight, X } from "lucide-react-native";
 
 type BackButtonProps = {
   variant?: "arrow" | "close";
@@ -26,9 +20,25 @@ export default function BackButton({
   return (
     <Button onPress={route.back} disabled={disabled}>
       {variant === "arrow" ? (
-        <LeftArrowIcon color={theme.text.primary} size={horizontalScale(30)} />
+        I18nManager.isRTL ? (
+          <ArrowRight
+            color={theme.text.primary}
+            strokeWidth={1.5}
+            size={moderateScale(25)}
+          />
+        ) : (
+          <ArrowLeft
+            color={theme.text.primary}
+            strokeWidth={1.5}
+            size={moderateScale(25)}
+          />
+        )
       ) : (
-        <CloseIcon color={theme.text.primary} size={horizontalScale(30)} />
+        <X
+          color={theme.text.primary}
+          strokeWidth={1.5}
+          size={moderateScale(25)}
+        />
       )}
     </Button>
   );

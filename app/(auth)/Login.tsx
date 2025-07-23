@@ -9,7 +9,7 @@ import {
 import PhoneSelector from "@/components/common/PhoneSelector";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import Typo from "@/components/common/Typo";
-import THEME, { COLORS } from "@/constants/theme";
+import theme, { COLORS } from "@/constants/theme";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import Button from "@/components/common/Button";
 import {
@@ -22,22 +22,18 @@ import { useRouter } from "expo-router";
 import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
 import React, { useState } from "react";
-import { createClient } from "@supabase/supabase-js";
-
-const supabaseUrl = "https://adjxlxetifrtxfygomse.supabase.co";
-const supabaseAnonKey =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkanhseGV0aWZydHhmeWdvbXNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5NDA3MjcsImV4cCI6MjA2ODUxNjcyN30.QSJBRz5VEJkVydmX6n6sEV5ntO6p9H2gudmvvv-NXSc";
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+import { useTheme } from "@/contexts/ThemeContext";
 
 // Complete the WebBrowser auth session
 WebBrowser.maybeCompleteAuthSession();
 
 export default function Login() {
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
   const [googleLoading, setGoogleLoading] = useState(false);
   const [facebookLoading, setFacebookLoading] = useState(false);
   const [appleLoading, setAppleLoading] = useState(false);
-
+  setTheme("dark");
   const { startSSOFlow } = useSSO();
 
   // Warm up browser for better performance
@@ -140,39 +136,70 @@ export default function Login() {
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}>
       <View style={styles.loginContaienr}>
-        <Typo color={THEME.text.primary} variant="h3" style={styles.centerText}>
+        <Typo variant="h3" style={styles.centerText}>
           Enter your number
         </Typo>
 
         <View style={styles.separator}>
-          <View style={styles.separatorLine} />
+          <View
+            style={[
+              styles.separatorLine,
+              { backgroundColor: theme.gray.surface },
+            ]}
+          />
           <Typo
-            color={THEME.text.muted}
+            color={theme.text.muted}
             variant="body"
             style={styles.separatorText}>
             Or
           </Typo>
-          <View style={styles.separatorLine} />
+          <View
+            style={[
+              styles.separatorLine,
+              { backgroundColor: theme.gray.surface },
+            ]}
+          />
         </View>
 
         <View style={styles.socialButtonsContainer}>
           <Button
             onPress={() => onSocialPress("oauth_google")}
-            style={styles.socialButtons}
+            style={[
+              styles.socialButtons,
+              {
+                borderRadius: theme.borderRadius.pill,
+                borderWidth: theme.borderWidth.regular,
+                borderColor: theme.gray.border,
+              },
+            ]}
             loading={googleLoading}>
             <GoolgeIcon size={verticalScale(30)} />
             <Typo variant="body">Sign in with Google</Typo>
           </Button>
           <Button
             onPress={() => onSocialPress("oauth_apple")}
-            style={styles.socialButtons}
+            style={[
+              styles.socialButtons,
+              {
+                borderRadius: theme.borderRadius.pill,
+                borderWidth: theme.borderWidth.regular,
+                borderColor: theme.gray.border,
+              },
+            ]}
             loading={appleLoading}>
-            <AppleIcon size={verticalScale(30)} />
+            <AppleIcon size={verticalScale(30)} color={theme.text.primary} />
             <Typo variant="body">Sign in with Apple</Typo>
           </Button>
           <Button
             onPress={() => onSocialPress("oauth_facebook")}
-            style={styles.socialButtons}
+            style={[
+              styles.socialButtons,
+              {
+                borderRadius: theme.borderRadius.pill,
+                borderWidth: theme.borderWidth.regular,
+                borderColor: theme.gray.border,
+              },
+            ]}
             loading={facebookLoading}>
             <FacebookIcon size={verticalScale(30)} />
             <Typo variant="body">Sign in with Facebook</Typo>
@@ -180,16 +207,23 @@ export default function Login() {
         </View>
       </View>
 
-      <View style={styles.footerContainer}>
+      <View
+        style={[
+          styles.footerContainer,
+          {
+            borderTopWidth: theme.borderWidth.thin,
+            borderTopColor: theme.gray.border,
+          },
+        ]}>
         <Typo
           variant="caption"
-          color={THEME.text.secondary}
+          color={theme.text.muted}
           style={styles.centerText}>
           By continuing, you agree to our secure service.
         </Typo>
         <Typo
           variant="body"
-          color={THEME.text.muted}
+          color={theme.text.secondary}
           style={styles.centerText}
           size={moderateScale(15)}>
           Taximotour - Safe rides across Tunisia
@@ -221,7 +255,6 @@ const styles = StyleSheet.create({
   separatorLine: {
     height: 1,
     flex: 1,
-    backgroundColor: COLORS.gray[200],
   },
   separatorText: {
     paddingHorizontal: horizontalScale(10),
@@ -233,16 +266,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: horizontalScale(30),
-    borderRadius: THEME.borderRadius.pill,
     padding: horizontalScale(15),
-    borderWidth: THEME.borderWidth.thin,
-    borderColor: COLORS.gray[200],
     minHeight: verticalScale(65),
   },
   footerContainer: {
     alignItems: "center",
     paddingTop: verticalScale(15),
-    borderTopWidth: 1,
-    borderTopColor: COLORS.gray[200],
+    gap: verticalScale(6),
   },
 });

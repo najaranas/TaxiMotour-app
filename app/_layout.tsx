@@ -81,14 +81,26 @@ function AppNavigator() {
 }
 
 export default function RootLayout() {
-  const [fontsLoaded] = useFonts({
-    "Roboto-Regular": require("../assets/fonts/Roboto-Regular.ttf"),
-    "Roboto-Bold": require("../assets/fonts/Roboto-Bold.ttf"),
-    "Roboto-Medium": require("../assets/fonts/Roboto-Medium.ttf"),
-    "Roboto-Light": require("../assets/fonts/Roboto-Light.ttf"),
-    "Roboto-Thin": require("../assets/fonts/Roboto-Thin.ttf"),
-    "Roboto-ExtraBold": require("../assets/fonts/Roboto-ExtraBold.ttf"),
-  });
+  const language = StorageManager.retrieveLanguagePreference() || "fr";
+
+  const LTRFonts = {
+    Regular: require("../assets/fonts/Roboto-Regular.ttf"),
+    Bold: require("../assets/fonts/Roboto-Bold.ttf"),
+    Medium: require("../assets/fonts/Roboto-Medium.ttf"),
+    Light: require("../assets/fonts/Roboto-Light.ttf"),
+    Thin: require("../assets/fonts/Roboto-Thin.ttf"),
+    ExtraBold: require("../assets/fonts/Roboto-ExtraBold.ttf"),
+  };
+
+  const arabicFonts = {
+    Regular: require("../assets/fonts/Tajawal-Regular.ttf"),
+    Bold: require("../assets/fonts/Tajawal-Bold.ttf"),
+    Medium: require("../assets/fonts/Tajawal-Medium.ttf"),
+    Light: require("../assets/fonts/Tajawal-Light.ttf"),
+    Thin: require("../assets/fonts/Tajawal-Light.ttf"),
+    ExtraBold: require("../assets/fonts/Tajawal-ExtraBold.ttf"),
+  };
+  const [fontsLoaded] = useFonts(language === "ar" ? arabicFonts : LTRFonts);
   const { setTheme } = useTheme();
 
   useEffect(() => {
@@ -98,8 +110,6 @@ export default function RootLayout() {
   }, [fontsLoaded]);
 
   useEffect(() => {
-    StorageManager.retrieveThemePreference();
-
     setTheme(StorageManager.retrieveThemePreference() || "light");
     initializeLanguage();
   }, [setTheme]);

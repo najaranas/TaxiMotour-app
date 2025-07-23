@@ -176,7 +176,7 @@ export default function EditPersonalInfo() {
             // If phone exists but isn't verified, send verification
             if (existingPhone.verification?.status !== "verified") {
               await existingPhone.prepareVerification();
-              router.push({
+              router.navigate({
                 pathname: "/(common)/ConfirmVerfication",
                 params: {
                   contactType: "phone",
@@ -200,7 +200,7 @@ export default function EditPersonalInfo() {
             if (phoneNumber) {
               // Send verification SMS
               await phoneNumber.prepareVerification();
-              router.push({
+              router.navigate({
                 pathname: "/(common)/ConfirmVerfication",
                 params: {
                   contactType: "phone",

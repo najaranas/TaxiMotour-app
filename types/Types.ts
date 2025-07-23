@@ -228,6 +228,14 @@ export type ThemeType = {
     warning: string;
     info: string;
   };
+  gray: {
+    background: string;
+    surface: string;
+    border: string;
+    text: string;
+    mutedText: string;
+    placeholder: string;
+  };
 };
 
 export type ThemeContextType = {
