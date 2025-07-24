@@ -243,3 +243,11 @@ export type ThemeContextType = {
   theme: ThemeType;
   setTheme: (theme: "light" | "dark") => void;
 };
+export type RideCardProps = {
+  ride: {
+    pickupAddress: string;
+    destinationAddress: string;
+    payment: string;
+    distance: string;
+  };
+};

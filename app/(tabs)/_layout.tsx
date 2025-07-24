@@ -77,7 +77,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="Rides"
+        name="RidesHistory"
         options={{
           title: t("tabs.rides"),
           tabBarIcon: ({ color, focused }) => (
