@@ -239,16 +239,19 @@ export default function ProfileScreen() {
       </BottomSheetView>
     </CustomBottomSheetModal>
   );
+
   return (
     <ScreenWrapper
       style={styles.container}
       safeArea
       scroll
+      hasBottomTabs
       padding={horizontalScale(15)}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}>
       {renderProfileHeader()}
       <ProfileMenuList />
+
       {renderLogoutModal()}
     </ScreenWrapper>
   );

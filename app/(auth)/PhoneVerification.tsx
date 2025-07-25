@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   StyleSheet,
   TextInput,
@@ -20,6 +20,7 @@ import { useSignUp, useSSO } from "@clerk/clerk-expo";
 import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
 import { useTranslation } from "react-i18next";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export default function PhoneVerification() {
   const inputRef = useRef<TextInput>(null);
@@ -28,6 +29,7 @@ export default function PhoneVerification() {
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
   const { t } = useTranslation();
+  const { theme } = useTheme();
 
   const { isLoaded, signUp, setActive } = useSignUp();
 
@@ -100,64 +102,130 @@ export default function PhoneVerification() {
 
   const handleContinue = () => {
     // setLoading(true);
-    router.navigate("/(common)/ConfirmVerfication");
+    router.navigate("/(auth)/UserTypeSelection");
     console.log("Phone number:", phoneNumber);
   };
+
+  // Create dynamic styles based on theme - memoized for performance
+  const dynamicStyles = useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          flex: 1,
+          backgroundColor: theme.background,
+        },
+        scrollContent: {
+          flexGrow: 1,
+          justifyContent: "space-between",
+        },
+        content: {
+          flex: 1,
+          paddingTop: verticalScale(20),
+        },
+        titleContainer: {
+          gap: verticalScale(20),
+          marginBottom: verticalScale(40),
+        },
+        whatsappInfo: {
+          flexDirection: "row",
+          alignItems: "center",
+          gap: horizontalScale(10),
+        },
+        whatsappText: {
+          flex: 1,
+          lineHeight: verticalScale(25),
+        },
+        phoneInputContainer: {
+          flexDirection: "row",
+          alignItems: "center",
+          gap: horizontalScale(10),
+        },
+        countrySection: {
+          flexDirection: "row",
+          alignItems: "center",
+          gap: horizontalScale(10),
+          paddingHorizontal: horizontalScale(12),
+          paddingVertical: verticalScale(7),
+          borderRadius: theme.borderRadius.medium,
+          backgroundColor: theme.gray.background,
+          borderWidth: theme.borderWidth.thin,
+          borderColor: theme.gray.border,
+          height: "100%",
+        },
+        inputContainer: {
+          flex: 1,
+          backgroundColor: "transparent",
+          borderRadius: theme.borderRadius.medium,
+          paddingHorizontal: horizontalScale(12),
+          paddingVertical: verticalScale(7),
+          borderWidth: theme.borderWidth.regular,
+          borderColor: isInputOnFocus ? COLORS.secondary : theme.gray.border,
+        },
+        textInput: {
+          fontSize: moderateScale(16),
+          fontFamily: "Roboto-Regular",
+          color: theme.text.primary,
+        },
+        button: {
+          borderRadius: theme.borderRadius.pill,
+          backgroundColor: theme.button.primary,
+          justifyContent: "center",
+          alignItems: "center",
+          paddingBlock: verticalScale(15),
+          minHeight: verticalScale(60),
+        },
+      }),
+    [theme, isInputOnFocus]
+  );
 
   return (
     <ScreenWrapper
       safeArea
       padding={horizontalScale(15)}
       scroll
-      style={styles.container}
-      contentContainerStyle={styles.scrollContent}
+      style={dynamicStyles.container}
+      contentContainerStyle={dynamicStyles.scrollContent}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}>
       {/* Header */}
       <BackButton />
       {/* Content */}
-      <View style={styles.content}>
+      <View style={dynamicStyles.content}>
         <TextInput
           value={code}
           placeholder="Enter your verification code"
+          placeholderTextColor={theme.input.placeholder}
           onChangeText={(code) => setCode(code)}
+          style={{ color: theme.text.primary }}
         />
-        <TouchableOpacity onPress={onVerifyPress}>
+        {/* <TouchableOpacity onPress={onVerifyPress}>
           <Text>Verify</Text>
-        </TouchableOpacity>
-        <View style={styles.titleContainer}>
-          <Typo color={THEME.text.primary} variant="h3">
+        </TouchableOpacity> */}
+        <View style={dynamicStyles.titleContainer}>
+          <Typo color={theme.text.primary} variant="h3">
             {t("auth.phoneVerification")}
           </Typo>
 
-          <View style={styles.whatsappInfo}>
+          <View style={dynamicStyles.whatsappInfo}>
             <WhatsappIcon size={horizontalScale(40)} />
             <Typo
-              color={THEME.text.muted}
+              color={theme.text.muted}
               variant="body"
-              style={styles.whatsappText}>
+              style={dynamicStyles.whatsappText}>
               {t("auth.whatsappNotification")}
             </Typo>
           </View>
         </View>
 
-        <View style={styles.phoneInputContainer}>
-          <View style={styles.countrySection}>
+        <View style={dynamicStyles.phoneInputContainer}>
+          <View style={dynamicStyles.countrySection}>
             <TunisiaFlag size={horizontalScale(30)} />
-            <Typo variant="body" color={THEME.text.primary}>
+            <Typo variant="body" color={theme.text.primary}>
               +216
             </Typo>
           </View>
 
-          <View
-            style={[
-              styles.inputContainer,
-              {
-                borderColor: isInputOnFocus
-                  ? COLORS.secondary
-                  : COLORS.gray["200"],
-              },
-            ]}>
+          <View style={dynamicStyles.inputContainer}>
             <TextInput
               ref={inputRef}
               value={phoneNumber}
@@ -166,9 +234,9 @@ export default function PhoneVerification() {
               onBlur={() => setIsInputOnFocus(false)}
               keyboardType="numeric"
               placeholder={t("auth.phonePlaceholder")}
-              placeholderTextColor={THEME.text.secondary}
+              placeholderTextColor={theme.input.placeholder}
               maxLength={8}
-              style={styles.textInput}
+              style={dynamicStyles.textInput}
             />
           </View>
         </View>
@@ -180,13 +248,13 @@ export default function PhoneVerification() {
           loading={loading}
           disabled={loading}
           indicatorStyle={{ size: moderateScale(25), color: COLORS.primary }}
-          style={[styles.button, { opacity: loading ? 0.3 : 1 }]}
+          style={[dynamicStyles.button, { opacity: loading ? 0.3 : 1 }]}
           onPress={handleContinue}>
           <Typo
             variant="button"
             size={moderateScale(20)}
             fontFamily={FONTS.medium}
-            color={COLORS.white}>
+            color={theme.button.text}>
             {t("auth.sendCode")}
           </Typo>
         </Button>
@@ -194,70 +262,3 @@ export default function PhoneVerification() {
     </ScreenWrapper>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: "space-between",
-  },
-
-  content: {
-    flex: 1,
-    paddingTop: verticalScale(20),
-  },
-  titleContainer: {
-    gap: verticalScale(20),
-    marginBottom: verticalScale(40),
-  },
-  whatsappInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: horizontalScale(10),
-  },
-  whatsappText: {
-    flex: 1,
-    lineHeight: verticalScale(25),
-  },
-  phoneInputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: horizontalScale(10),
-  },
-  countrySection: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: horizontalScale(10),
-    paddingHorizontal: horizontalScale(12),
-    paddingVertical: verticalScale(7),
-    borderRadius: THEME.borderRadius.medium,
-    backgroundColor: COLORS.gray["100"],
-    borderWidth: THEME.borderWidth.thin,
-    borderColor: COLORS.gray["200"],
-    height: "100%",
-  },
-  inputContainer: {
-    flex: 1,
-    backgroundColor: "transparent",
-    borderRadius: THEME.borderRadius.medium,
-    paddingHorizontal: horizontalScale(12),
-    paddingVertical: verticalScale(7),
-    borderWidth: THEME.borderWidth.regular,
-  },
-  textInput: {
-    fontSize: moderateScale(16),
-    fontFamily: "Roboto-Regular",
-    color: THEME.text.primary,
-  },
-
-  button: {
-    borderRadius: THEME.borderRadius.pill,
-    backgroundColor: COLORS.secondary,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingBlock: verticalScale(15),
-    minHeight: verticalScale(60),
-  },
-});

@@ -7,6 +7,7 @@ import {
   AppleIcon,
   FacebookIcon,
   GoolgeIcon,
+  TunisiaFlag,
 } from "@/components/common/SvgIcons";
 import { useSSO } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
@@ -14,6 +15,8 @@ import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
 import React, { useState } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
+import PhoneNumberField from "@/components/common/PhoneNumberField";
+import Seperator from "@/components/common/Seperator";
 
 // Complete the WebBrowser auth session
 WebBrowser.maybeCompleteAuthSession();
@@ -124,28 +127,13 @@ export default function Login() {
         <Typo variant="h3" style={styles.centerText}>
           Enter your number
         </Typo>
-
-        <View style={styles.separator}>
-          <View
-            style={[
-              styles.separatorLine,
-              { backgroundColor: theme.gray.surface },
-            ]}
-          />
-          <Typo
-            color={theme.text.muted}
-            variant="body"
-            style={styles.separatorText}>
-            Or
-          </Typo>
-          <View
-            style={[
-              styles.separatorLine,
-              { backgroundColor: theme.gray.surface },
-            ]}
-          />
-        </View>
-
+        <PhoneNumberField
+          placeholder="XX XXX XXX"
+          countryCode="+216"
+          countryIcon={<TunisiaFlag size={verticalScale(30)} />}
+          onPress={() => router.navigate("/(auth)/PhoneVerification")}
+        />
+        <Seperator text="Or" />
         <View style={styles.socialButtonsContainer}>
           <Button
             onPress={() => onSocialPress("oauth_google")}
@@ -233,17 +221,6 @@ const styles = StyleSheet.create({
   },
   centerText: { textAlign: "center" },
 
-  separator: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  separatorLine: {
-    height: 1,
-    flex: 1,
-  },
-  separatorText: {
-    paddingHorizontal: horizontalScale(10),
-  },
   socialButtonsContainer: {
     gap: horizontalScale(10),
   },

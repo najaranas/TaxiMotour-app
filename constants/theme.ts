@@ -147,6 +147,13 @@ const THEMES: Record<"light" | "dark", ThemeType> = {
       extraThick: 1.5,
     },
 
+    // borderWidth: {
+    //   none: 0,
+    //   thin: 1,
+    //   regular: 2,
+    //   thick: 3,
+    //   extraThick: 4,
+    // },
     // Buttons
     button: {
       primary: COLORS.secondary, // #FFB218

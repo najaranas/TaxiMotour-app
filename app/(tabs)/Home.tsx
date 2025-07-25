@@ -84,7 +84,7 @@ export default function Home() {
   );
 
   return (
-    <ScreenWrapper safeArea={false} style={styles.container}>
+    <ScreenWrapper safeArea={false} style={styles.container} hasBottomTabs>
       {/* Enhanced Map Component */}
       <Map roadData={roadData} />
 

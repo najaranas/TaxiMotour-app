@@ -20,9 +20,15 @@ SplashScreen.preventAutoHideAsync();
 function AppNavigator() {
   const { isSignedIn } = useAuth();
   const { t } = useTranslation();
+  const { theme } = useTheme();
 
   return (
-    <Stack screenOptions={{ animation: "ios_from_right", headerShown: false }}>
+    <Stack
+      screenOptions={{
+        animation: "ios_from_right",
+        headerShown: false,
+        contentStyle: { backgroundColor: theme.background },
+      }}>
       {/* Splash screen - always accessible */}
       <Stack.Screen name="index" options={{ title: "splashScreen" }} />
 
@@ -39,10 +45,10 @@ function AppNavigator() {
           name="(auth)/PhoneVerification"
           options={{ title: "phoneVerification" }}
         />
-        <Stack.Screen
+        {/* <Stack.Screen
           name="(auth)/UserTypeSelection"
           options={{ title: "userTypeSelection" }}
-        />
+        /> */}
       </Stack.Protected>
 
       {/* Main app screens - only accessible when signed in */}

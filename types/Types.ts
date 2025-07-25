@@ -19,6 +19,7 @@ export interface ScreenWrapperProps extends ScrollViewProps {
   scroll?: boolean;
   systemBarsStyle?: SystemBarStyle;
   statusBarStyle?: StatusBarStyle;
+  hasBottomTabs?: boolean;
 }
 
 export interface TypoProps extends TextProps {
@@ -243,11 +244,17 @@ export type ThemeContextType = {
   theme: ThemeType;
   setTheme: (theme: "light" | "dark") => void;
 };
+
+export type RideProps = {
+  id: number;
+  pickupAddress: string;
+  destinationAddress: string;
+  payment?: string;
+  distance?: string;
+};
+
 export type RideCardProps = {
-  ride: {
-    pickupAddress: string;
-    destinationAddress: string;
-    payment: string;
-    distance: string;
-  };
+  ride: RideProps;
+  viewOnly?: boolean;
+  hideExtraDetails?: boolean;
 };
