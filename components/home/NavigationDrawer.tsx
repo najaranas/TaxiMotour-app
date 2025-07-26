@@ -14,8 +14,11 @@ import {
   ShieldCheck,
   CalendarCheck,
   X,
+  Code,
+  Star,
+  Share2,
 } from "lucide-react-native";
-import { APP_CONFIG, ROUTE_CONFIG } from "@/constants/app";
+import { APP_CONFIG } from "@/constants/app";
 import { useUser } from "@clerk/clerk-expo";
 import { useTranslation } from "react-i18next";
 
@@ -29,8 +32,9 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
   const router = useRouter();
   const { user } = useUser();
   const { t } = useTranslation();
+
   const handleMyAccount = () => {
-    router.navigate(ROUTE_CONFIG.PROFILE);
+    router.navigate("/(tabs)/Profile");
     onClose();
   };
 
@@ -38,14 +42,15 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
     const iconMap = {
       history: CalendarCheck,
       about: Info,
-      safety: ShieldCheck,
-      settings: Settings,
+      share: Share2,
+      developer: Code,
+      rate: Star,
     };
 
     return {
       icon: iconMap[item.id as keyof typeof iconMap],
       title: t(`drawer.${item.id}`),
-      onPress: () => console.log(`${item.title} pressed`),
+      onPress: () => router.navigate(item.navigation),
     };
   });
 

@@ -16,6 +16,7 @@ export const APP_CONFIG = {
 
   // User Information
   DEFAULT_PHONE_NUMBER: "+216 93 772 115",
+  APP_NAME: "TaxiMotour",
   APP_VERSION: "1.0.0",
   CREATOR_NAME: "Anas Najar",
 
@@ -25,28 +26,33 @@ export const APP_CONFIG = {
       id: "history",
       title: "Trip History",
       action: "trip_history",
+      navigation: "/(tabs)/RidesHistory",
     },
     {
       id: "about",
       title: "About App",
       action: "about_app",
+      navigation: "/(drawer)/About",
     },
     {
-      id: "safety",
-      title: "Safety Center",
-      action: "safety_center",
+      id: "rate",
+      title: "Rate App",
+      action: "rate_app",
+      navigation: "/(tabs)/RidesHistory",
     },
     {
-      id: "settings",
-      title: "Settings",
-      action: "settings",
+      id: "share",
+      title: "Share App",
+      action: "share_app",
+      navigation: "/(tabs)/RidesHistory",
+    },
+    {
+      id: "developer",
+      title: "About Developer",
+      action: "about_developer",
+      navigation: "/(tabs)/RidesHistory",
     },
   ],
-} as const;
-
-// Route Configuration
-export const ROUTE_CONFIG = {
-  PROFILE: "/(tabs)/profile",
 } as const;
 
 // Error Messages
