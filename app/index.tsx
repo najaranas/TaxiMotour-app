@@ -2,7 +2,7 @@ import { COLORS } from "@/constants/theme";
 import { verticalScale } from "@/utils/styling";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
-import { Image, StyleSheet } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 import { useAuth } from "@clerk/clerk-expo";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 
@@ -26,14 +26,16 @@ export default function Index() {
 
   return (
     <ScreenWrapper
-      style={styles.container}
+      safeArea={false}
       systemBarsStyle="light"
       statusBarStyle="light-content">
-      <Image
-        resizeMode="contain"
-        source={require("../assets/images/logo.png")}
-        style={styles.logo}
-      />
+      <View style={styles.container}>
+        <Image
+          resizeMode="contain"
+          source={require("../assets/images/logo.png")}
+          style={styles.logo}
+        />
+      </View>
     </ScreenWrapper>
   );
 }

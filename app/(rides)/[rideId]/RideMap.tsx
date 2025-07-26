@@ -1,6 +1,6 @@
-import { StatusBar, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import { MapProps, RideCardProps, RouteData } from "@/types/Types";
+import { MapProps, RideCardProps } from "@/types/Types";
 import { horizontalScale, verticalScale } from "@/utils/styling";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import BackButton from "@/components/common/BackButton";
@@ -14,35 +14,33 @@ import StatusBarOverlay from "@/components/common/StatusBarOverlay";
 import { useState, useMemo } from "react";
 
 export default function RideMap() {
-  let { ride, rideId } = useLocalSearchParams() as unknown as {
+  // Get ride and rideId from navigation params
+  const { ride: rideParam, rideId: rideIdParam } = useLocalSearchParams() as {
     ride: string;
     rideId: string;
   };
   const { theme } = useTheme();
+  const rideDetails = JSON.parse(rideParam) as RideCardProps["ride"];
 
-  const rideData = JSON.parse(ride) as RideCardProps["ride"];
-
-  // Separate state variables for each padding
-  const [headerHeight, setHeaderHeight] = useState<number>(0);
-  const [bottomHeight, setBottomHeight] = useState<number>(0);
-  const [backIconWidth, setBackIconWidth] = useState<number>(0);
+  // Heights and widths for dynamic padding
+  const [headerSectionHeight, setHeaderSectionHeight] = useState<number>(0);
+  const [footerSectionHeight, setFooterSectionHeight] = useState<number>(0);
+  const [backButtonWidth, setBackButtonWidth] = useState<number>(0);
   const insets = useSafeAreaInsets();
 
-  const mapCameraView = useMemo<MapProps["viewPadding"]>(
+  // Camera padding for map
+  const mapViewPadding = useMemo<MapProps["viewPadding"]>(
     () => ({
       paddingLeft: horizontalScale(50),
       paddingRight: horizontalScale(50),
-      paddingTop: headerHeight + insets.top + verticalScale(40),
-      paddingBottom: bottomHeight + verticalScale(40),
+      paddingTop: headerSectionHeight + insets.top + verticalScale(40),
+      paddingBottom: footerSectionHeight + verticalScale(40),
     }),
-    [headerHeight, bottomHeight, insets.top]
+    [headerSectionHeight, footerSectionHeight, insets.top]
   );
 
-  console.log("mapCameraView", mapCameraView);
-  console.log("Ride ID:", rideId);
-  console.log("Ride Details:", rideData);
-
-  const data = [
+  // Example ride route data
+  const routePoints = [
     {
       place: "Délégation Bab Souika",
       lon: 10.267988166213035,
@@ -57,78 +55,65 @@ export default function RideMap() {
 
   return (
     <ScreenWrapper safeArea={false}>
-      <Map roadData={data} viewPadding={mapCameraView} />
+      <Map roadData={routePoints} viewPadding={mapViewPadding} />
       <StatusBarOverlay />
 
+      {/* Header Section */}
       <View
         onLayout={(e) => {
           const height = e?.nativeEvent?.layout?.height;
           if (height !== undefined) {
-            console.log("Header height:", height);
-            setHeaderHeight(height);
+            setHeaderSectionHeight(height);
           }
         }}
         style={[
           styles.headerSection,
           {
             top: insets.top + verticalScale(10),
-            gap: verticalScale(10),
-            alignItems: "flex-start",
-            flexDirection: "row",
-            marginLeft: backIconWidth + horizontalScale(10),
+            marginLeft: backButtonWidth + horizontalScale(10),
           },
         ]}>
-        <View style={{ flex: 1 }}>
-          <RideCard ride={rideData} hideExtraDetails viewOnly />
+        <View style={styles.headerCardWrapper}>
+          <RideCard ride={rideDetails} hideExtraDetails viewOnly />
         </View>
       </View>
 
+      {/* Back Button */}
       <View
         onLayout={(e) => {
           const width = e?.nativeEvent?.layout?.width;
           if (width !== undefined) {
-            setBackIconWidth(width);
+            setBackButtonWidth(width);
           }
         }}
-        style={{
-          position: "absolute",
-          left: horizontalScale(20),
-          top: insets.top + verticalScale(10),
+        style={[
+          styles.backButton,
+          {
+            top: insets.top + verticalScale(10),
 
-          zIndex: 3,
-          padding: horizontalScale(5),
-          backgroundColor: theme.background,
-          borderRadius: theme.borderRadius.circle,
-          elevation: 8,
-          shadowColor: "#000",
-          shadowOffset: {
-            width: 0,
-            height: 4,
+            backgroundColor: theme.background,
+            borderRadius: theme.borderRadius.circle,
           },
-          shadowOpacity: 0.25,
-          shadowRadius: 6,
-        }}>
+        ]}>
         <BackButton variant="arrow" />
       </View>
 
+      {/* Footer Section */}
       <View
         onLayout={(e) => {
           const height = e?.nativeEvent?.layout?.height;
           if (height !== undefined) {
-            console.log("Bottom height:", height);
-            setBottomHeight(height);
+            setFooterSectionHeight(height);
           }
         }}
         style={[
-          styles.dataContainer,
+          styles.footerSection,
           {
             borderTopLeftRadius: theme.borderRadius.large + horizontalScale(20),
             borderTopRightRadius:
               theme.borderRadius.large + horizontalScale(20),
             backgroundColor: theme.background,
-            padding: horizontalScale(20),
             paddingBottom: insets.bottom + horizontalScale(20),
-            gap: verticalScale(20),
           },
         ]}>
         <DriverInfo />
@@ -144,13 +129,34 @@ const styles = StyleSheet.create({
     left: horizontalScale(20),
     right: horizontalScale(20),
     zIndex: 1,
+    gap: verticalScale(10),
+    alignItems: "flex-start",
+    flexDirection: "row",
   },
-  dataContainer: {
+  headerCardWrapper: {
+    flex: 1,
+  },
+  backButton: {
+    position: "absolute",
+    left: horizontalScale(20),
+    padding: horizontalScale(5),
+    zIndex: 3,
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+  },
+  footerSection: {
     position: "absolute",
     left: 0,
     right: 0,
     bottom: 0,
     zIndex: 10,
-    backgroundColor: "blue",
+    padding: horizontalScale(20),
+    gap: verticalScale(20),
   },
 });
