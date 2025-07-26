@@ -178,6 +178,22 @@ export interface MapTilerGeocodingResponse {
   attribution: string;
 }
 
+export interface RouteData {
+  type: "FeatureCollection";
+  bbox?:
+    | [number, number, number, number]
+    | [number, number, number, number, number, number];
+  features: {
+    type: "Feature";
+    properties: Record<string, any>;
+    geometry: {
+      type: "LineString";
+      coordinates: number[][];
+    };
+  }[];
+  metadata?: any;
+}
+
 export interface locationProp {
   place?: string;
   lon?: number | null;
@@ -186,6 +202,12 @@ export interface locationProp {
 
 export interface MapProps {
   roadData?: locationProp[];
+  viewPadding?: {
+    paddingLeft?: number;
+    paddingRight?: number;
+    paddingTop?: number;
+    paddingBottom?: number;
+  };
 }
 
 export type ThemeType = {

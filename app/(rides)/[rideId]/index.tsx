@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { RideCardProps } from "@/types/Types";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
@@ -17,19 +17,26 @@ import { useTheme } from "@/contexts/ThemeContext";
 export default function RideDetails() {
   let { ride, rideId } = useLocalSearchParams() as unknown as {
     ride: string;
-    rideId: number;
+    rideId: string;
   };
   const { theme } = useTheme();
+  const router = useRouter();
 
   const rideData = JSON.parse(ride) as RideCardProps["ride"];
   console.log("Ride ID:", rideId);
   console.log("Ride Dedstails:", rideData);
+
+  const handleMapPress = () => {
+    router.push({
+      pathname: "/(rides)/[rideId]/RideMap",
+      params: { rideId: rideId, ride: ride },
+    });
+  };
   return (
     <ScreenWrapper
       // scroll
       safeArea
-      padding={horizontalScale(20)}
-      nestedScrollEnabled>
+      padding={horizontalScale(20)}>
       <BackButton variant="arrow" />
       <View style={styles.mainContainer}>
         <Typo variant="h3" style={styles.title}>
@@ -58,7 +65,7 @@ export default function RideDetails() {
           </Button>
           <Button
             // disabled={isUploading}
-            // onPress={handleRetake}
+            onPress={handleMapPress}
             style={[styles.actionButton, { backgroundColor: theme.surface }]}>
             <Map
               size={moderateScale(20)}

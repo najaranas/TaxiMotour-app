@@ -23,6 +23,7 @@ export default function RideCard({
         borderRadius: theme.borderRadius.large,
         borderWidth: theme.borderWidth.thin,
         borderColor: theme.gray.border,
+        backgroundColor: theme.background,
       },
       locationIcon: {
         ...styles.locationIcon,
@@ -47,7 +48,7 @@ export default function RideCard({
   const cardPressHandler = () => {
     router.navigate({
       pathname: "/(rides)/[rideId]",
-      params: { rideId: ride.id, ride: JSON.stringify(ride) },
+      params: { rideId: ride.id.toString(), ride: JSON.stringify(ride) },
     });
   };
   return (

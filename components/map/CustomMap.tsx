@@ -2,30 +2,17 @@ import React, { useState, useEffect, useRef } from "react";
 import { Image, StyleSheet, View } from "react-native";
 import * as MapLibreRN from "@maplibre/maplibre-react-native";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
-import { MapProps } from "@/types/Types";
+import { MapProps, RouteData } from "@/types/Types";
 import { COLORS } from "@/constants/theme";
 import { routeService, apiUtils } from "@/services/api";
 import * as Location from "expo-location";
 import { LocationIcon, TargetIcon } from "../common/SvgIcons";
 import { MaterialIndicator } from "react-native-indicators";
 
-interface RouteData {
-  type: "FeatureCollection";
-  bbox?:
-    | [number, number, number, number]
-    | [number, number, number, number, number, number];
-  features: {
-    type: "Feature";
-    properties: Record<string, any>;
-    geometry: {
-      type: "LineString";
-      coordinates: number[][];
-    };
-  }[];
-  metadata?: any;
-}
+export default function CustomMap({ roadData, viewPadding }: MapProps) {
+  console.log("roadData", roadData);
+  console.log("viewPadding");
 
-export default function EnhancedMap({ roadData }: MapProps) {
   const mapRef = useRef<MapLibreRN.MapViewRef>(null);
   const [location, setLocation] = useState<Location.LocationObject | null>(
     null
@@ -182,10 +169,14 @@ export default function EnhancedMap({ roadData }: MapProps) {
                   )
                 ),
               ],
-              paddingLeft: horizontalScale(100),
-              paddingRight: horizontalScale(100),
-              paddingTop: verticalScale(100),
-              paddingBottom: verticalScale(200),
+              ...(viewPadding
+                ? viewPadding
+                : {
+                    paddingLeft: horizontalScale(50),
+                    paddingRight: horizontalScale(50),
+                    paddingTop: verticalScale(50),
+                    paddingBottom: verticalScale(200),
+                  }),
             }}
           />
         )}

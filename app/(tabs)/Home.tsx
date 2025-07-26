@@ -11,7 +11,7 @@ import CustomBottomSheet from "@/components/common/CustomBottomSheet";
 import { MenuIcon } from "@/components/common/SvgIcons";
 
 // New modular components
-import Map from "@/components/map/Map";
+import CustomMap from "@/components/map/CustomMap";
 import NavigationDrawer from "@/components/home/NavigationDrawer";
 import RideBookingSheet from "@/components/home/RideBookingSheet";
 
@@ -22,6 +22,7 @@ import { apiUtils } from "@/services/api";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
+import StatusBarOverlay from "@/components/common/StatusBarOverlay";
 
 interface LocationData {
   place?: string;
@@ -44,8 +45,7 @@ export default function Home() {
   const [roadData, setRoadData] = useState<LocationData[]>([]);
 
   const insets = useSafeAreaInsets();
-  const { theme, themeName } = useTheme();
-  const { t } = useTranslation();
+  const { theme } = useTheme();
 
   // Handlers
   const handleSnapToIndex = (index: number) => {
@@ -86,24 +86,17 @@ export default function Home() {
   return (
     <ScreenWrapper safeArea={false} style={styles.container} hasBottomTabs>
       {/* Enhanced Map Component */}
-      <Map roadData={roadData} />
+      <CustomMap
+        roadData={roadData}
+        viewPadding={{
+          paddingLeft: horizontalScale(50),
+          paddingRight: horizontalScale(50),
+          paddingTop: verticalScale(50),
+          paddingBottom: verticalScale(200),
+        }}
+      />
 
-      {themeName === "dark" && (
-        <LinearGradient
-          colors={["rgba(0, 0, 0, 0.3)", "transparent"]}
-          dither={false}
-          locations={[0.5, 1]}
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            width: "100%",
-            height: insets.top + verticalScale(10),
-            zIndex: 30,
-          }}
-        />
-      )}
+      <StatusBarOverlay />
 
       {/* Navigation Drawer */}
 
