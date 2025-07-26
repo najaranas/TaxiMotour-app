@@ -52,7 +52,9 @@ export default function RideCard({
     });
   };
   return (
-    <Button onPress={!viewOnly ? cardPressHandler : undefined}>
+    <Button
+      onPress={!viewOnly ? cardPressHandler : undefined}
+      activeOpacity={viewOnly ? 1 : 0.5}>
       <View style={dynamicStyles.rideCard}>
         <View style={styles.locationInfoColumn}>
           {/* Pickup Icon */}

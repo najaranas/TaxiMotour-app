@@ -25,9 +25,9 @@ export default function RideMap() {
   // Separate state variables for each padding
   const [headerHeight, setHeaderHeight] = useState<number>(0);
   const [bottomHeight, setBottomHeight] = useState<number>(0);
+  const [backIconWidth, setBackIconWidth] = useState<number>(0);
   const insets = useSafeAreaInsets();
 
-  // Calculate mapCameraView using useMemo to avoid unnecessary recalculations
   const mapCameraView = useMemo<MapProps["viewPadding"]>(
     () => ({
       paddingLeft: horizontalScale(50),
@@ -75,27 +75,40 @@ export default function RideMap() {
             gap: verticalScale(10),
             alignItems: "flex-start",
             flexDirection: "row",
+            marginLeft: backIconWidth + horizontalScale(10),
           },
         ]}>
-        <View
-          style={{
-            padding: horizontalScale(5),
-            backgroundColor: theme.background,
-            borderRadius: theme.borderRadius.circle,
-            elevation: 8,
-            shadowColor: "#000",
-            shadowOffset: {
-              width: 0,
-              height: 4,
-            },
-            shadowOpacity: 0.25,
-            shadowRadius: 6,
-          }}>
-          <BackButton variant="arrow" />
-        </View>
         <View style={{ flex: 1 }}>
-          <RideCard ride={rideData} hideExtraDetails />
+          <RideCard ride={rideData} hideExtraDetails viewOnly />
         </View>
+      </View>
+
+      <View
+        onLayout={(e) => {
+          const width = e?.nativeEvent?.layout?.width;
+          if (width !== undefined) {
+            setBackIconWidth(width);
+          }
+        }}
+        style={{
+          position: "absolute",
+          left: horizontalScale(20),
+          top: insets.top + verticalScale(10),
+
+          zIndex: 3,
+          padding: horizontalScale(5),
+          backgroundColor: theme.background,
+          borderRadius: theme.borderRadius.circle,
+          elevation: 8,
+          shadowColor: "#000",
+          shadowOffset: {
+            width: 0,
+            height: 4,
+          },
+          shadowOpacity: 0.25,
+          shadowRadius: 6,
+        }}>
+        <BackButton variant="arrow" />
       </View>
 
       <View
@@ -114,7 +127,7 @@ export default function RideMap() {
               theme.borderRadius.large + horizontalScale(20),
             backgroundColor: theme.background,
             padding: horizontalScale(20),
-            paddingBottom: insets.bottom,
+            paddingBottom: insets.bottom + horizontalScale(20),
             gap: verticalScale(20),
           },
         ]}>

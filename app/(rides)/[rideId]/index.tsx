@@ -42,7 +42,7 @@ export default function RideDetails() {
         <Typo variant="h3" style={styles.title}>
           Ride Details
         </Typo>
-        <RideCard ride={rideData} />
+        <RideCard ride={rideData} viewOnly />
         <Seperator text="Details" />
 
         <DriverInfo />
