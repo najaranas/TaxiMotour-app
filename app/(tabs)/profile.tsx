@@ -188,10 +188,10 @@ export default function ProfileScreen() {
       isVisible={isLogoutModalVisible}
       onClose={() => setIsLogoutModalVisible(false)}
       onRef={setBottomSheetRef}
-      enablePanDownToClose={true}
-      enableOverDrag={true}
-      showIndicator={true}
-      showBackdrop={true}>
+      enablePanDownToClose
+      enableOverDrag
+      showIndicator
+      showBackdrop>
       <BottomSheetView
         style={[
           styles.logoutModalContent,

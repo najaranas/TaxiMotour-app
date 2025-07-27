@@ -19,7 +19,11 @@ export const APP_CONFIG = {
   APP_NAME: "TaxiMotour",
   APP_VERSION: "1.0.0",
   CREATOR_NAME: "Anas Najar",
-
+  SOCIAL_LINKS: {
+    LINKEDIN: "https://www.linkedin.com/in/anasnajar",
+    INSTAGRAM: "https://www.instagram.com/anas__najjar",
+    TWITTER: "https://x.com/AnasnajarTn",
+  },
   // Home Navigation Menu Items (Drawer)
   DRAWER_MENU_ITEMS: [
     {

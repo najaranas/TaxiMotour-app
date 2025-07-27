@@ -1,5 +1,5 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { View, StyleSheet, Share, Linking, Platform, Text } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { COLORS, FONTS } from "@/constants/theme";
@@ -7,7 +7,15 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import Typo from "@/components/common/Typo";
 import Button from "@/components/common/Button";
-import { UserIcon } from "@/components/common/SvgIcons";
+import {
+  FacebookIcon,
+  InstagramIcon,
+  LinkedinIcon,
+  TwitterIcon,
+  UserIcon,
+} from "@/components/common/SvgIcons";
+import * as StoreReview from "expo-store-review";
+
 import {
   Settings,
   Info,
@@ -17,10 +25,15 @@ import {
   Code,
   Star,
   Share2,
+  Linkedin,
+  Facebook,
+  Twitter,
 } from "lucide-react-native";
 import { APP_CONFIG } from "@/constants/app";
 import { useUser } from "@clerk/clerk-expo";
 import { useTranslation } from "react-i18next";
+import CustomBottomSheetModal from "../common/CustomBottomSheetModal";
+import { BottomSheetView } from "@gorhom/bottom-sheet";
 
 interface NavigationDrawerProps {
   onClose: () => void;
@@ -32,10 +45,61 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
   const router = useRouter();
   const { user } = useUser();
   const { t } = useTranslation();
+  const [isDevloperModalVisible, setIsDevloperModalVisible] = useState(false);
 
   const handleMyAccount = () => {
     router.navigate("/(tabs)/Profile");
     onClose();
+  };
+
+  const shareApp = async () => {
+    try {
+      await Share.share({
+        message:
+          "🚀 Download Taximoto now! Get safe and fast moto rides in your city.\nhttps://taximoto.app",
+      });
+    } catch (err) {
+      console.log("Sharing failed:", err);
+    }
+  };
+
+  const reviewApp = async () => {
+    try {
+      const url = Platform.select({
+        ios: "itms-apps://itunes.apple.com/app/id951812684?action=write-review",
+        android: `https://play.google.com/store/apps/details?id=com.muhammedhashim.misk_app&showAllReviews=true`,
+      });
+      if (url) await Linking.openURL(url);
+    } catch (err) {
+      console.log("Review failed:", err);
+    }
+  };
+
+  type ItemId = "history" | "about" | "rate" | "share" | "developer";
+
+  const itemPressHandler = (id: ItemId) => {
+    switch (id) {
+      case "history":
+        router.navigate("/(rides)/History");
+        onClose();
+        break;
+      case "about":
+        router.navigate("/(drawer)/About");
+        onClose();
+        break;
+      case "rate":
+        reviewApp();
+        break;
+      case "share":
+        shareApp();
+        break;
+      case "developer":
+        setIsDevloperModalVisible(true);
+        break;
+
+      default:
+        break;
+    }
   };
 
   const menuItems = APP_CONFIG.DRAWER_MENU_ITEMS.map((item) => {
@@ -50,7 +114,7 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
     return {
       icon: iconMap[item.id as keyof typeof iconMap],
       title: t(`drawer.${item.id}`),
-      onPress: () => router.navigate(item.navigation),
+      onPress: () => itemPressHandler(item.id),
     };
   });
 
@@ -155,6 +219,79 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
           {t("drawer.version", { version: APP_CONFIG.APP_VERSION })}
         </Typo>
       </View>
+
+      <CustomBottomSheetModal
+        isVisible={isDevloperModalVisible}
+        onClose={() => setIsDevloperModalVisible(false)}
+        showBackdrop
+        enablePanDownToClose
+        showIndicator
+        enableOverDrag>
+        <BottomSheetView
+          style={[
+            {
+              paddingBottom: insets.bottom + verticalScale(20),
+              justifyContent: "center",
+              alignItems: "center",
+              gap: verticalScale(15),
+            },
+          ]}>
+          <Typo
+            color={theme.text.primary}
+            variant="body"
+            size={moderateScale(20)}>
+            About the developer
+          </Typo>
+          <View style={{ alignItems: "center", gap: verticalScale(5) }}>
+            <Typo
+              variant="body"
+              size={moderateScale(15)}
+              color={theme.text.secondary}>
+              {APP_CONFIG.CREATOR_NAME}
+            </Typo>
+            <Typo
+              color={theme.text.muted}
+              variant="body"
+              size={moderateScale(15)}>
+              Mobile App Developer
+            </Typo>
+            <View
+              style={{
+                flexDirection: "row",
+                gap: horizontalScale(15),
+                marginTop: verticalScale(10),
+              }}>
+              <Button
+                onPress={() =>
+                  Linking.openURL(APP_CONFIG.SOCIAL_LINKS.LINKEDIN)
+                }>
+                <LinkedinIcon
+                  color={theme.text.muted}
+                  size={moderateScale(30)}
+                />
+              </Button>
+              <Button
+                onPress={() =>
+                  Linking.openURL(APP_CONFIG.SOCIAL_LINKS.INSTAGRAM)
+                }>
+                <InstagramIcon
+                  color={theme.text.muted}
+                  size={moderateScale(30)}
+                />
+              </Button>
+              <Button
+                onPress={() =>
+                  Linking.openURL(APP_CONFIG.SOCIAL_LINKS.TWITTER)
+                }>
+                <TwitterIcon
+                  color={theme.text.muted}
+                  size={moderateScale(30)}
+                />
+              </Button>
+            </View>
+          </View>
+        </BottomSheetView>
+      </CustomBottomSheetModal>
     </View>
   );
 }

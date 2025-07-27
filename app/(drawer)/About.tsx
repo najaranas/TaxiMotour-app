@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { View, StyleSheet } from "react-native";
+import React, { useEffect, useMemo } from "react";
+import { View, StyleSheet, Share } from "react-native";
 import { useTheme } from "@/contexts/ThemeContext";
 import { APP_CONFIG } from "@/constants/app";
 import Typo from "@/components/common/Typo";
@@ -7,6 +7,7 @@ import ScreenWrapper from "@/components/common/ScreenWrapper";
 import { horizontalScale, verticalScale } from "@/utils/styling";
 import { CheckCircle, Info } from "lucide-react-native";
 import BackButton from "@/components/common/BackButton";
+import * as Sharing from "expo-sharing";
 
 export default function About() {
   const { theme } = useTheme();
