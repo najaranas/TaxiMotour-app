@@ -81,10 +81,15 @@
     "myAccount": "My account",
     "history": "History",
     "about": "About",
+    "rate": "Rate the app",
+    "share": "Share the app",
+    "developer": "About the developer",
     "safety": "Safety",
     "settings": "Settings",
     "createdBy": "Created by {{creator}}",
-    "version": "Version {{version}}"
+    "version": "Version {{version}}",
+    "aboutDeveloper": "About the developer",
+    "developerRole": "Mobile App Developer"
   },
   "earnings": {
     "title": "Earnings Screen",

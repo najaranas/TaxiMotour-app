@@ -15,6 +15,11 @@ import LocationSuggestionItem from "./LocationSuggestionItem";
 import { MapTilerFeature } from "@/types/Types";
 import BottomSheetKeyboardAwareScrollView from "../common/BottomSheetKeyboardAwareScrollView";
 import { useTranslation } from "react-i18next";
+import SkeletonPlaceholder, {
+  SkeletonCircle,
+  SkeletonRect,
+  SkeletonText,
+} from "../common/SkeletonPlaceholder";
 
 interface LocationData {
   place?: string;
@@ -50,6 +55,7 @@ export default function RideBookingSheet({
     "location" | "destination" | null
   >(null);
   const [searchData, setSearchData] = useState<any>(null);
+  const [isDataLoading, setIsDataLoading] = useState<boolean | null>(null);
 
   const locationInputRef = useRef<TextInput | null>(null);
   const destinationInputRef = useRef<TextInput | null>(null);
@@ -201,6 +207,7 @@ export default function RideBookingSheet({
             isFocused={locationInputFocused}
             inputRef={locationInputRef}
             onSearchDataChange={setSearchData}
+            setIsDataLoading={setIsDataLoading}
           />
           <LocationSearchInput
             placeholder={t("placeholders.destination")}
@@ -211,6 +218,7 @@ export default function RideBookingSheet({
             isFocused={destinationInputFocused}
             inputRef={destinationInputRef}
             onSearchDataChange={setSearchData}
+            setIsDataLoading={setIsDataLoading}
           />
         </View>
       </Animated.View>
@@ -221,21 +229,145 @@ export default function RideBookingSheet({
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled">
-        <Animated.View
-          entering={FadeInRight.duration(300)}
-          exiting={FadeOutLeft}
-          style={styles.suggestionsContainer}>
-          {searchData?.features?.map((item: MapTilerFeature, index: number) => (
-            <LocationSuggestionItem
-              key={index}
-              item={item}
-              index={index}
-              isLast={searchData.features.length - 1 === index}
-              onSelect={handleLocationSelect}
-              onRefine={handleLocationRefine}
-            />
-          ))}
-        </Animated.View>
+        {isDataLoading ? (
+          <Animated.View
+            style={{ flex: 1, gap: verticalScale(20) }}
+            entering={FadeInRight.duration(300)}
+            exiting={FadeOutLeft}>
+            <View
+              style={{
+                flexDirection: "row",
+                paddingHorizontal: horizontalScale(15),
+                alignItems: "center",
+                gap: horizontalScale(10),
+                marginTop: verticalScale(35),
+              }}>
+              <SkeletonPlaceholder animationType="shimmer">
+                <View
+                  style={{
+                    width: horizontalScale(40),
+                    height: verticalScale(40),
+                    borderRadius: "50%",
+                  }}
+                />
+              </SkeletonPlaceholder>
+              <View style={{ flex: 1, gap: verticalScale(10) }}>
+                <SkeletonPlaceholder animationType="shimmer">
+                  <View
+                    style={{
+                      width: "100%",
+                      height: verticalScale(20),
+                      borderRadius: moderateScale(10),
+                    }}
+                  />
+                </SkeletonPlaceholder>
+                <SkeletonPlaceholder animationType="shimmer">
+                  <View
+                    style={{
+                      width: "100%",
+                      height: verticalScale(20),
+                      borderRadius: moderateScale(10),
+                    }}
+                  />
+                </SkeletonPlaceholder>
+              </View>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                paddingHorizontal: horizontalScale(15),
+                alignItems: "center",
+                gap: horizontalScale(10),
+                marginTop: verticalScale(35),
+              }}>
+              <SkeletonPlaceholder animationType="shimmer">
+                <View
+                  style={{
+                    width: horizontalScale(40),
+                    height: verticalScale(40),
+                    borderRadius: "50%",
+                  }}
+                />
+              </SkeletonPlaceholder>
+              <View style={{ flex: 1, gap: verticalScale(10) }}>
+                <SkeletonPlaceholder animationType="shimmer">
+                  <View
+                    style={{
+                      width: "100%",
+                      height: verticalScale(20),
+                      borderRadius: moderateScale(10),
+                    }}
+                  />
+                </SkeletonPlaceholder>
+                <SkeletonPlaceholder animationType="shimmer">
+                  <View
+                    style={{
+                      width: "100%",
+                      height: verticalScale(20),
+                      borderRadius: moderateScale(10),
+                    }}
+                  />
+                </SkeletonPlaceholder>
+              </View>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                paddingHorizontal: horizontalScale(15),
+                alignItems: "center",
+                gap: horizontalScale(10),
+                marginTop: verticalScale(35),
+              }}>
+              <SkeletonPlaceholder animationType="shimmer">
+                <View
+                  style={{
+                    width: horizontalScale(40),
+                    height: verticalScale(40),
+                    borderRadius: "50%",
+                  }}
+                />
+              </SkeletonPlaceholder>
+              <View style={{ flex: 1, gap: verticalScale(10) }}>
+                <SkeletonPlaceholder animationType="shimmer">
+                  <View
+                    style={{
+                      width: "100%",
+                      height: verticalScale(20),
+                      borderRadius: moderateScale(10),
+                    }}
+                  />
+                </SkeletonPlaceholder>
+                <SkeletonPlaceholder animationType="shimmer">
+                  <View
+                    style={{
+                      width: "100%",
+                      height: verticalScale(20),
+                      borderRadius: moderateScale(10),
+                    }}
+                  />
+                </SkeletonPlaceholder>
+              </View>
+            </View>
+          </Animated.View>
+        ) : (
+          <Animated.View
+            entering={FadeInRight.duration(300)}
+            exiting={FadeOutLeft}
+            style={styles.suggestionsContainer}>
+            {searchData?.features?.map(
+              (item: MapTilerFeature, index: number) => (
+                <LocationSuggestionItem
+                  key={index}
+                  item={item}
+                  index={index}
+                  isLast={searchData.features.length - 1 === index}
+                  onSelect={handleLocationSelect}
+                  onRefine={handleLocationRefine}
+                />
+              )
+            )}
+          </Animated.View>
+        )}
       </BottomSheetKeyboardAwareScrollView>
     </>
   );
@@ -268,6 +400,7 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     marginTop: verticalScale(15),
+    backgroundColor: "red",
   },
   scrollContent: {
     flexGrow: 1,

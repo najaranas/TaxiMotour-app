@@ -9,7 +9,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import Button from "@/components/common/Button";
 import { useUser } from "@clerk/clerk-expo";
 import UserProfileImage from "@/components/common/UserProfileImage";
-import { Mail, User } from "lucide-react-native";
+import { Bike, BriefcaseBusiness, Mail, User } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 export default function PersonalInfo() {
   const { user } = useUser();
@@ -116,6 +116,88 @@ export default function PersonalInfo() {
             }>
             <View style={styles.menuItemContent}>
               <Mail
+                color={theme.text.primary}
+                strokeWidth={1.5}
+                size={moderateScale(25)}
+              />
+              <Typo
+                variant="body"
+                style={{ flexShrink: 1 }}
+                numberOfLines={1}
+                size={moderateScale(17)}
+                color={theme.text.primary}>
+                {user?.primaryEmailAddress?.emailAddress}
+              </Typo>
+              <View style={{ flex: 1, alignItems: "flex-end" }}></View>
+              <Typo
+                variant="body"
+                size={moderateScale(17)}
+                fontFamily={FONTS.medium}
+                color={COLORS.secondary}>
+                {t("profile.edit")}
+              </Typo>
+            </View>
+          </Button>
+          {/* email*/}
+
+          <Button
+            style={[
+              styles.menuItem,
+              { borderBottomWidth: theme.borderWidth.regular },
+            ]}
+            onPress={() =>
+              router.navigate({
+                pathname: "/(profile)/EditPersonalInfo",
+                params: {
+                  editType: "email",
+                  title: t("profile.editYourEmail"),
+                  description: t("profile.emailDescription"),
+                },
+              })
+            }>
+            <View style={styles.menuItemContent}>
+              <Bike
+                color={theme.text.primary}
+                strokeWidth={1.5}
+                size={moderateScale(25)}
+              />
+              <Typo
+                variant="body"
+                style={{ flexShrink: 1 }}
+                numberOfLines={1}
+                size={moderateScale(17)}
+                color={theme.text.primary}>
+                {user?.primaryEmailAddress?.emailAddress}
+              </Typo>
+              <View style={{ flex: 1, alignItems: "flex-end" }}></View>
+              <Typo
+                variant="body"
+                size={moderateScale(17)}
+                fontFamily={FONTS.medium}
+                color={COLORS.secondary}>
+                {t("profile.edit")}
+              </Typo>
+            </View>
+          </Button>
+          {/* email*/}
+
+          <Button
+            style={[
+              styles.menuItem,
+              { borderBottomWidth: theme.borderWidth.regular },
+            ]}
+            onPress={() =>
+              router.navigate({
+                pathname: "/(profile)/EditPersonalInfo",
+                params: {
+                  editType: "email",
+                  title: t("profile.editYourEmail"),
+                  description: t("profile.emailDescription"),
+                },
+              })
+            }>
+            <View style={styles.menuItemContent}>
+              <BriefcaseBusiness
                 color={theme.text.primary}
                 strokeWidth={1.5}
                 size={moderateScale(25)}

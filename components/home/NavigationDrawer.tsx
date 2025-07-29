@@ -1,33 +1,26 @@
-import React, { useState } from "react";
-import { View, StyleSheet, Share, Linking, Platform, Text } from "react-native";
+import { useState } from "react";
+import { View, StyleSheet, Share, Linking, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { COLORS, FONTS } from "@/constants/theme";
+import { FONTS } from "@/constants/theme";
 import { useTheme } from "@/contexts/ThemeContext";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import Typo from "@/components/common/Typo";
 import Button from "@/components/common/Button";
 import {
-  FacebookIcon,
   InstagramIcon,
   LinkedinIcon,
   TwitterIcon,
   UserIcon,
 } from "@/components/common/SvgIcons";
-import * as StoreReview from "expo-store-review";
 
 import {
-  Settings,
   Info,
-  ShieldCheck,
   CalendarCheck,
   X,
   Code,
   Star,
   Share2,
-  Linkedin,
-  Facebook,
-  Twitter,
 } from "lucide-react-native";
 import { APP_CONFIG } from "@/constants/app";
 import { useUser } from "@clerk/clerk-expo";
@@ -45,7 +38,7 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
   const router = useRouter();
   const { user } = useUser();
   const { t } = useTranslation();
-  const [isDevloperModalVisible, setIsDevloperModalVisible] = useState(false);
+  const [isDeveloperModalVisible, setIsDeveloperModalVisible] = useState(false);
 
   const handleMyAccount = () => {
     router.navigate("/(tabs)/Profile");
@@ -80,7 +73,7 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
   const itemPressHandler = (id: ItemId) => {
     switch (id) {
       case "history":
-        router.navigate("/(rides)/History");
+        router.navigate("/(tabs)/RidesHistory");
         onClose();
         break;
       case "about":
@@ -94,9 +87,8 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
         shareApp();
         break;
       case "developer":
-        setIsDevloperModalVisible(true);
+        setIsDeveloperModalVisible(true);
         break;
-
       default:
         break;
     }
@@ -110,6 +102,8 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
       developer: Code,
       rate: Star,
     };
+
+    // Use explicit translation keys for clarity
 
     return {
       icon: iconMap[item.id as keyof typeof iconMap],
@@ -221,26 +215,24 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
       </View>
 
       <CustomBottomSheetModal
-        isVisible={isDevloperModalVisible}
-        onClose={() => setIsDevloperModalVisible(false)}
+        isVisible={isDeveloperModalVisible}
+        onClose={() => setIsDeveloperModalVisible(false)}
         showBackdrop
         enablePanDownToClose
         showIndicator
         enableOverDrag>
         <BottomSheetView
-          style={[
-            {
-              paddingBottom: insets.bottom + verticalScale(20),
-              justifyContent: "center",
-              alignItems: "center",
-              gap: verticalScale(15),
-            },
-          ]}>
+          style={{
+            paddingBottom: insets.bottom + verticalScale(20),
+            justifyContent: "center",
+            alignItems: "center",
+            gap: verticalScale(15),
+          }}>
           <Typo
             color={theme.text.primary}
             variant="body"
             size={moderateScale(20)}>
-            About the developer
+            {t("drawer.aboutDeveloper")}
           </Typo>
           <View style={{ alignItems: "center", gap: verticalScale(5) }}>
             <Typo
@@ -253,7 +245,7 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
               color={theme.text.muted}
               variant="body"
               size={moderateScale(15)}>
-              Mobile App Developer
+              {t("drawer.developerRole")}
             </Typo>
             <View
               style={{
@@ -267,7 +259,7 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
                 }>
                 <LinkedinIcon
                   color={theme.text.muted}
-                  size={moderateScale(30)}
+                  size={moderateScale(40)}
                 />
               </Button>
               <Button
@@ -276,7 +268,7 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
                 }>
                 <InstagramIcon
                   color={theme.text.muted}
-                  size={moderateScale(30)}
+                  size={moderateScale(40)}
                 />
               </Button>
               <Button
@@ -285,7 +277,7 @@ export default function NavigationDrawer({ onClose }: NavigationDrawerProps) {
                 }>
                 <TwitterIcon
                   color={theme.text.muted}
-                  size={moderateScale(30)}
+                  size={moderateScale(40)}
                 />
               </Button>
             </View>

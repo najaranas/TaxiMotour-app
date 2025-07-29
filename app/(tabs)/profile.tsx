@@ -1,9 +1,18 @@
 import { useState, useEffect } from "react";
-import { View, StyleSheet, Switch } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Switch,
+  Pressable,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import { COLORS, FONTS } from "@/constants/theme";
 import { useTheme } from "@/contexts/ThemeContext";
-import { useClerk, useUser } from "@clerk/clerk-expo";
+import { createClient } from "@supabase/supabase-js";
+
+import { useAuth, useClerk, useSession, useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import Typo from "@/components/common/Typo";
@@ -29,6 +38,9 @@ import { useTranslation } from "react-i18next";
 export default function ProfileScreen() {
   const { signOut } = useClerk();
   const { user } = useUser();
+  const { session } = useSession();
+  const { getToken } = useAuth();
+
   const { theme, themeName, setTheme } = useTheme();
   const { t } = useTranslation();
 
@@ -240,6 +252,36 @@ export default function ProfileScreen() {
     </CustomBottomSheetModal>
   );
 
+  const supabase = createClient(
+    "https://adjxlxetifrtxfygomse.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkanhseGV0aWZydHhmeWdvbXNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5NDA3MjcsImV4cCI6MjA2ODUxNjcyN30.QSJBRz5VEJkVydmX6n6sEV5ntO6p9H2gudmvvv-NXSc",
+    {
+      async accessToken() {
+        return session?.getToken() ?? null;
+      },
+    }
+  );
+
+  // const { user } = useUser();
+  const fetchUserData = async () => {
+    try {
+      console.log("Fetching user data...");
+
+      await supabase.from("drivers").insert({
+        full_name: " test Salem",
+        moto_type: "dsda",
+        experience_years: 1,
+      });
+
+      const res = await supabase.from("drivers").select();
+      console.log("Fetched user data:", res);
+
+      console.log("ending user data...");
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
   return (
     <ScreenWrapper
       style={styles.container}
@@ -251,6 +293,9 @@ export default function ProfileScreen() {
       showsVerticalScrollIndicator={false}>
       {renderProfileHeader()}
       <ProfileMenuList />
+      <TouchableOpacity onPress={() => fetchUserData()}>
+        <Text>aze</Text>
+      </TouchableOpacity>
 
       {renderLogoutModal()}
     </ScreenWrapper>

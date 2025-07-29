@@ -22,7 +22,7 @@ export const APP_CONFIG = {
   SOCIAL_LINKS: {
     LINKEDIN: "https://www.linkedin.com/in/anasnajar",
     INSTAGRAM: "https://www.instagram.com/anas__najjar",
-    TWITTER: "https://x.com/AnasnajarTn",
+    TWITTER: "https://x.com/anasnajar_dev",
   },
   // Home Navigation Menu Items (Drawer)
   DRAWER_MENU_ITEMS: [

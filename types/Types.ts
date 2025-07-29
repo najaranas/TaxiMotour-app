@@ -251,6 +251,10 @@ export type ThemeType = {
     warning: string;
     info: string;
   };
+  skeleton: {
+    backgroundColor: string;
+    highlightColor: string;
+  };
   gray: {
     background: string;
     surface: string;

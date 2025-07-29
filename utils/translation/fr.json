@@ -81,10 +81,12 @@
     "myAccount": "Mon compte",
     "history": "Historique",
     "about": "À propos",
-    "safety": "Sécurité",
-    "settings": "Paramètres",
+    "rate": "Noter l'application",
+    "share": "Partager l'application",
+    "developer": "À propos du développeur",
     "createdBy": "Créé par {{creator}}",
-    "version": "Version {{version}}"
+    "version": "Version {{version}}",
+    "developerRole": "Développeur d'applications mobiles"
   },
   "earnings": {
     "title": "Écran des gains",

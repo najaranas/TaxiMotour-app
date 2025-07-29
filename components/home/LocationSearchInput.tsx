@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { TextInput, View, StyleSheet } from "react-native";
 import { CloseIcon, SearchIcon } from "@/components/common/SvgIcons";
 import { COLORS } from "@/constants/theme";
@@ -22,6 +22,7 @@ interface LocationSearchInputProps {
   isFocused?: boolean;
   inputRef?: React.RefObject<TextInput | null>;
   onSearchDataChange?: (data: any) => void;
+  setIsDataLoading?: (state: boolean) => void;
 }
 
 export default function LocationSearchInput({
@@ -33,6 +34,7 @@ export default function LocationSearchInput({
   isFocused = false,
   inputRef,
   onSearchDataChange,
+  setIsDataLoading,
 }: LocationSearchInputProps) {
   const handleTextChange = async (text: string) => {
     onValueChange({ place: text, lon: null, lat: null });
@@ -43,11 +45,14 @@ export default function LocationSearchInput({
 
   const fetchSuggestions = async (text: string) => {
     if (!text) return;
+    setIsDataLoading?.(true);
     try {
       const data = await geocodingService.fetchSuggestions(text);
       onSearchDataChange?.(data);
     } catch (error) {
       console.error("Geocoding error:", error);
+    } finally {
+      setIsDataLoading?.(false);
     }
   };
 
@@ -80,6 +85,7 @@ export default function LocationSearchInput({
             lon: null,
             lat: null,
           });
+          onSearchDataChange?.([]);
           inputRef?.current?.focus();
         }}>
         <CloseIcon color={theme.text.secondary} size={horizontalScale(15)} />

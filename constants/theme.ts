@@ -97,6 +97,11 @@ const THEMES: Record<"light" | "dark", ThemeType> = {
       placeholder: COLORS.gray[400],
     },
 
+    skeleton: {
+      backgroundColor: COLORS.gray[200], // light gray base
+      highlightColor: COLORS.gray[100], // lighter shimmer wave
+    },
+
     // Status
     status: {
       success: COLORS.success,
@@ -169,6 +174,10 @@ const THEMES: Record<"light" | "dark", ThemeType> = {
       placeholder: COLORS.gray[400],
     },
 
+    skeleton: {
+      backgroundColor: COLORS.gray[800], // dark gray base
+      highlightColor: COLORS.gray[700], // shimmer with slight contrast
+    },
     // Status
     status: {
       success: COLORS.success,

@@ -81,10 +81,14 @@
     "myAccount": "حسابي",
     "history": "التاريخ",
     "about": "حول",
+    "rate": "قيّم التطبيق",
+    "share": "مشاركة التطبيق",
+    "developer": "عن المطور",
     "safety": "الأمان",
     "settings": "الإعدادات",
     "createdBy": "تطوير {{creator}}",
-    "version": "الإصدار {{version}}"
+    "version": "الإصدار {{version}}",
+    "developerRole": "مطور تطبيقات الجوال"
   },
   "earnings": {
     "title": "شاشة الأرباح",

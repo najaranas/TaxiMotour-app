@@ -130,7 +130,7 @@ export default function Home() {
         enableOverDrag={false}
         enablePanDownToClose={false}
         onRef={setBottomSheetMethods}
-        snapPoints={["30%", "100%"]}
+        snapPoints={["90%", "100%"]}
         index={0}
         zindex={10}
         onChange={setActiveBottomSheetIndex}>
