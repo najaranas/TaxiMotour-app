@@ -75,7 +75,13 @@
   "home": {
     "whereToGo": "Où voulez-vous aller ?",
     "takeARide": "Prendre un trajet",
-    "letsGoPlaces": "Allons-y, explorons de nouveaux endroits."
+    "letsGoPlaces": "Allons-y, explorons de nouveaux endroits.",
+    "requestRide": "Demander un trajet",
+    "changeRoute": "Changer d'itinéraire",
+    "waitingForOffers": "En attente d'offres des chauffeurs",
+    "rideRequested": "Trajet demandé avec succès !",
+    "cancelRide": "Annuler le trajet",
+    "findingDriver": "Recherche de votre chauffeur..."
   },
   "drawer": {
     "myAccount": "Mon compte",

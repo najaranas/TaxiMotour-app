@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import * as MapLibreRN from "@maplibre/maplibre-react-native";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import { MapProps, RouteData } from "@/types/Types";
@@ -9,7 +9,12 @@ import * as Location from "expo-location";
 import { LocationIcon, TargetIcon } from "../common/SvgIcons";
 import { MaterialIndicator } from "react-native-indicators";
 
-export default function CustomMap({ roadData, viewPadding }: MapProps) {
+export default function CustomMap({
+  roadData,
+  viewPadding,
+  isMapLoading,
+  setIsMapLoading,
+}: MapProps) {
   console.log("roadData", roadData);
   console.log("viewPadding");
 
@@ -19,7 +24,6 @@ export default function CustomMap({ roadData, viewPadding }: MapProps) {
   );
   const mapCameraRef = useRef<MapLibreRN.CameraRef>(null);
   const [routeGeoJSON, setRouteGeoJSON] = useState<RouteData | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   console.log("routeGeoJSON", routeGeoJSON);
   useEffect(() => {
@@ -32,7 +36,7 @@ export default function CustomMap({ roadData, viewPadding }: MapProps) {
   const fetchRoute = async () => {
     if (!roadData || roadData.length < 2) return;
 
-    setIsLoading(true);
+    setIsMapLoading(true);
     setError(null);
 
     try {
@@ -54,7 +58,7 @@ export default function CustomMap({ roadData, viewPadding }: MapProps) {
       console.error("Route fetching error:", error);
       setError(apiUtils.handleApiError(error, "Failed to fetch route"));
     } finally {
-      setIsLoading(false);
+      setIsMapLoading(false);
     }
   };
 
@@ -87,7 +91,7 @@ export default function CustomMap({ roadData, viewPadding }: MapProps) {
               id="lineLayerBackground"
               style={{
                 lineColor: COLORS.routeBlue,
-                lineWidth: horizontalScale(10),
+                lineWidth: horizontalScale(6),
                 lineCap: "round",
                 lineJoin: "round",
               }}
@@ -183,7 +187,7 @@ export default function CustomMap({ roadData, viewPadding }: MapProps) {
       </MapLibreRN.MapView>
 
       {/* Loading Indicator */}
-      {isLoading && (
+      {isMapLoading && (
         <View style={styles.loadingOverlay}>
           <MaterialIndicator
             size={moderateScale(30)}

@@ -7,9 +7,11 @@ export default function CustomDrawer({
   onClose,
   style,
   children,
+  ...props
 }: CustomDrawerProps) {
   return (
     <Drawer
+      {...props}
       open={open}
       onOpen={onOpen}
       onClose={onClose}

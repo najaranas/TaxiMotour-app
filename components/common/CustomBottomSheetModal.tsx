@@ -4,6 +4,8 @@ import { CustomBottomSheetProps } from "@/types/Types";
 import { COLORS } from "@/constants/theme";
 import { horizontalScale, verticalScale } from "@/utils/styling";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useFocusEffect } from "expo-router";
+import { BackHandler } from "react-native";
 
 export default function CustomBottomSheetModal({
   snapPoints = [],
@@ -59,7 +61,6 @@ export default function CustomBottomSheetModal({
     [onChange]
   );
 
-  // Custom backdrop component that appears over tab bar
   const renderBackdrop = useCallback(
     (props: any) => (
       <>
@@ -72,7 +73,28 @@ export default function CustomBottomSheetModal({
         />
       </>
     ),
-    []
+    [themeName]
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      const backAction = () => {
+        if (isVisible) {
+          onClose && onClose();
+          return true;
+        }
+        return false;
+      };
+
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        backAction
+      );
+
+      return () => {
+        backHandler.remove();
+      };
+    }, [isVisible, onClose])
   );
 
   return (

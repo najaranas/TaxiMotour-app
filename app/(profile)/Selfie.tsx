@@ -122,7 +122,7 @@ export default function Selfie() {
             <View
               style={[styles.iconButton, { backgroundColor: theme.surface }]}>
               <AnimatedRefreshCcw
-                color={theme.text.secondary}
+                color={theme.text.primary}
                 strokeWidth={1.5}
                 size={moderateScale(25)}
                 style={animatedStyles}

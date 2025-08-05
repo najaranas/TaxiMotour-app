@@ -75,7 +75,13 @@
   "home": {
     "whereToGo": "إلى أين تريد الذهاب؟",
     "takeARide": "احجز رحلة",
-    "letsGoPlaces": "هيا لنذهب إلى أماكن جديدة."
+    "letsGoPlaces": "هيا لنذهب إلى أماكن جديدة.",
+    "requestRide": "اطلب رحلة",
+    "changeRoute": "تغيير المسار",
+    "waitingForOffers": "في انتظار عروض من السائقين",
+    "rideRequested": "تم طلب الرحلة بنجاح!",
+    "cancelRide": "إلغاء الرحلة",
+    "findingDriver": "جاري البحث عن سائقك..."
   },
   "drawer": {
     "myAccount": "حسابي",

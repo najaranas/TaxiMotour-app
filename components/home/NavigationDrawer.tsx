@@ -1,7 +1,14 @@
-import { useState } from "react";
-import { View, StyleSheet, Share, Linking, Platform } from "react-native";
+import { useCallback, useState } from "react";
+import {
+  View,
+  StyleSheet,
+  Share,
+  Linking,
+  Platform,
+  BackHandler,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { FONTS } from "@/constants/theme";
 import { useTheme } from "@/contexts/ThemeContext";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";

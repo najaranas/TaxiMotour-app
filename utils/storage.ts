@@ -7,6 +7,7 @@ const storage = new MMKV();
 export const STORAGE_KEYS = {
   THEME: "theme",
   LANGUAGE: "language",
+  USER_SYNC_PREFIX: "user_sync_", // For user sync data
 } as const;
 
 // Storage utility functions
@@ -92,6 +93,37 @@ const StorageManager = {
 
   retrieveLanguagePreference: (): string | undefined => {
     return storage.getString(STORAGE_KEYS.LANGUAGE);
+  },
+
+  // User sync storage operations
+  storeUserSyncData: (
+    userId: string,
+    syncData: { lastSyncTime: number; userDataHash: string }
+  ): void => {
+    const key = `${STORAGE_KEYS.USER_SYNC_PREFIX}${userId}`;
+    StorageManager.storeObject(key, syncData);
+  },
+
+  retrieveUserSyncData: (
+    userId: string
+  ): { lastSyncTime: number; userDataHash: string } | null => {
+    const key = `${STORAGE_KEYS.USER_SYNC_PREFIX}${userId}`;
+    return StorageManager.retrieveObject(key);
+  },
+
+  removeUserSyncData: (userId: string): void => {
+    const key = `${STORAGE_KEYS.USER_SYNC_PREFIX}${userId}`;
+    StorageManager.removeFromStorage(key);
+  },
+
+  clearAllUserSyncData: (): void => {
+    const allKeys = StorageManager.getAllStorageKeys();
+    const userSyncKeys = allKeys.filter((key) =>
+      key.startsWith(STORAGE_KEYS.USER_SYNC_PREFIX)
+    );
+    userSyncKeys.forEach((key) => {
+      StorageManager.removeFromStorage(key);
+    });
   },
 };
 

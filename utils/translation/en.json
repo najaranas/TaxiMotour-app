@@ -75,7 +75,13 @@
   "home": {
     "whereToGo": "Where to go?",
     "takeARide": "Take a ride",
-    "letsGoPlaces": "Let's go places."
+    "letsGoPlaces": "Let's go places.",
+    "requestRide": "Request a ride",
+    "changeRoute": "Change route",
+    "waitingForOffers": "Waiting for offers from drivers",
+    "rideRequested": "Ride requested successfully!",
+    "cancelRide": "Cancel ride",
+    "findingDriver": "Finding your driver..."
   },
   "drawer": {
     "myAccount": "My account",

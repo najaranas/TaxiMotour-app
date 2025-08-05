@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
-import { TextInput, View, StyleSheet, Keyboard } from "react-native";
+import { useRef, useState, useEffect } from "react";
+import { TextInput, View, StyleSheet, Keyboard, Modal } from "react-native";
 import { BottomSheetScrollView, BottomSheetView } from "@gorhom/bottom-sheet";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import Animated, { FadeInRight, FadeOutLeft } from "react-native-reanimated";
@@ -59,6 +59,23 @@ export default function RideBookingSheet({
 
   const locationInputRef = useRef<TextInput | null>(null);
   const destinationInputRef = useRef<TextInput | null>(null);
+
+  // Prevent bottom sheet from closing when keyboard opens
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        // Ensure we stay at index 1 when keyboard is shown
+        if (activeIndex === 1) {
+          setTimeout(() => onSnapToIndex(1), 100);
+        }
+      }
+    );
+
+    return () => {
+      keyboardDidShowListener?.remove();
+    };
+  }, [activeIndex, onSnapToIndex]);
 
   const handleLocationSelect = (item: MapTilerFeature) => {
     Keyboard.dismiss();
@@ -155,7 +172,7 @@ export default function RideBookingSheet({
           exiting={FadeOutLeft}>
           <Typo variant="h3">{t("home.letsGoPlaces")}</Typo>
           <Button
-            onPress={() => onSnapToIndex(2)}
+            onPress={() => onSnapToIndex(1)}
             style={[
               styles.searchButton,
               { backgroundColor: theme.input.background },
@@ -174,6 +191,7 @@ export default function RideBookingSheet({
   return (
     <>
       <Animated.View
+        key="view1"
         entering={FadeInRight.duration(300)}
         exiting={FadeOutLeft}
         style={[
@@ -400,10 +418,10 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     marginTop: verticalScale(15),
-    backgroundColor: "red",
   },
   scrollContent: {
     flexGrow: 1,
+    paddingBottom: verticalScale(50), // Add padding for keyboard
   },
   suggestionsContainer: {
     paddingHorizontal: horizontalScale(15),

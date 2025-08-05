@@ -24,6 +24,7 @@ import { profileMenuItems } from "@/constants/data";
 import CustomBottomSheetModal from "@/components/common/CustomBottomSheetModal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
+import { getSupabaseClient } from "@/services/supabaseClient";
 
 /**
  * ProfileScreen - Main profile screen component
@@ -252,36 +253,29 @@ export default function ProfileScreen() {
     </CustomBottomSheetModal>
   );
 
-  const supabase = createClient(
-    "https://adjxlxetifrtxfygomse.supabase.co",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFkanhseGV0aWZydHhmeWdvbXNlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI5NDA3MjcsImV4cCI6MjA2ODUxNjcyN30.QSJBRz5VEJkVydmX6n6sEV5ntO6p9H2gudmvvv-NXSc",
-    {
-      async accessToken() {
-        return session?.getToken() ?? null;
-      },
-    }
-  );
-
-  // const { user } = useUser();
   const fetchUserData = async () => {
     try {
-      console.log("Fetching user data...");
+      console.log("User ID:", user?.id);
+      const supabase = getSupabaseClient(session);
 
-      await supabase.from("drivers").insert({
-        full_name: " test Salem",
-        moto_type: "dsda",
-        experience_years: 1,
-      });
+      const res = await supabase
+        .from("drivers")
+        .update({
+          full_name: "pippo",
+        })
+        .eq("user_id", user?.id)
+        .select("*");
+      console.log("User ID from Clerk:", res);
 
-      const res = await supabase.from("drivers").select();
-      console.log("Fetched user data:", res);
-
-      console.log("ending user data...");
+      // const az = await supabase.from("drivers").insert({
+      //   user_id: user?.id,
+      //   full_name: "test",
+      // });
+      // console.log("Matching drivers row:", az);
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      console.error("Error:", error);
     }
   };
-
   return (
     <ScreenWrapper
       style={styles.container}

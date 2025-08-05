@@ -13,7 +13,7 @@ import { useSSO } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 import PhoneNumberField from "@/components/common/PhoneNumberField";
 import Seperator from "@/components/common/Seperator";
@@ -32,7 +32,7 @@ export default function Login() {
   const { startSSOFlow } = useSSO();
 
   // Warm up browser for better performance
-  React.useEffect(() => {
+  useEffect(() => {
     void WebBrowser.warmUpAsync();
     return () => {
       void WebBrowser.coolDownAsync();
@@ -69,24 +69,33 @@ export default function Login() {
         signUpStatus: signUp?.status,
       });
 
+      let shouldNavigate = false;
+
       // Check if OAuth was successful
       if (createdSessionId) {
         console.log("New session created successfully");
         if (setActive) {
           await setActive({ session: createdSessionId });
-          console.log("Session activated, navigating to home");
-          router.replace("/(tabs)/Home");
+          console.log("Session activated");
+          shouldNavigate = true;
         }
       } else if (signIn?.status === "complete") {
         console.log("Existing user signed in successfully");
-        router.replace("/(tabs)/Home");
+        shouldNavigate = true;
       } else if (signUp?.status === "complete") {
         console.log("New user signed up successfully");
-        router.replace("/(tabs)/Home");
+        shouldNavigate = true;
       } else {
         // OAuth was cancelled or incomplete
         console.log("OAuth cancelled or incomplete - no navigation");
         // Don't navigate anywhere, just stop loading
+      }
+
+      // If login was successful, navigate to home
+      // Database sync will be handled by AuthWrapper automatically
+      if (shouldNavigate) {
+        console.log("Navigating to home");
+        router.replace("/(tabs)/Home");
       }
     } catch (err: any) {
       console.error(

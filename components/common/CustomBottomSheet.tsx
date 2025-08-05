@@ -40,7 +40,6 @@ export default function CustomBottomSheet({
 
   const handleSheetChanges = useCallback(
     (index: number) => {
-      console.log("handleSheetChanges", index);
       onChange?.(index);
     },
     [onChange]
@@ -73,9 +72,10 @@ export default function CustomBottomSheet({
       enableOverDrag={enableOverDrag}
       enableContentPanningGesture={enableContentPanningGesture}
       enablePanDownToClose={enablePanDownToClose}
-      keyboardBehavior="interactive"
+      keyboardBehavior="extend"
       keyboardBlurBehavior="restore"
-      android_keyboardInputMode="adjustResize">
+      android_keyboardInputMode="adjustResize"
+      enableDynamicSizing={false}>
       {children}
     </BottomSheet>
   );

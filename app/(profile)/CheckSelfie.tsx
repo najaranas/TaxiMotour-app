@@ -23,6 +23,7 @@ export default function CheckSelfie() {
   const handleRetake = () => {
     router.back();
   };
+
   const handleConfirm = async () => {
     try {
       setIsUploading(true);
@@ -36,7 +37,7 @@ export default function CheckSelfie() {
       console.log(error);
     } finally {
       setIsUploading(false);
-      router.replace("/(tabs)/profile");
+      router.replace("/(tabs)/Profile");
     }
   };
   return (
@@ -47,7 +48,7 @@ export default function CheckSelfie() {
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.screenContent}>
-      <BackButton disabled={isUploading} variant="arrow" />
+      <BackButton variant="arrow" />
       <View style={styles.mainContent}>
         <Typo variant="h3" style={{ textAlign: "center" }}>
           {t("profile.reviewSelfie")}
