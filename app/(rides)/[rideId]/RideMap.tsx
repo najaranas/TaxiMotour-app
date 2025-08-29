@@ -8,7 +8,7 @@ import RideCard from "@/components/Ride/RideCard";
 import DriverInfo from "@/components/common/DriverInfo";
 import FareInfo from "@/components/common/FareInfo";
 import { useTheme } from "@/contexts/ThemeContext";
-import Map from "@/components/map/CustomMap";
+import CustomMap from "@/components/map/CustomMap";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import StatusBarOverlay from "@/components/common/StatusBarOverlay";
 import { useState, useMemo } from "react";
@@ -55,7 +55,7 @@ export default function RideMap() {
 
   return (
     <ScreenWrapper safeArea={false}>
-      <Map roadData={routePoints} viewPadding={mapViewPadding} />
+      <CustomMap roadData={routePoints} viewPadding={mapViewPadding} />
       <StatusBarOverlay />
 
       {/* Header Section */}

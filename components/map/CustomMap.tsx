@@ -1,72 +1,78 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Image, StyleSheet, View } from "react-native";
 import * as MapLibreRN from "@maplibre/maplibre-react-native";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
-import { MapProps, RouteData } from "@/types/Types";
+import { MapProps } from "@/types/Types";
 import { COLORS } from "@/constants/theme";
-import { routeService, apiUtils } from "@/services/api";
 import * as Location from "expo-location";
 import { LocationIcon, TargetIcon } from "../common/SvgIcons";
 import { MaterialIndicator } from "react-native-indicators";
+import { useMapStore } from "@/store/mapStore";
 
-export default function CustomMap({
-  roadData,
-  viewPadding,
-  isMapLoading,
-  setIsMapLoading,
-}: MapProps) {
+export default function CustomMap({ roadData, viewPadding }: MapProps) {
   console.log("roadData", roadData);
   console.log("viewPadding");
 
   const mapRef = useRef<MapLibreRN.MapViewRef>(null);
-  const [location, setLocation] = useState<Location.LocationObject | null>(
+
+  const { isMapLoading, routeGeoJSON, fetchRoute, routeError } = useMapStore();
+  // const [isMapLoading, setIsMapLoading] = useState(false);
+
+  const [mylocation, setMylocation] = useState<Location.LocationObject | null>(
     null
   );
+  // Control when we allow camera to follow user to avoid native error spam
+  const [canFollowUser, setCanFollowUser] = useState(false);
   const mapCameraRef = useRef<MapLibreRN.CameraRef>(null);
-  const [routeGeoJSON, setRouteGeoJSON] = useState<RouteData | null>(null);
-  const [error, setError] = useState<string | null>(null);
   console.log("routeGeoJSON", routeGeoJSON);
+
   useEffect(() => {
     if (roadData && roadData.length >= 2) {
-      fetchRoute();
+      fetchRoute(roadData);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [roadData]);
+  }, [roadData, fetchRoute]);
 
-  const fetchRoute = async () => {
-    if (!roadData || roadData.length < 2) return;
-
-    setIsMapLoading(true);
-    setError(null);
-
+  const initLocation = useCallback(async () => {
     try {
-      const startCoords: [number, number] = [
-        roadData[0].lon!,
-        roadData[0].lat!,
-      ];
-      const endCoords: [number, number] = [roadData[1].lon!, roadData[1].lat!];
-      if (
-        !apiUtils.validateCoordinates(startCoords[0], startCoords[1]) ||
-        !apiUtils.validateCoordinates(endCoords[0], endCoords[1])
-      ) {
-        throw new Error("Invalid coordinates");
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setMylocation(null);
+        setCanFollowUser(false);
+        return;
       }
-      const data = await routeService.fetchRoute(startCoords, endCoords);
 
-      setRouteGeoJSON(data);
-    } catch (error) {
-      console.error("Route fetching error:", error);
-      setError(apiUtils.handleApiError(error, "Failed to fetch route"));
-    } finally {
-      setIsMapLoading(false);
+      // Try last known first (fast, may be null)
+      const last = await Location.getLastKnownPositionAsync();
+      if (last) {
+        setMylocation(last as Location.LocationObject);
+      }
+
+      // Start a watcher for fresher updates
+      await Location.watchPositionAsync(
+        {
+          accuracy: Location.Accuracy.High,
+          distanceInterval: 5,
+          timeInterval: 4000,
+        },
+        (loc) => {
+          setMylocation(loc);
+          setCanFollowUser(true);
+        }
+      );
+    } catch (e) {
+      console.warn("Location init error", e);
+      setCanFollowUser(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    initLocation();
+  }, [initLocation]);
 
   const mapStyleUrl = process.env.EXPO_PUBLIC_MAPTILER_MAP_API
     ? `https://api.maptiler.com/maps/streets/style.json?key=${process.env.EXPO_PUBLIC_MAPTILER_MAP_API}`
     : "https://api.maptiler.com/maps/streets/style.json";
 
-  console.log("locationd", location);
   return (
     <View style={styles.mapContainer}>
       <MapLibreRN.MapView
@@ -137,11 +143,26 @@ export default function CustomMap({
         {/* Default Camera (when no route) */}
         {!routeGeoJSON && (
           <MapLibreRN.Camera
-            followUserLocation={location !== null}
-            zoomLevel={2}
-            centerCoordinate={[10.17226, 36.8104]}
+            followUserLocation={canFollowUser}
+            zoomLevel={mylocation ? 14 : 2}
+            centerCoordinate={
+              mylocation
+                ? [mylocation.coords.longitude, mylocation.coords.latitude]
+                : [10.17226, 36.8104]
+            }
           />
         )}
+
+        {/* User location puck - keeps native module satisfied and gives updates */}
+        <MapLibreRN.UserLocation
+          visible={true}
+          androidRenderMode="gps"
+          onUpdate={(loc) => {
+            if (loc && !canFollowUser) {
+              setCanFollowUser(true);
+            }
+          }}
+        />
 
         {/* Route Camera (when route is loaded) */}
         {routeGeoJSON && routeGeoJSON.features[0]?.geometry?.coordinates && (
@@ -198,7 +219,7 @@ export default function CustomMap({
       )}
 
       {/* Error Message */}
-      {error && (
+      {routeError && (
         <View style={styles.errorOverlay}>
           <View style={styles.errorContainer}>
             <Image

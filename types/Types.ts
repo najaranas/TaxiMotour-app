@@ -208,8 +208,6 @@ export interface MapProps {
     paddingTop?: number;
     paddingBottom?: number;
   };
-  isMapLoading?: boolean;
-  setIsMapLoading: (state: boolean) => void;
 }
 
 export type ThemeType = {

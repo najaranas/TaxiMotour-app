@@ -1,12 +1,29 @@
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import Typo from "./Typo";
 import { useTheme } from "@/contexts/ThemeContext";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import { useState } from "react";
+import { useMapStore } from "@/store/mapStore";
 
 export default function FareInfo() {
   const { theme } = useTheme();
   const [viewWidth, setViewWidth] = useState(0);
+  const { routeGeoJSON } = useMapStore();
+
+  // Extract distance and duration from route data
+  const routeData = routeGeoJSON?.features?.[0]?.properties?.summary;
+  const distance = routeData?.distance
+    ? `${(routeData.distance / 1000).toFixed(1)}km`
+    : "N/A";
+  const duration = routeData?.duration
+    ? `${Math.round(routeData.duration / 60)}min`
+    : "N/A";
+
+  // Calculate basic fare (you can implement your fare calculation logic)
+  const baseFare = routeData?.distance
+    ? Math.max(5, Math.round((routeData.distance / 1000) * 2.5))
+    : 15;
+
   return (
     <View>
       <View
@@ -38,7 +55,7 @@ export default function FareInfo() {
               variant="body"
               size={moderateScale(14)}
               color={theme.text.secondary}>
-              TND15
+              TND{baseFare}
             </Typo>
           </View>
           <View
@@ -121,7 +138,7 @@ export default function FareInfo() {
               variant="body"
               size={moderateScale(14)}
               color={theme.text.secondary}>
-              2.5km
+              {distance}
             </Typo>
           </View>
           <View
@@ -140,7 +157,7 @@ export default function FareInfo() {
               variant="body"
               size={moderateScale(14)}
               color={theme.text.secondary}>
-              5min
+              {duration}
             </Typo>
           </View>
         </View>
@@ -184,5 +201,3 @@ export default function FareInfo() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({});

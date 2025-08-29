@@ -24,6 +24,7 @@ import THEME, { COLORS, FONTS } from "@/constants/theme";
 import Typo from "@/components/common/Typo";
 import { useTranslation } from "react-i18next";
 import { PulseIndicator } from "react-native-indicators";
+import { useMapStore } from "@/store/mapStore";
 
 interface LocationData {
   place?: string;
@@ -45,9 +46,9 @@ export default function Home() {
   >("");
   const [roadData, setRoadData] = useState<LocationData[]>([]);
   const [hasSelectedRoute, setHasSelectedRoute] = useState(false);
-  const [isMapLoading, setIsMapLoading] = useState(false);
   const [isRideRequested, setIsRideRequested] = useState(false);
   const [isRequestingRide, setIsRequestingRide] = useState(false);
+  const { isMapLoading, clearRoute } = useMapStore();
 
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
@@ -92,10 +93,11 @@ export default function Home() {
     setHasSelectedRoute(false);
     setIsRideRequested(false);
     setRoadData([]);
+    clearRoute(); // Clear the route from store
 
     setActiveBottomSheetIndex(1);
     handleSnapToIndex(1);
-  }, [handleSnapToIndex]);
+  }, [handleSnapToIndex, clearRoute]);
 
   const handleRequestRide = useCallback(async () => {
     try {
@@ -160,14 +162,12 @@ export default function Home() {
   );
 
   console.log("activeBottomSheetIndex", activeBottomSheetIndex);
-
+  console.log("roadData roadData", roadData);
   return (
     <ScreenWrapper safeArea={false} style={styles.container} hasBottomTabs>
       {/* Enhanced Map Component */}
       <CustomMap
         roadData={roadData}
-        isMapLoading={isMapLoading}
-        setIsMapLoading={setIsMapLoading}
         viewPadding={{
           paddingLeft: horizontalScale(50),
           paddingRight: horizontalScale(50),
@@ -226,8 +226,8 @@ export default function Home() {
           />
         </CustomBottomSheet>
       ) : (
+        //  Ride Action Buttons - Show when route is selected
         !isMapLoading && (
-          //  Ride Action Buttons - Show when route is selected
           <View
             style={[
               styles.buttonColumn,
@@ -238,6 +238,7 @@ export default function Home() {
               },
             ]}>
             {/* Status indicator - Only show after ride is requested */}
+
             {(isRideRequested || isRequestingRide) && (
               <View
                 style={{
