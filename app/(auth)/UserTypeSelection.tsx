@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Button from "@/components/common/Button";
 import Typo from "@/components/common/Typo";
 import { FONTS } from "@/constants/theme";
@@ -11,7 +11,7 @@ import { userTypes } from "@/constants/data";
 import BackButton from "@/components/common/BackButton";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/contexts/ThemeContext";
-import { useUser, useSession, useClerk } from "@clerk/clerk-expo";
+import { useUser, useSession } from "@clerk/clerk-expo";
 import { getSupabaseClient } from "@/services/supabaseClient";
 import { useUserData } from "@/store/userStore";
 import StorageManager from "@/utils/storage";
