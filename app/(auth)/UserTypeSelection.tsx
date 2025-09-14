@@ -1,19 +1,20 @@
-import React, { useState, useMemo } from "react";
-import { StyleSheet, View } from "react-native";
+import React, { useState, useMemo, useEffect } from "react";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Button from "@/components/common/Button";
 import Typo from "@/components/common/Typo";
 import { FONTS } from "@/constants/theme";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
-import { useRouter } from "expo-router";
+import { usePathname, useRouter } from "expo-router";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import UserTypeCard from "@/components/common/UserTypeCard";
 import { userTypes } from "@/constants/data";
 import BackButton from "@/components/common/BackButton";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/contexts/ThemeContext";
-import { useUser, useSession } from "@clerk/clerk-expo";
+import { useUser, useSession, useClerk } from "@clerk/clerk-expo";
 import { getSupabaseClient } from "@/services/supabaseClient";
 import { useUserData } from "@/store/userStore";
+import StorageManager from "@/utils/storage";
 
 type UserType = "driver" | "passenger" | null;
 
@@ -114,6 +115,9 @@ export default function UserTypeSelection() {
       });
 
       console.log(`User successfully created as ${selectedType}`);
+
+      StorageManager.removeFromStorage("signUpCompleted");
+
       router.dismissAll();
       router.replace("/(tabs)/Home");
     } catch (error) {
@@ -122,6 +126,17 @@ export default function UserTypeSelection() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    StorageManager.storeBoolean("signUpCompleted", false);
+  }, []);
+
+  const pathname = usePathname();
+  console.log(pathname);
+
+  const { session: clerkSession } = useSession();
+  console.log("clerkSession2", clerkSession);
+  console.log("user", user);
 
   return (
     <ScreenWrapper

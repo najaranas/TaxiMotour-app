@@ -93,6 +93,7 @@ export default function UserTypeCard({
           style={dynamicStyles.cardIcon}
           resizeMode="contain"
         />
+
         <View style={staticStyles.cardTextContainer}>
           <Typo
             variant="h3"

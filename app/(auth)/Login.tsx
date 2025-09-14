@@ -11,9 +11,9 @@ import {
 } from "@/components/common/SvgIcons";
 import { useSession, useSSO, useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
-import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
-import React, { useEffect, useState } from "react";
+import * as AuthSession from "expo-auth-session";
+import React, { useEffect, useState, useRef } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 import PhoneNumberField from "@/components/common/PhoneNumberField";
 import Seperator from "@/components/common/Seperator";
@@ -27,13 +27,16 @@ export default function Login() {
   const router = useRouter();
   const { theme } = useTheme();
   const [loginLoading, setLoginLoading] = useState<
-    "google" | "facebook" | "appgle" | null
+    "google" | "facebook" | "apple" | null
   >(null);
 
   const { startSSOFlow } = useSSO();
   const { session: clerkSession } = useSession();
   const { user } = useUser();
   const { setUserData } = useUserData();
+
+  // Track if we need to handle post-OAuth navigation
+  const pendingNavigation = useRef(false);
 
   // Warm up browser for better performance
   useEffect(() => {
@@ -43,29 +46,93 @@ export default function Login() {
     };
   }, []);
 
+  // Handle navigation after OAuth when session and user become available
+  useEffect(() => {
+    if (pendingNavigation.current && clerkSession && user) {
+      pendingNavigation.current = false; // Reset flag
+      handlePostOAuthNavigation();
+    }
+  }, [clerkSession, user]);
+
+  const handlePostOAuthNavigation = async () => {
+    try {
+      console.log("Handling post-OAuth navigation...");
+      console.log("clerkSession", clerkSession);
+      console.log("user", user);
+
+      const supabase = getSupabaseClient(clerkSession);
+
+      const [driversResponse, passengersResponse] = await Promise.all([
+        supabase.from("drivers").select("*").eq("user_id", user?.id).single(),
+        supabase
+          .from("passengers")
+          .select("*")
+          .eq("user_id", user?.id)
+          .single(),
+      ]);
+
+      console.log("User ID:", user?.id);
+      console.log("Drivers response:", driversResponse);
+      console.log("Passengers response:", passengersResponse);
+
+      const driverData = driversResponse.data;
+      const passengerData = passengersResponse.data;
+
+      if (driverData || passengerData) {
+        // Existing user - go directly to Home
+        const userData = driverData || passengerData;
+
+        setUserData({
+          email_address: userData.email_address,
+          phone_number: userData.phone_number,
+          full_name: userData.full_name,
+          first_name: userData.first_name,
+          last_name: userData.last_name,
+          experience_years: userData.experience_years,
+          moto_type: userData.moto_type,
+          user_type: userData.user_type,
+        });
+
+        console.log("Existing user found, navigating directly to Home");
+        // router.replace("/(tabs)/Home");
+      } else {
+        // New user - needs to select user type
+        console.log("New user detected, navigating to UserTypeSelection");
+        // router.replace("/(auth)/UserTypeSelection");
+      }
+    } catch (error) {
+      console.error("Error in post-OAuth navigation:", error);
+      // On error, assume new user and go to UserTypeSelection
+      // router.replace("/(auth)/UserTypeSelection");
+    }
+  };
+
   const onSocialPress = async (
     type: "oauth_google" | "oauth_apple" | "oauth_facebook"
   ) => {
-    // Prevent multiple simultaneous requests
     if (loginLoading) return;
 
-    if (type === "oauth_apple") {
-      setLoginLoading("appgle");
-    } else if (type === "oauth_facebook") {
-      setLoginLoading("facebook");
-    } else {
-      setLoginLoading("google");
-    }
+    setLoginLoading(
+      type === "oauth_google"
+        ? "google"
+        : type === "oauth_facebook"
+        ? "facebook"
+        : "apple"
+    );
 
     const providerName = type.replace("oauth_", "");
     console.log(`Starting ${providerName} OAuth...`);
+
     try {
+      const redirectUrl = AuthSession.makeRedirectUri({
+        scheme: "taximotour",
+        path: "/(auth)/Login",
+      });
+
       const { createdSessionId, setActive, signIn, signUp } =
         await startSSOFlow({
           strategy: type,
-          redirectUrl: Linking.createURL("/(tabs)/Home", {
-            scheme: "taximotour",
-          }),
+          redirectUrl,
         });
 
       console.log("OAuth result:", {
@@ -74,84 +141,36 @@ export default function Login() {
         signUpStatus: signUp?.status,
       });
 
-      let shouldNavigate = false;
+      let oauthSuccessful = false;
 
-      // Check if OAuth was successful
       if (createdSessionId) {
         console.log("New session created successfully");
         if (setActive) {
           await setActive({ session: createdSessionId });
           console.log("Session activated");
-          shouldNavigate = true;
+          oauthSuccessful = true;
         }
       } else if (signIn?.status === "complete") {
         console.log("Existing user signed in successfully");
-        shouldNavigate = true;
+        oauthSuccessful = true;
       } else if (signUp?.status === "complete") {
         console.log("New user signed up successfully");
-        shouldNavigate = true;
+        oauthSuccessful = true;
       } else {
-        // OAuth was cancelled or incomplete
-        console.log("OAuth cancelled or incomplete - no navigation");
-        // Don't navigate anywhere, just stop loading
+        console.log("OAuth cancelled or incomplete");
       }
 
-      // If login was successful, navigate to home
-      // Database sync will be handled by AuthWrapper automatically
-      if (shouldNavigate) {
-        try {
-          const supabase = getSupabaseClient(clerkSession);
+      if (oauthSuccessful) {
+        // Don't navigate immediately - wait for session and user to be available
+        console.log("OAuth successful, waiting for session and user data...");
+        pendingNavigation.current = true;
 
-          // Check both drivers and passengers tables for existing user
-          const [driversResponse, passengersResponse] = await Promise.all([
-            supabase
-              .from("drivers")
-              .select("*")
-              .eq("user_id", user?.id)
-              .single(),
-            supabase
-              .from("passengers")
-              .select("*")
-              .eq("user_id", user?.id)
-              .single(),
-          ]);
-
-          console.log("user id :", user?.id);
-          console.log("Drivers response:", driversResponse);
-          console.log("Passengers response:", passengersResponse);
-
-          // Check if user exists in either table
-          const driverData = driversResponse.data;
-          const passengerData = passengersResponse.data;
-
-          if (driverData || passengerData) {
-            // User exists - store their data
-            const userData = driverData || passengerData;
-
-            setUserData({
-              email_address: userData.email_address,
-              phone_number: userData.phone_number,
-              full_name: userData.full_name,
-              first_name: userData.first_name,
-              last_name: userData.last_name,
-              experience_years: userData.experience_years,
-              moto_type: userData.moto_type,
-              user_type: userData.user_type,
-            });
-
-            console.log("Existing user found, navigating to Home");
-            router.replace("/(tabs)/Home");
-          } else {
-            // New user - redirect to user type selection
-            console.log("New user detected, navigating to user type selection");
-            router.replace("/(auth)/UserTypeSelection");
-          }
-        } catch (error) {
-          console.error("Error checking user in Supabase:", error);
-          // On error, redirect to user type selection as fallback
-          router.replace("/(auth)/UserTypeSelection");
+        // If session and user are already available, handle navigation immediately
+        if (clerkSession && user) {
+          pendingNavigation.current = false;
+          await handlePostOAuthNavigation();
         }
-        // router.replace("/(tabs)/Home");
+        // Otherwise, the useEffect will handle it when they become available
       }
     } catch (err: any) {
       console.error(
@@ -159,7 +178,6 @@ export default function Login() {
         JSON.stringify(err, null, 2)
       );
 
-      // Check if error is due to user cancellation
       const errorMessage = err?.message || "";
       const isUserCancellation =
         errorMessage.includes("cancelled") ||
@@ -175,7 +193,7 @@ export default function Login() {
         console.log(`User cancelled ${providerName} OAuth`);
       }
     } finally {
-      setLoginLoading(null); // Reset loading state
+      setLoginLoading(null);
     }
   };
 
@@ -224,7 +242,7 @@ export default function Login() {
                 borderColor: theme.gray.border,
               },
             ]}
-            loading={loginLoading === "appgle"}>
+            loading={loginLoading === "apple"}>
             <AppleIcon size={verticalScale(30)} color={theme.text.primary} />
             <Typo variant="body">Sign in with Apple</Typo>
           </Button>
@@ -285,7 +303,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   centerText: { textAlign: "center" },
-
   socialButtonsContainer: {
     gap: horizontalScale(10),
   },
