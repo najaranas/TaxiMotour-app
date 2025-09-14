@@ -7,11 +7,13 @@ import Typo from "@/components/common/Typo";
 import { COLORS, FONTS } from "@/constants/theme";
 import { useTheme } from "@/contexts/ThemeContext";
 import { horizontalScale, verticalScale } from "@/utils/styling";
-import { useUser } from "@clerk/clerk-expo";
+import { useUser, useSession } from "@clerk/clerk-expo";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { StyleSheet, View, Alert } from "react-native";
 import { useTranslation } from "react-i18next";
+import { getSupabaseClient } from "@/services/supabaseClient";
+import { useUserData } from "@/store/userStore";
 
 export default function ConfirmVerification() {
   const { contactType, contactValue } = useLocalSearchParams() as unknown as {
@@ -24,6 +26,8 @@ export default function ConfirmVerification() {
   console.log("segments");
   const router = useRouter();
   const { user } = useUser();
+  const { session } = useSession();
+  const { userData, updateUserData } = useUserData();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [contactToVerify, setContactToVerify] = useState<any>(null);
   const resendTime = 20;
@@ -92,8 +96,29 @@ export default function ConfirmVerification() {
           await user?.update({
             primaryEmailAddressId: contactToVerify.id,
           });
-          console.log("Email verified and set as primary successfully");
 
+          // Update Supabase with the verified email
+          try {
+            const supabase = getSupabaseClient(session);
+            const { error } = await supabase
+              .from(userData?.user_type === "driver" ? "drivers" : "passengers")
+              .update({ email_address: contactValue })
+              .eq("user_id", user?.id);
+
+            if (error) {
+              console.log("Error updating email in Supabase:", error);
+            } else {
+              // Update local user store
+              updateUserData({ email_address: contactValue });
+              console.log(
+                "Email updated successfully in both Clerk and Supabase"
+              );
+            }
+          } catch (error) {
+            console.log("Error updating email in Supabase:", error);
+          }
+
+          console.log("Email verified and set as primary successfully");
           router.dismissTo("/(profile)/PersonalInfo");
         } else {
           Alert.alert(t("errors.error"), t("errors.invalidVerificationCode"));
@@ -108,8 +133,29 @@ export default function ConfirmVerification() {
           await user?.update({
             primaryPhoneNumberId: contactToVerify.id,
           });
-          console.log("Phone verified and set as primary successfully");
 
+          // Update Supabase with the verified phone
+          try {
+            const supabase = getSupabaseClient(session);
+            const { error } = await supabase
+              .from(userData?.user_type === "driver" ? "drivers" : "passengers")
+              .update({ phone_number: contactValue })
+              .eq("user_id", user?.id);
+
+            if (error) {
+              console.log("Error updating phone in Supabase:", error);
+            } else {
+              // Update local user store
+              updateUserData({ phone_number: contactValue });
+              console.log(
+                "Phone updated successfully in both Clerk and Supabase"
+              );
+            }
+          } catch (error) {
+            console.log("Error updating phone in Supabase:", error);
+          }
+
+          console.log("Phone verified and set as primary successfully");
           router.dismissTo("/(profile)/PersonalInfo");
         } else {
           Alert.alert(t("errors.error"), t("errors.invalidVerificationCode"));

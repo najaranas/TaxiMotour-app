@@ -2,23 +2,30 @@ import React, { useState, useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 import Button from "@/components/common/Button";
 import Typo from "@/components/common/Typo";
-import THEME, { COLORS, FONTS } from "@/constants/theme";
+import { FONTS } from "@/constants/theme";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
-import { usePathname, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import UserTypeCard from "@/components/common/UserTypeCard";
 import { userTypes } from "@/constants/data";
 import BackButton from "@/components/common/BackButton";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useUser, useSession } from "@clerk/clerk-expo";
+import { getSupabaseClient } from "@/services/supabaseClient";
+import { useUserData } from "@/store/userStore";
 
 type UserType = "driver" | "passenger" | null;
 
 export default function UserTypeSelection() {
   const [selectedType, setSelectedType] = useState<UserType>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { user } = useUser();
+  const { session } = useSession();
+  const { setUserData } = useUserData();
 
   // Dynamic styles - memoized for performance, only recreated when theme changes
   const dynamicStyles = useMemo(
@@ -63,12 +70,58 @@ export default function UserTypeSelection() {
     [theme]
   );
 
-  const handleContinue = () => {
-    router.dismissAll();
-    router.replace("/(tabs)/Home");
+  const handleContinue = async () => {
+    if (!selectedType || !user || !session) return;
+
+    setIsLoading(true);
+    try {
+      const supabase = getSupabaseClient(session);
+
+      // Prepare user data
+      const userData = {
+        user_id: user.id,
+        email_address: user.primaryEmailAddress?.emailAddress || "",
+        phone_number: user.primaryPhoneNumber?.phoneNumber || "",
+        first_name: user.firstName || "",
+        last_name: user.lastName || "",
+        user_type: selectedType,
+        ...(selectedType === "driver" && {
+          experience_years: "",
+          moto_type: "",
+        }),
+      };
+
+      // Insert user into appropriate table
+      const tableName = selectedType === "driver" ? "drivers" : "passengers";
+      const { error } = await supabase.from(tableName).insert(userData);
+
+      if (error) {
+        console.error(`Error inserting user into ${tableName}:`, error);
+        // Handle error - maybe show an alert
+        return;
+      }
+
+      // Update local user store
+      setUserData({
+        email_address: userData.email_address,
+        phone_number: userData.phone_number,
+        full_name: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
+        first_name: userData.first_name,
+        last_name: userData.last_name,
+        experience_years: userData.experience_years,
+        moto_type: userData.moto_type,
+        user_type: userData.user_type,
+      });
+
+      console.log(`User successfully created as ${selectedType}`);
+      router.dismissAll();
+      router.replace("/(tabs)/Home");
+    } catch (error) {
+      console.error("Error during user creation:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
-  const pathname = usePathname();
-  console.log(pathname);
 
   return (
     <ScreenWrapper
@@ -117,31 +170,17 @@ export default function UserTypeSelection() {
         );
       })}
 
-      {userTypes.map((type) => {
-        const isSelected = selectedType === type.id;
-        return (
-          <UserTypeCard
-            key={type.id}
-            icon={type.icon}
-            title={t(`auth.${type.id}`)}
-            subtitle={t(`auth.${type.id}Subtitle`)}
-            description={t(`auth.${type.id}Description`)}
-            isSelected={isSelected}
-            onPress={() => setSelectedType(type.id)}
-          />
-        );
-      })}
-
       {/* Continue Button */}
       <Button
-        disabled={!selectedType}
+        loading={isLoading}
+        disabled={!selectedType || isLoading}
         style={[
           dynamicStyles.button,
-          selectedType
+          selectedType && !isLoading
             ? dynamicStyles.buttonEnabled
             : dynamicStyles.buttonDisabled,
           {
-            opacity: selectedType ? 1 : 0.5,
+            opacity: selectedType && !isLoading ? 1 : 0.5,
           },
         ]}
         onPress={handleContinue}>
@@ -150,7 +189,7 @@ export default function UserTypeSelection() {
           size={moderateScale(18)}
           fontFamily={FONTS.medium}
           color={theme.button.text}>
-          {t("auth.continue")}
+          {isLoading ? t("auth.creating") : t("auth.continue")}
         </Typo>
       </Button>
     </ScreenWrapper>

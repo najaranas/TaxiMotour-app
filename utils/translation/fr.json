@@ -9,6 +9,7 @@
     "driverSubtitle": "Gagner de l'argent en conduisant",
     "driverDescription": "Acceptez les demandes de trajets, gagnez de l'argent et gérez vos trajets facilement.",
     "continue": "Continuer",
+    "creating": "Création du compte...",
     "phoneVerification": "Entrez votre numéro",
     "phoneVerificationDescription": "Nous enverrons un code de vérification à ce numéro",
     "whatsappNotification": "Nous enverrons un code de vérification à votre numéro WhatsApp.",
@@ -60,7 +61,18 @@
     "reviewSelfie": "Examiner votre selfie",
     "selfieReviewInstructions": "Si vous êtes satisfait de votre photo, appuyez sur Confirmer. Sinon, reprenez votre selfie.",
     "confirmSelfie": "Confirmer le selfie",
-    "retakeSelfie": "Reprendre le selfie"
+    "retakeSelfie": "Reprendre le selfie",
+
+    "editMotoType": "Modifier le type de moto",
+    "editExperience": "Modifier l'expérience",
+    "motoTypeDescription": "Veuillez spécifier votre type de moto",
+    "experienceDescription": "Veuillez spécifier vos années d'expérience",
+    "year": "année",
+    "years": "années",
+    "motoType": "Type de Moto",
+    "experienceYears": "Années d'Expérience",
+    "enterMotoType": "Entrez votre type de moto",
+    "enterExperience": "Entrez vos années d'expérience"
   },
   "selfie": {
     "instructions": "Assurez-vous que votre visage est centré et bien éclairé. Souriez pour un meilleur résultat !",

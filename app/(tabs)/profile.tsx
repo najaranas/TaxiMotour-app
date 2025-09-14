@@ -1,18 +1,10 @@
 import { useState, useEffect } from "react";
-import {
-  View,
-  StyleSheet,
-  Switch,
-  Pressable,
-  Text,
-  TouchableOpacity,
-} from "react-native";
+import { View, StyleSheet, Switch } from "react-native";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import { COLORS, FONTS } from "@/constants/theme";
 import { useTheme } from "@/contexts/ThemeContext";
-import { createClient } from "@supabase/supabase-js";
 
-import { useAuth, useClerk, useSession, useUser } from "@clerk/clerk-expo";
+import { useClerk, useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import Typo from "@/components/common/Typo";
@@ -24,7 +16,7 @@ import { profileMenuItems } from "@/constants/data";
 import CustomBottomSheetModal from "@/components/common/CustomBottomSheetModal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
-import { getSupabaseClient } from "@/services/supabaseClient";
+import { useUserData } from "@/store/userStore";
 
 /**
  * ProfileScreen - Main profile screen component
@@ -39,8 +31,7 @@ import { getSupabaseClient } from "@/services/supabaseClient";
 export default function ProfileScreen() {
   const { signOut } = useClerk();
   const { user } = useUser();
-  const { session } = useSession();
-  const { getToken } = useAuth();
+  const { setUserData } = useUserData();
 
   const { theme, themeName, setTheme } = useTheme();
   const { t } = useTranslation();
@@ -91,6 +82,7 @@ export default function ProfileScreen() {
     setIsSigningOut(true);
     try {
       await signOut();
+      setUserData({});
     } catch (error) {
       console.error("Sign out error:", JSON.stringify(error, null, 2));
     } finally {
@@ -253,29 +245,6 @@ export default function ProfileScreen() {
     </CustomBottomSheetModal>
   );
 
-  const fetchUserData = async () => {
-    try {
-      console.log("User ID:", user?.id);
-      const supabase = getSupabaseClient(session);
-
-      const res = await supabase
-        .from("drivers")
-        .update({
-          full_name: "pippo",
-        })
-        .eq("user_id", user?.id)
-        .select("*");
-      console.log("User ID from Clerk:", res);
-
-      // const az = await supabase.from("drivers").insert({
-      //   user_id: user?.id,
-      //   full_name: "test",
-      // });
-      // console.log("Matching drivers row:", az);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
   return (
     <ScreenWrapper
       style={styles.container}
@@ -287,10 +256,6 @@ export default function ProfileScreen() {
       showsVerticalScrollIndicator={false}>
       {renderProfileHeader()}
       <ProfileMenuList />
-      <TouchableOpacity onPress={() => fetchUserData()}>
-        <Text>aze</Text>
-      </TouchableOpacity>
-
       {renderLogoutModal()}
     </ScreenWrapper>
   );

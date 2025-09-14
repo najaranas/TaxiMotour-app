@@ -75,6 +75,7 @@ export default function Home() {
     const validRoadData = newRoadData.filter((location) =>
       apiUtils.validateCoordinates(location.lat ?? null, location.lon ?? null)
     );
+
     console.log("validRoadData", validRoadData);
     if (validRoadData.length >= 2) {
       setRoadData(validRoadData);

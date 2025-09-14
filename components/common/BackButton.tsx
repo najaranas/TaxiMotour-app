@@ -8,17 +8,21 @@ import { ArrowLeft, ArrowRight, X } from "lucide-react-native";
 type BackButtonProps = {
   variant?: "arrow" | "close";
   disabled?: boolean;
+  onPress?: () => void;
 };
 
 export default function BackButton({
   variant = "arrow",
   disabled = false,
+  onPress,
 }: BackButtonProps) {
   const route = useRouter();
   const { theme } = useTheme();
 
+  const handlePress = onPress || route.back;
+
   return (
-    <Button onPress={route.back} disabled={disabled}>
+    <Button onPress={handlePress} disabled={disabled}>
       {variant === "arrow" ? (
         I18nManager.isRTL ? (
           <ArrowRight

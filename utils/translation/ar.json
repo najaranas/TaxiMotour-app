@@ -9,6 +9,7 @@
     "driverSubtitle": "اكسب المال من القيادة",
     "driverDescription": "اقبل طلبات الرحلات، اكسب المال، وأدر رحلاتك بسهولة.",
     "continue": "متابعة",
+    "creating": "إنشاء الحساب...",
     "phoneVerification": "أدخل رقمك",
     "phoneVerificationDescription": "سنرسل رمز التحقق إلى هذا الرقم",
     "whatsappNotification": "سنرسل رمز التحقق إلى رقم الواتساب الخاص بك.",
@@ -60,7 +61,17 @@
     "reviewSelfie": "مراجعة صورتك الشخصية",
     "selfieReviewInstructions": "إذا كنت راضياً عن صورتك، اضغط على تأكيد. وإلا، أعد التقاط صورتك الشخصية.",
     "confirmSelfie": "تأكيد الصورة الشخصية",
-    "retakeSelfie": "إعادة التقاط الصورة الشخصية"
+    "retakeSelfie": "إعادة التقاط الصورة الشخصية",
+    "editMotoType": "تعديل نوع الدراجة النارية",
+    "editExperience": "تعديل الخبرة",
+    "motoTypeDescription": "يرجى تحديد نوع دراجتك النارية",
+    "experienceDescription": "يرجى تحديد سنوات خبرتك",
+    "year": "سنة",
+    "years": "سنوات",
+    "motoType": "نوع الدراجة النارية",
+    "experienceYears": "سنوات الخبرة",
+    "enterMotoType": "أدخل نوع دراجتك النارية",
+    "enterExperience": "أدخل سنوات خبرتك"
   },
   "selfie": {
     "instructions": "تأكد من أن وجهك في المنتصف ومضاء جيداً. ابتسم للحصول على أفضل نتيجة!",

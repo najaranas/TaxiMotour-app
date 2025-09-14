@@ -284,3 +284,14 @@ export type RideCardProps = {
   viewOnly?: boolean;
   hideExtraDetails?: boolean;
 };
+
+export interface userDataType {
+  email_address?: string;
+  phone_number?: string;
+  full_name?: string;
+  first_name?: string;
+  last_name?: string;
+  experience_years?: string;
+  moto_type?: string;
+  user_type?: "driver" | "passenger";
+}

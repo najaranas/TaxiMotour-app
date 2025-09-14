@@ -9,6 +9,7 @@
     "driverSubtitle": "Earn money by driving",
     "driverDescription": "Accept ride requests, earn money, and manage your trips easily.",
     "continue": "Continue",
+    "creating": "Creating Account...",
     "phoneVerification": "Enter your number",
     "phoneVerificationDescription": "We'll send a verification code to this number",
     "whatsappNotification": "We'll send a verification code to your WhatsApp number.",
@@ -60,7 +61,18 @@
     "reviewSelfie": "Review Your Selfie",
     "selfieReviewInstructions": "If you're happy with your photo, tap Confirm. Otherwise, retake your selfie.",
     "confirmSelfie": "Confirm Selfie",
-    "retakeSelfie": "Retake Selfie"
+    "retakeSelfie": "Retake Selfie",
+
+    "editMotoType": "Edit Motorcycle Type",
+    "editExperience": "Edit Experience",
+    "motoTypeDescription": "Please specify your motorcycle type",
+    "experienceDescription": "Please specify your years of experience",
+    "year": "year",
+    "years": "years",
+    "motoType": "Motorcycle Type",
+    "experienceYears": "Years of Experience",
+    "enterMotoType": "Enter your motorcycle type",
+    "enterExperience": "Enter years of experience"
   },
   "selfie": {
     "instructions": "Make sure your face is centered and well-lit. Smile for the best result!",

@@ -9,13 +9,23 @@ import { useTheme } from "@/contexts/ThemeContext";
 import Button from "@/components/common/Button";
 import { useUser } from "@clerk/clerk-expo";
 import UserProfileImage from "@/components/common/UserProfileImage";
-import { Bike, BriefcaseBusiness, Mail, User } from "lucide-react-native";
+import {
+  Bike,
+  BriefcaseBusiness,
+  Mail,
+  Phone,
+  User,
+} from "lucide-react-native";
 import { useTranslation } from "react-i18next";
+import { useUserData } from "@/store/userStore";
 export default function PersonalInfo() {
   const { user } = useUser();
   const router = useRouter();
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { userData } = useUserData();
+  console.log("usedata", userData);
+  console.log("user id ", user?.id);
 
   return (
     <ScreenWrapper
@@ -57,6 +67,9 @@ export default function PersonalInfo() {
 
         <View style={styles.menuContainer}>
           {/* Personal Info */}
+
+          {/* name */}
+
           <Button
             style={[
               styles.menuItem,
@@ -84,7 +97,7 @@ export default function PersonalInfo() {
                 numberOfLines={1}
                 size={moderateScale(17)}
                 color={theme.text.primary}>
-                {user?.fullName}
+                {userData?.full_name || "—"}
               </Typo>
               <View style={{ flex: 1, alignItems: "flex-end" }}></View>
               <Typo
@@ -126,7 +139,7 @@ export default function PersonalInfo() {
                 numberOfLines={1}
                 size={moderateScale(17)}
                 color={theme.text.primary}>
-                {user?.primaryEmailAddress?.emailAddress}
+                {userData?.email_address || "—"}
               </Typo>
               <View style={{ flex: 1, alignItems: "flex-end" }}></View>
               <Typo
@@ -138,7 +151,8 @@ export default function PersonalInfo() {
               </Typo>
             </View>
           </Button>
-          {/* email*/}
+
+          {/* phone number*/}
 
           <Button
             style={[
@@ -149,14 +163,14 @@ export default function PersonalInfo() {
               router.navigate({
                 pathname: "/(profile)/EditPersonalInfo",
                 params: {
-                  editType: "email",
-                  title: t("profile.editYourEmail"),
-                  description: t("profile.emailDescription"),
+                  editType: "phone",
+                  title: t("profile.editYourPhone"),
+                  description: t("profile.phoneDescription"),
                 },
               })
             }>
             <View style={styles.menuItemContent}>
-              <Bike
+              <Phone
                 color={theme.text.primary}
                 strokeWidth={1.5}
                 size={moderateScale(25)}
@@ -167,7 +181,7 @@ export default function PersonalInfo() {
                 numberOfLines={1}
                 size={moderateScale(17)}
                 color={theme.text.primary}>
-                {user?.primaryEmailAddress?.emailAddress}
+                {userData?.phone_number || "—"}
               </Typo>
               <View style={{ flex: 1, alignItems: "flex-end" }}></View>
               <Typo
@@ -179,47 +193,97 @@ export default function PersonalInfo() {
               </Typo>
             </View>
           </Button>
-          {/* email*/}
 
-          <Button
-            style={[
-              styles.menuItem,
-              { borderBottomWidth: theme.borderWidth.regular },
-            ]}
-            onPress={() =>
-              router.navigate({
-                pathname: "/(profile)/EditPersonalInfo",
-                params: {
-                  editType: "email",
-                  title: t("profile.editYourEmail"),
-                  description: t("profile.emailDescription"),
-                },
-              })
-            }>
-            <View style={styles.menuItemContent}>
-              <BriefcaseBusiness
-                color={theme.text.primary}
-                strokeWidth={1.5}
-                size={moderateScale(25)}
-              />
-              <Typo
-                variant="body"
-                style={{ flexShrink: 1 }}
-                numberOfLines={1}
-                size={moderateScale(17)}
-                color={theme.text.primary}>
-                {user?.primaryEmailAddress?.emailAddress}
-              </Typo>
-              <View style={{ flex: 1, alignItems: "flex-end" }}></View>
-              <Typo
-                variant="body"
-                size={moderateScale(17)}
-                fontFamily={FONTS.medium}
-                color={COLORS.secondary}>
-                {t("profile.edit")}
-              </Typo>
-            </View>
-          </Button>
+          {userData?.user_type === "driver" && (
+            <>
+              <Button
+                style={[
+                  styles.menuItem,
+                  { borderBottomWidth: theme.borderWidth.regular },
+                ]}
+                onPress={() =>
+                  router.navigate({
+                    pathname: "/(profile)/EditPersonalInfo",
+                    params: {
+                      editType: "motoType",
+                      title: t("profile.editMotoType"),
+                      description: t("profile.motoTypeDescription"),
+                    },
+                  })
+                }>
+                <View style={styles.menuItemContent}>
+                  <Bike
+                    color={theme.text.primary}
+                    strokeWidth={1.5}
+                    size={moderateScale(25)}
+                  />
+                  <Typo
+                    variant="body"
+                    style={{ flexShrink: 1 }}
+                    numberOfLines={1}
+                    size={moderateScale(17)}
+                    color={theme.text.primary}>
+                    {userData?.moto_type || "—"}
+                  </Typo>
+                  <View style={{ flex: 1, alignItems: "flex-end" }}></View>
+                  <Typo
+                    variant="body"
+                    size={moderateScale(17)}
+                    fontFamily={FONTS.medium}
+                    color={COLORS.secondary}>
+                    {t("profile.edit")}
+                  </Typo>
+                </View>
+              </Button>
+
+              <Button
+                style={[
+                  styles.menuItem,
+                  { borderBottomWidth: theme.borderWidth.regular },
+                ]}
+                onPress={() =>
+                  router.navigate({
+                    pathname: "/(profile)/EditPersonalInfo",
+                    params: {
+                      editType: "experience",
+                      title: t("profile.editExperience"),
+                      description: t("profile.experienceDescription"),
+                    },
+                  })
+                }>
+                <View style={styles.menuItemContent}>
+                  <BriefcaseBusiness
+                    color={theme.text.primary}
+                    strokeWidth={1.5}
+                    size={moderateScale(25)}
+                  />
+                  <Typo
+                    variant="body"
+                    style={{ flexShrink: 1 }}
+                    numberOfLines={1}
+                    size={moderateScale(17)}
+                    color={theme.text.primary}>
+                    {userData?.experience_years
+                      ? `${userData.experience_years} ${
+                          Number(userData.experience_years) === 1
+                            ? t("profile.year")
+                            : t("profile.years")
+                        }`
+                      : "—"}
+                  </Typo>
+
+                  <View style={{ flex: 1, alignItems: "flex-end" }}></View>
+                  <Typo
+                    variant="body"
+                    size={moderateScale(17)}
+                    fontFamily={FONTS.medium}
+                    color={COLORS.secondary}>
+                    {t("profile.edit")}
+                  </Typo>
+                </View>
+              </Button>
+            </>
+          )}
         </View>
       </View>
     </ScreenWrapper>

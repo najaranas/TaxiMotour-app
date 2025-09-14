@@ -9,7 +9,7 @@ import {
   GoolgeIcon,
   TunisiaFlag,
 } from "@/components/common/SvgIcons";
-import { useSSO } from "@clerk/clerk-expo";
+import { useSession, useSSO, useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
@@ -17,19 +17,23 @@ import React, { useEffect, useState } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 import PhoneNumberField from "@/components/common/PhoneNumberField";
 import Seperator from "@/components/common/Seperator";
+import { getSupabaseClient } from "@/services/supabaseClient";
+import { useUserData } from "@/store/userStore";
 
 // Complete the WebBrowser auth session
 WebBrowser.maybeCompleteAuthSession();
 
 export default function Login() {
   const router = useRouter();
-  const { theme, setTheme } = useTheme();
+  const { theme } = useTheme();
   const [loginLoading, setLoginLoading] = useState<
     "google" | "facebook" | "appgle" | null
   >(null);
 
-  setTheme("dark");
   const { startSSOFlow } = useSSO();
+  const { session: clerkSession } = useSession();
+  const { user } = useUser();
+  const { setUserData } = useUserData();
 
   // Warm up browser for better performance
   useEffect(() => {
@@ -44,6 +48,7 @@ export default function Login() {
   ) => {
     // Prevent multiple simultaneous requests
     if (loginLoading) return;
+
     if (type === "oauth_apple") {
       setLoginLoading("appgle");
     } else if (type === "oauth_facebook") {
@@ -94,8 +99,59 @@ export default function Login() {
       // If login was successful, navigate to home
       // Database sync will be handled by AuthWrapper automatically
       if (shouldNavigate) {
-        console.log("Navigating to home");
-        router.replace("/(tabs)/Home");
+        try {
+          const supabase = getSupabaseClient(clerkSession);
+
+          // Check both drivers and passengers tables for existing user
+          const [driversResponse, passengersResponse] = await Promise.all([
+            supabase
+              .from("drivers")
+              .select("*")
+              .eq("user_id", user?.id)
+              .single(),
+            supabase
+              .from("passengers")
+              .select("*")
+              .eq("user_id", user?.id)
+              .single(),
+          ]);
+
+          console.log("user id :", user?.id);
+          console.log("Drivers response:", driversResponse);
+          console.log("Passengers response:", passengersResponse);
+
+          // Check if user exists in either table
+          const driverData = driversResponse.data;
+          const passengerData = passengersResponse.data;
+
+          if (driverData || passengerData) {
+            // User exists - store their data
+            const userData = driverData || passengerData;
+
+            setUserData({
+              email_address: userData.email_address,
+              phone_number: userData.phone_number,
+              full_name: userData.full_name,
+              first_name: userData.first_name,
+              last_name: userData.last_name,
+              experience_years: userData.experience_years,
+              moto_type: userData.moto_type,
+              user_type: userData.user_type,
+            });
+
+            console.log("Existing user found, navigating to Home");
+            router.replace("/(tabs)/Home");
+          } else {
+            // New user - redirect to user type selection
+            console.log("New user detected, navigating to user type selection");
+            router.replace("/(auth)/UserTypeSelection");
+          }
+        } catch (error) {
+          console.error("Error checking user in Supabase:", error);
+          // On error, redirect to user type selection as fallback
+          router.replace("/(auth)/UserTypeSelection");
+        }
+        // router.replace("/(tabs)/Home");
       }
     } catch (err: any) {
       console.error(

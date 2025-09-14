@@ -9,13 +9,21 @@ import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import Button from "@/components/common/Button";
 import { useState, useRef } from "react";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
-import { useUser } from "@clerk/clerk-expo";
+import { useUser, useSession } from "@clerk/clerk-expo";
 import { useLocalSearchParams, useRouter, useSegments } from "expo-router";
 import { useNavigationState } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
+import { getSupabaseClient } from "@/services/supabaseClient";
+import { useUserData } from "@/store/userStore";
 
-type EditType = "name" | "email" | "phone";
-type InputType = "firstName" | "lastName" | "email" | "phone";
+type EditType = "name" | "email" | "phone" | "motoType" | "experience";
+type InputType =
+  | "firstName"
+  | "lastName"
+  | "email"
+  | "phone"
+  | "motoType"
+  | "experience";
 
 export default function EditPersonalInfo() {
   const { editType, title, description } = useLocalSearchParams<{
@@ -25,10 +33,12 @@ export default function EditPersonalInfo() {
   }>();
 
   const { user } = useUser();
+  const { session } = useSession();
   const router = useRouter();
   const { theme } = useTheme();
   const segments = useSegments();
   const { t } = useTranslation();
+  const { userData, updateUserData } = useUserData();
 
   const routes = useNavigationState((state) => state.routes);
 
@@ -37,16 +47,15 @@ export default function EditPersonalInfo() {
   console.log("segments", segments);
 
   // Form states
-  const [firstName, setFirstName] = useState(user?.firstName || "");
-  const [lastName, setLastName] = useState(user?.lastName || "");
-  const [email, setEmail] = useState(
-    user?.primaryEmailAddress?.emailAddress || ""
-  );
-  const [phone, setPhone] = useState(
-    user?.primaryPhoneNumber?.phoneNumber || ""
+  const [firstName, setFirstName] = useState(userData?.first_name || "");
+  const [lastName, setLastName] = useState(userData?.last_name || "");
+  const [email, setEmail] = useState(userData?.email_address || "");
+  const [phone, setPhone] = useState(userData?.phone_number || "");
+  const [motoType, setMotoType] = useState(userData?.moto_type || "");
+  const [experience, setExperience] = useState(
+    userData?.experience_years || ""
   );
   const [isLoading, setIsLoading] = useState(false);
-
   // Input states
   const [focusedInput, setFocusedInput] = useState<InputType | null>(null);
   const blurTimeoutRef = useRef<number | null>(null);
@@ -74,20 +83,23 @@ export default function EditPersonalInfo() {
     switch (editType) {
       case "name":
         return (
-          (user?.firstName !== firstName.trim() ||
-            user?.lastName !== lastName.trim()) &&
+          (userData?.first_name !== firstName.trim() ||
+            userData?.last_name !== lastName.trim()) &&
           firstName.trim() !== "" &&
           lastName.trim() !== ""
         );
       case "email":
-        return (
-          user?.primaryEmailAddress?.emailAddress !== email.trim() &&
-          email.trim() !== ""
-        );
+        return userData?.email_address !== email.trim() && email.trim() !== "";
       case "phone":
+        return userData?.phone_number !== phone.trim() && phone.trim() !== "";
+      case "motoType":
         return (
-          user?.primaryPhoneNumber?.phoneNumber !== phone.trim() &&
-          phone.trim() !== ""
+          userData?.moto_type !== motoType.trim() && motoType.trim() !== ""
+        );
+      case "experience":
+        return (
+          String(userData?.experience_years) !== String(experience).trim() &&
+          String(experience).trim() !== ""
         );
       default:
         return false;
@@ -99,20 +111,50 @@ export default function EditPersonalInfo() {
   const handleSave = async () => {
     setIsLoading(true);
     try {
+      const supabase = getSupabaseClient(session);
+
       if (editType === "name") {
         const updateData: {
           firstName?: string;
           lastName?: string;
         } = {};
 
-        if (firstName.trim() !== user?.firstName) {
+        if (firstName.trim() !== userData?.first_name) {
           updateData.firstName = firstName.trim();
         }
-        if (lastName.trim() !== user?.lastName) {
+        if (lastName.trim() !== userData?.last_name) {
           updateData.lastName = lastName.trim();
         }
 
+        // Update Clerk first
         await user?.update(updateData);
+
+        // Then update Supabase
+        try {
+          const fullName = `${firstName.trim()} ${lastName.trim()}`;
+          const { error } = await supabase
+            .from(userData?.user_type === "driver" ? "drivers" : "passengers")
+            .update({
+              first_name: firstName.trim(),
+              last_name: lastName.trim(),
+            })
+            .eq("user_id", user?.id);
+
+          if (error) {
+            console.log("Error updating name in Supabase:", error);
+          } else {
+            // Update local user store
+            updateUserData({
+              full_name: fullName,
+              first_name: firstName.trim(),
+              last_name: lastName.trim(),
+            });
+            console.log("Name updated successfully in both Clerk and Supabase");
+          }
+        } catch (error) {
+          console.log("Error updating name in Supabase:", error);
+        }
+
         router.back();
       } else if (editType === "email") {
         console.log("Updating email");
@@ -132,6 +174,7 @@ export default function EditPersonalInfo() {
                 params: {
                   contactType: "email",
                   contactValue: email.trim(),
+                  // Note: Supabase update will happen in ConfirmVerification screen after successful verification
                 },
               });
               console.log("Navigation command executed successfully");
@@ -140,6 +183,29 @@ export default function EditPersonalInfo() {
               await user?.update({
                 primaryEmailAddressId: existingEmail.id,
               });
+
+              // Update Supabase with the verified email
+              try {
+                const { error } = await supabase
+                  .from(
+                    userData?.user_type === "driver" ? "drivers" : "passengers"
+                  )
+                  .update({ email_address: email.trim() })
+                  .eq("user_id", user?.id);
+
+                if (error) {
+                  console.log("Error updating email in Supabase:", error);
+                } else {
+                  // Update local user store
+                  updateUserData({ email_address: email.trim() });
+                  console.log(
+                    "Email updated successfully in both Clerk and Supabase"
+                  );
+                }
+              } catch (error) {
+                console.log("Error updating email in Supabase:", error);
+              }
+
               router.back();
             }
           } else {
@@ -157,6 +223,7 @@ export default function EditPersonalInfo() {
                 params: {
                   contactType: "email",
                   contactValue: email.trim(),
+                  // Note: Supabase update will happen in ConfirmVerification screen after successful verification
                 },
               });
             }
@@ -181,6 +248,7 @@ export default function EditPersonalInfo() {
                 params: {
                   contactType: "phone",
                   contactValue: phone.trim(),
+                  // Note: Supabase update will happen in ConfirmVerification screen after successful verification
                 },
               });
             } else {
@@ -188,6 +256,29 @@ export default function EditPersonalInfo() {
               await user?.update({
                 primaryPhoneNumberId: existingPhone.id,
               });
+
+              // Update Supabase with the verified phone
+              try {
+                const { error } = await supabase
+                  .from(
+                    userData?.user_type === "driver" ? "drivers" : "passengers"
+                  )
+                  .update({ phone_number: phone.trim() })
+                  .eq("user_id", user?.id);
+
+                if (error) {
+                  console.log("Error updating phone in Supabase:", error);
+                } else {
+                  // Update local user store
+                  updateUserData({ phone_number: phone.trim() });
+                  console.log(
+                    "Phone updated successfully in both Clerk and Supabase"
+                  );
+                }
+              } catch (error) {
+                console.log("Error updating phone in Supabase:", error);
+              }
+
               console.log("Phone set as primary successfully");
               router.back();
             }
@@ -205,12 +296,53 @@ export default function EditPersonalInfo() {
                 params: {
                   contactType: "phone",
                   contactValue: phone.trim(),
+                  // Note: Supabase update will happen in ConfirmVerification screen after successful verification
                 },
               });
             }
           }
         } catch (error) {
           console.log("Error updating phone:", error);
+          // TODO: Show error alert to user
+        }
+      } else if (editType === "motoType") {
+        try {
+          const { error } = await supabase
+            .from(userData?.user_type === "driver" ? "drivers" : "passengers")
+            .update({ moto_type: motoType.trim() })
+            .eq("user_id", user?.id);
+
+          if (error) {
+            console.log("Error updating moto type:", error);
+            // TODO: Show error alert to user
+          } else {
+            // Update local user store
+            updateUserData({ moto_type: motoType.trim() });
+            console.log("Moto type updated successfully");
+            router.back();
+          }
+        } catch (error) {
+          console.log("Error updating moto type:", error);
+          // TODO: Show error alert to user
+        }
+      } else if (editType === "experience") {
+        try {
+          const { error } = await supabase
+            .from(userData?.user_type === "driver" ? "drivers" : "passengers")
+            .update({ experience_years: experience.trim() })
+            .eq("user_id", user?.id);
+
+          if (error) {
+            console.log("Error updating experience:", error);
+            // TODO: Show error alert to user
+          } else {
+            // Update local user store
+            updateUserData({ experience_years: experience.trim() });
+            console.log("Experience updated successfully");
+            router.back();
+          }
+        } catch (error) {
+          console.log("Error updating experience:", error);
           // TODO: Show error alert to user
         }
       }
@@ -272,6 +404,31 @@ export default function EditPersonalInfo() {
     />
   );
 
+  const renderMotoTypeInput = () => (
+    <SearchInput
+      label={t("profile.motoType")}
+      value={motoType}
+      onChangeText={setMotoType}
+      placeholder={t("profile.enterMotoType")}
+      isFocused={focusedInput === "motoType"}
+      onFocus={() => handleInputFocus("motoType")}
+      onBlur={handleInputBlur}
+    />
+  );
+
+  const renderExperienceInput = () => (
+    <SearchInput
+      label={t("profile.experienceYears")}
+      value={String(experience)}
+      onChangeText={setExperience}
+      placeholder={t("profile.enterExperience")}
+      isFocused={focusedInput === "experience"}
+      onFocus={() => handleInputFocus("experience")}
+      onBlur={handleInputBlur}
+      keyboardType="numeric"
+    />
+  );
+
   const renderInputs = () => {
     switch (editType) {
       case "name":
@@ -280,6 +437,10 @@ export default function EditPersonalInfo() {
         return renderEmailInput();
       case "phone":
         return renderPhoneInput();
+      case "motoType":
+        return renderMotoTypeInput();
+      case "experience":
+        return renderExperienceInput();
       default:
         return null;
     }

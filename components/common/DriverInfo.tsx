@@ -67,11 +67,9 @@ export default function DriverInfo() {
           Yamaha YZF-R3
         </Typo>
         <Typo variant="caption" color={theme.text.muted}>
-          +2 years
+          +216 93772115
         </Typo>
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({});
