@@ -271,7 +271,40 @@ export type ThemeContextType = {
   setTheme: (theme: "light" | "dark") => void;
 };
 
+// Ride status enum
+export type RideStatus =
+  | "pending"
+  | "accepted"
+  | "in_progress"
+  | "completed"
+  | "cancelled";
+
+// Payment method enum
+export type PaymentMethod = "cash" | "card" | "mobile_wallet" | "bank_transfer";
+
+// Complete ride type based on Supabase schema
 export type RideProps = {
+  id?: string; // UUID from Supabase
+  passenger_id: string;
+  driver_id: string;
+  pickup_address: string;
+  pickup_lat: number;
+  pickup_lon: number;
+  destination_address: string;
+  destination_lat: number;
+  destination_lon: number;
+  ride_fare: number;
+  distance: number; // in kilometers
+  duration: number; // in seconds
+  status: RideStatus;
+  feedback?: string | null;
+  payment_method: PaymentMethod;
+  created_at: string; // ISO string timestamp
+  updated_at?: string; // ISO string timestamp
+};
+
+// Simplified ride type for UI components (backward compatibility)
+export type SimpleRideProps = {
   id: number;
   pickupAddress: string;
   destinationAddress: string;
@@ -279,8 +312,10 @@ export type RideProps = {
   distance?: string;
 };
 
+// Union type for ride card component
+
 export type RideCardProps = {
-  ride: RideProps;
+  ride: SimpleRideProps;
   viewOnly?: boolean;
   hideExtraDetails?: boolean;
 };

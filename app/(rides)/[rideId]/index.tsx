@@ -13,6 +13,8 @@ import Button from "@/components/common/Button";
 import THEME, { COLORS, FONTS } from "@/constants/theme";
 import { Map } from "lucide-react-native";
 import { useTheme } from "@/contexts/ThemeContext";
+import { getSupabaseClient } from "@/services/supabaseClient";
+import { useSession } from "@clerk/clerk-expo";
 
 export default function RideDetails() {
   let { ride, rideId } = useLocalSearchParams() as unknown as {
@@ -32,6 +34,7 @@ export default function RideDetails() {
       params: { rideId: rideId, ride: ride },
     });
   };
+
   return (
     <ScreenWrapper
       // scroll
@@ -49,7 +52,7 @@ export default function RideDetails() {
         <FareInfo />
         <View style={styles.buttonColumn}>
           <Button
-            // onPress={handleConfirm}
+            onPress={trydata}
             // loading={isUploading}
             indicatorStyle={{ color: COLORS.white }}
             style={[

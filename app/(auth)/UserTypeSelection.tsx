@@ -4,7 +4,7 @@ import Button from "@/components/common/Button";
 import Typo from "@/components/common/Typo";
 import { FONTS } from "@/constants/theme";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
-import { usePathname, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import UserTypeCard from "@/components/common/UserTypeCard";
 import { userTypes } from "@/constants/data";
@@ -130,13 +130,6 @@ export default function UserTypeSelection() {
   useEffect(() => {
     StorageManager.storeBoolean("signUpCompleted", false);
   }, []);
-
-  const pathname = usePathname();
-  console.log(pathname);
-
-  const { session: clerkSession } = useSession();
-  console.log("clerkSession2", clerkSession);
-  console.log("user", user);
 
   return (
     <ScreenWrapper
