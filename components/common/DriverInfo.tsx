@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { View } from "react-native";
 import UserProfileImage from "./UserProfileImage";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useMemo } from "react";
@@ -45,8 +45,8 @@ export default function DriverInfo() {
             gap: verticalScale(5),
             flexShrink: 1,
           }}>
-          <Typo variant="body" numberOfLines={1}>
-            Anis Ben Youssefdsdsds
+          <Typo variant="body" numberOfLines={1} ellipsizeMode="middle">
+            Anis Ben Youssef
           </Typo>
           <Typo variant="caption" color={theme.text.muted}>
             Driver
@@ -64,10 +64,10 @@ export default function DriverInfo() {
           numberOfLines={1}
           size={moderateScale(13)}
           color={theme.text.primary}>
-          Yamaha YZF-R3
+          +216 93772115
         </Typo>
         <Typo variant="caption" color={theme.text.muted}>
-          +216 93772115
+          Yamaha YZF-R3
         </Typo>
       </View>
     </View>

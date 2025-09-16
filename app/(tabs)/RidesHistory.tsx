@@ -40,7 +40,7 @@ export default function RidesHistoryScreen() {
 
   const activeRide = {
     id: 1,
-    pickupAddress: "456 Elm Street, Springfield",
+    pickupAddress: "456 Elm Street, Springfieldsdsdsd",
     destinationAddress: "739 Main Street, Springfield",
     payment: "TND12",
     distance: "12Km",
@@ -50,6 +50,14 @@ export default function RidesHistoryScreen() {
     fetchRidesData();
   }, []);
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchRidesData();
+    setRefreshing(false);
+  };
+
+  console.log("ridesData", ridesData);
+
   const fetchRidesData = async () => {
     setIsLoading(true);
     try {
@@ -58,7 +66,7 @@ export default function RidesHistoryScreen() {
         .select("id")
         .eq("user_id", "user_32huNQZutbWpXK7QoOTutC2onnN")
         .single();
-
+      console.log(user?.id, "user?.id");
       console.log("supadbaseUserId", supabaseUserId);
 
       const response = await supabase
@@ -74,11 +82,6 @@ export default function RidesHistoryScreen() {
     }
   };
 
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await fetchRidesData();
-    setRefreshing(false);
-  };
   return (
     <ScreenWrapper
       scroll
