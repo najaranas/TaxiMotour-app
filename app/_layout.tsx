@@ -38,22 +38,26 @@ function AppNavigator() {
         options={{ title: "confirmVerification" }}
       />
 
+      <Stack.Screen
+        name="(auth)/UserTypeSelection"
+        options={{ title: "userTypeSelection" }}
+      />
+
       {/* Auth screens - only accessible when not signed in */}
-      <Stack.Protected guard={!Boolean(isSignedIn)}>
+      <Stack>
         <Stack.Screen name="(auth)/Login" options={{ title: "login" }} />
         <Stack.Screen
           name="(auth)/PhoneVerification"
           options={{ title: "phoneVerification" }}
         />
-        {/* <Stack.Screen
-          name="(auth)/UserTypeSelection"
-          options={{ title: "userTypeSelection" }}
-        /> */}
-      </Stack.Protected>
+      </Stack>
 
       {/* Main app screens - only accessible when signed in */}
-      <Stack.Protected guard={Boolean(isSignedIn)}>
+      <Stack>
+        {/* Tab navigation */}
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+
+        {/* Profile screens */}
         <Stack.Screen
           name="(profile)/PersonalInfo"
           options={{ title: t("profile.personalInfo") }}
@@ -81,7 +85,29 @@ function AppNavigator() {
             headerShown: true,
           }}
         />
-      </Stack.Protected>
+
+        {/* Drawer screens */}
+        <Stack.Screen
+          name="(drawer)/About"
+          options={{ title: t("drawer.about") }}
+        />
+
+        {/* Ride screens */}
+        <Stack.Screen
+          name="(rides)/[rideId]/index"
+          options={{ title: t("rides.rideDetails") }}
+        />
+        <Stack.Screen
+          name="(rides)/[rideId]/RideMap"
+          options={{
+            title: t("rides.rideMap"),
+            animation: "slide_from_bottom",
+          }}
+        />
+
+        {/* About screen (root level) */}
+        <Stack.Screen name="About" options={{ title: t("about.title") }} />
+      </Stack>
     </Stack>
   );
 }

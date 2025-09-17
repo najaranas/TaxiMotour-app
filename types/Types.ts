@@ -315,7 +315,7 @@ export type SimpleRideProps = {
 // Union type for ride card component
 
 export type RideCardProps = {
-  ride: SimpleRideProps;
+  ride: RideProps;
   viewOnly?: boolean;
   hideExtraDetails?: boolean;
 };

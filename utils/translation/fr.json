@@ -106,6 +106,17 @@
     "version": "Version {{version}}",
     "developerRole": "Développeur d'applications mobiles"
   },
+  "rides": {
+    "title": "Historique des trajets",
+    "subtitle": "Suivez tous vos voyages terminés",
+    "activeRide": "Trajet en cours",
+    "pastRides": "Trajets précédents",
+    "noRidesTitle": "Aucun trajet pour le moment.",
+    "noRidesSubtitle": "Réservez votre premier trajet et commencez à construire votre historique de voyage avec nous.",
+    "takeARide": "Réserver un trajet",
+    "noCompletedRidesYet": "Votre premier trajet est en cours!",
+    "completeFirstRide": "Terminez votre premier trajet pour commencer à construire votre historique de voyage."
+  },
   "earnings": {
     "title": "Écran des gains",
     "subtitle": "Suivez vos gains et paiements"

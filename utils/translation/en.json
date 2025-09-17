@@ -109,6 +109,17 @@
     "aboutDeveloper": "About the developer",
     "developerRole": "Mobile App Developer"
   },
+  "rides": {
+    "title": "Ride History",
+    "subtitle": "Track all your completed trips",
+    "activeRide": "Current Ride",
+    "pastRides": "Previous Rides",
+    "noRidesTitle": "No ride yet!",
+    "noRidesSubtitle": "Book your first ride and start building your travel history with us.",
+    "takeARide": "Book a Ride",
+    "noCompletedRidesYet": "Your first ride is in progress!",
+    "completeFirstRide": "Complete your first ride to start building your travel history."
+  },
   "earnings": {
     "title": "Earnings Screen",
     "subtitle": "Track your earnings and payments"

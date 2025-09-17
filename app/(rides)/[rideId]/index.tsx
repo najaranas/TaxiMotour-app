@@ -27,7 +27,7 @@ export default function RideDetails() {
   console.log("Ride Dedstails:", rideData);
 
   const handleMapPress = () => {
-    router.push({
+    router.replace({
       pathname: "/(rides)/[rideId]/RideMap",
       params: { rideId: rideId, ride: ride },
     });

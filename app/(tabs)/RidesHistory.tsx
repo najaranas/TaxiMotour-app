@@ -1,87 +1,136 @@
-import { View, StyleSheet, RefreshControl } from "react-native";
+import { View, StyleSheet, RefreshControl, Image } from "react-native";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import Typo from "@/components/common/Typo";
 import { Bell } from "lucide-react-native";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import { useTheme } from "@/contexts/ThemeContext";
 import RideCard from "@/components/Ride/RideCard";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useSession, useUser } from "@clerk/clerk-expo";
 import { getSupabaseClient } from "@/services/supabaseClient";
 import SkeletonPlaceholder from "@/components/common/SkeletonPlaceholder";
 import { PulseIndicator } from "react-native-indicators";
-import { COLORS } from "@/constants/theme";
+import THEME, { COLORS, FONTS } from "@/constants/theme";
+import { RideProps } from "@/types/Types";
+import Button from "@/components/common/Button";
+import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 export default function RidesHistoryScreen() {
   const { theme } = useTheme();
   const { session } = useSession();
   const { user } = useUser();
+  const router = useRouter();
+  const { t } = useTranslation();
 
-  const [ridesData, setRidesData] = useState<any>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [completedRides, setCompletedRides] = useState<RideProps[]>([]);
+  const [currentActiveRide, setCurrentActiveRide] = useState<RideProps | null>(
+    null
+  );
+  const [isLoadingRides, setIsLoadingRides] = useState<boolean>(true);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
-  //  passenger_id: "90a183c9-5fc8-420e-89f6-eb53a1248a48",
-  //     driver_id: "25a26619-3854-47e3-905e-df0968d97e40",
-  //     pickup_address: "Délégation Bab Souika",
-  //     pickup_lat: "36.805205",
-  //     pickup_lon: "10.167988",
-  //     destination_address: "Bab Saadoun",
-  //     destination_lat: "36.806302",
-  //     destination_lon: "10.162364",
-  //     ride_fare: "5",
-  //     distance: "3",
-  //     duration: "3000",
-  //     status: "completed",
-  //     feedback: "very good ",
-  //     payment: "cash",
+  const supabaseClient = getSupabaseClient(session);
 
-  const supabase = getSupabaseClient(session);
-
-  const activeRide = {
-    id: 1,
-    pickupAddress: "456 Elm Street, Springfieldsdsdsd",
-    destinationAddress: "739 Main Street, Springfield",
-    payment: "TND12",
-    distance: "12Km",
+  const onRefresh = async () => {
+    setIsRefreshing(true);
+    await fetchRidesData();
+    setIsRefreshing(false);
   };
+
+  console.log("completedRides", completedRides);
+
+  const fetchRidesData = useCallback(async () => {
+    setIsLoadingRides(true);
+    try {
+      const supabaseUserId = await supabaseClient
+        .from("passengers")
+        .select("id")
+        .eq("user_id", user?.id)
+        .single();
+
+      console.log(user?.id, "user?.id");
+      console.log("supadbaseUserId", supabaseUserId);
+
+      const response = await supabaseClient
+        .from("rides")
+        .select("*")
+        .eq("passenger_id", supabaseUserId?.data?.id);
+      console.log("responseaze", response?.data);
+      setCompletedRides(
+        response?.data?.filter(
+          (ride: RideProps) => ride?.status !== "in_progress"
+        ) || []
+      );
+      setCurrentActiveRide(
+        response?.data?.find(
+          (ride: RideProps) => ride?.status === "in_progress"
+        ) || null
+      );
+    } catch (error) {
+      console.log("error feching rides data", error);
+    } finally {
+      setIsLoadingRides(false);
+    }
+  }, [
+    user?.id,
+    supabaseClient,
+    setCompletedRides,
+    setCurrentActiveRide,
+    setIsLoadingRides,
+  ]);
 
   useEffect(() => {
     fetchRidesData();
   }, []);
 
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await fetchRidesData();
-    setRefreshing(false);
+  const navigateToHome = () => {
+    router.replace("/(tabs)/Home");
   };
 
-  console.log("ridesData", ridesData);
+  const renderskeletonContainer = () => (
+    <View style={styles.skeletonContainer}>
+      {/* Header Section Skeleton */}
+      <View style={styles.skeletonHeaderSection}>
+        <View style={styles.skeletonHeaderText}>
+          <SkeletonPlaceholder animationType="shimmer">
+            <View style={styles.skeletonTitle} />
+          </SkeletonPlaceholder>
+          <SkeletonPlaceholder animationType="shimmer">
+            <View style={styles.skeletonSubtitle} />
+          </SkeletonPlaceholder>
+        </View>
+        <SkeletonPlaceholder animationType="shimmer">
+          <View style={styles.skeletonIcon} />
+        </SkeletonPlaceholder>
+      </View>
 
-  const fetchRidesData = async () => {
-    setIsLoading(true);
-    try {
-      const supabaseUserId = await supabase
-        .from("drivers")
-        .select("id")
-        .eq("user_id", "user_32huNQZutbWpXK7QoOTutC2onnN")
-        .single();
-      console.log(user?.id, "user?.id");
-      console.log("supadbaseUserId", supabaseUserId);
+      {/* Active Rides Section */}
+      <View style={styles.skeletonSection}>
+        <SkeletonPlaceholder animationType="shimmer">
+          <View style={styles.skeletonSectionTitle} />
+        </SkeletonPlaceholder>
 
-      const response = await supabase
-        .from("rides")
-        .select("*")
-        .eq("passenger_id", supabaseUserId.data?.id);
+        <SkeletonPlaceholder animationType="shimmer">
+          <View style={styles.skeletonRideCard}></View>
+        </SkeletonPlaceholder>
+      </View>
 
-      setRidesData(response);
-    } catch (error) {
-      console.log("error feching rides data", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      {/* Past Rides Section */}
+      <View style={styles.skeletonSection}>
+        <SkeletonPlaceholder animationType="shimmer">
+          <View style={styles.skeletonSectionTitle} />
+        </SkeletonPlaceholder>
 
+        {/* Multiple ride cards */}
+        {[1, 2, 3, 4].map((index) => (
+          <SkeletonPlaceholder key={index} animationType="shimmer">
+            <View style={styles.skeletonRideCard}></View>
+          </SkeletonPlaceholder>
+        ))}
+      </View>
+    </View>
+  );
   return (
     <ScreenWrapper
       scroll
@@ -90,124 +139,26 @@ export default function RidesHistoryScreen() {
       padding={horizontalScale(20)}
       contentContainerStyle={{
         paddingBlock: verticalScale(10),
-        flex: isLoading ? 1 : 0,
+        flexGrow: 1,
       }}
       refreshControl={
         <RefreshControl
-          refreshing={refreshing}
+          refreshing={isRefreshing}
           onRefresh={onRefresh}
           progressBackgroundColor={theme.gray.background}
           colors={[theme.text.primary]}
         />
       }
       showsVerticalScrollIndicator={false}>
-      {isLoading ? (
-        <View style={styles.skeletonContainer}>
-          {/* Header Section Skeleton */}
-          <View style={styles.skeletonHeaderSection}>
-            <View style={styles.skeletonHeaderText}>
-              <SkeletonPlaceholder animationType="shimmer">
-                <View style={styles.skeletonTitle} />
-              </SkeletonPlaceholder>
-              <SkeletonPlaceholder animationType="shimmer">
-                <View style={styles.skeletonSubtitle} />
-              </SkeletonPlaceholder>
-            </View>
-            <SkeletonPlaceholder animationType="shimmer">
-              <View style={styles.skeletonIcon} />
-            </SkeletonPlaceholder>
-          </View>
-
-          {/* Active Rides Section */}
-          <View style={styles.skeletonSection}>
-            <SkeletonPlaceholder animationType="shimmer">
-              <View style={styles.skeletonSectionTitle} />
-            </SkeletonPlaceholder>
-
-            <SkeletonPlaceholder animationType="shimmer">
-              <View style={styles.skeletonRideCard}></View>
-            </SkeletonPlaceholder>
-            <SkeletonPlaceholder animationType="shimmer">
-              <View style={styles.skeletonRideCard}></View>
-            </SkeletonPlaceholder>
-            <SkeletonPlaceholder animationType="shimmer">
-              <View style={styles.skeletonRideCard}></View>
-            </SkeletonPlaceholder>
-            <SkeletonPlaceholder animationType="shimmer">
-              <View style={styles.skeletonRideCard}></View>
-            </SkeletonPlaceholder>
-            <SkeletonPlaceholder animationType="shimmer">
-              <View style={styles.skeletonRideCard}></View>
-            </SkeletonPlaceholder>
-          </View>
-
-          {/* Past Rides Section */}
-          <View style={styles.skeletonSection}>
-            <SkeletonPlaceholder animationType="shimmer">
-              <View
-                style={[
-                  styles.skeletonSectionTitle,
-                  { backgroundColor: "#E1E9EE" },
-                ]}
-              />
-            </SkeletonPlaceholder>
-
-            {/* Multiple ride cards */}
-            {[1, 2, 3, 4].map((index) => (
-              <SkeletonPlaceholder key={index} animationType="shimmer">
-                <View
-                  style={[
-                    styles.skeletonRideCard,
-                    { backgroundColor: "#E1E9EE" },
-                  ]}>
-                  <View style={styles.skeletonCardContent}>
-                    <View
-                      style={[
-                        styles.skeletonCardIcon,
-                        { backgroundColor: "#D0D7DD" },
-                      ]}
-                    />
-                    <View style={styles.skeletonCardText}>
-                      <View
-                        style={[
-                          styles.skeletonCardMainText,
-                          { backgroundColor: "#D0D7DD" },
-                        ]}
-                      />
-                      <View
-                        style={[
-                          styles.skeletonCardSecondaryText,
-                          { backgroundColor: "#D0D7DD" },
-                        ]}
-                      />
-                    </View>
-                    <View style={styles.skeletonCardRight}>
-                      <View
-                        style={[
-                          styles.skeletonPrice,
-                          { backgroundColor: "#D0D7DD" },
-                        ]}
-                      />
-                      <View
-                        style={[
-                          styles.skeletonDistance,
-                          { backgroundColor: "#D0D7DD" },
-                        ]}
-                      />
-                    </View>
-                  </View>
-                </View>
-              </SkeletonPlaceholder>
-            ))}
-          </View>
-        </View>
+      {isLoadingRides ? (
+        <>{renderskeletonContainer()}</>
       ) : (
         <View style={styles.mainContainer}>
           <View style={styles.headerSection}>
             <View style={styles.headerTextContainer}>
-              <Typo variant="h3">Rides History</Typo>
+              <Typo variant="h3">{t("rides.title")}</Typo>
               <Typo variant="body" color={theme.text.secondary}>
-                Showing all your rides
+                {t("rides.subtitle")}
               </Typo>
             </View>
             <View>
@@ -218,32 +169,97 @@ export default function RidesHistoryScreen() {
               />
             </View>
           </View>
+          {completedRides.length > 0 || currentActiveRide ? (
+            <>
+              {/* Show Active Ride Section if exists */}
+              {currentActiveRide && (
+                <View style={styles.ridesSection}>
+                  <View
+                    style={{ flexDirection: "row", gap: horizontalScale(5) }}>
+                    <View>
+                      <PulseIndicator
+                        color={COLORS.success}
+                        size={moderateScale(30)}
+                      />
+                    </View>
+                    <Typo size={moderateScale(20)} variant="h3">
+                      {t("rides.activeRide")}
+                    </Typo>
+                  </View>
+                  <RideCard ride={currentActiveRide} />
+                </View>
+              )}
 
-          <View style={styles.ridesSection}>
-            <View style={{ flexDirection: "row", gap: horizontalScale(5) }}>
-              <View>
-                <PulseIndicator
-                  color={COLORS.success}
-                  size={moderateScale(30)}
-                />
+              {/* Show Past Rides Section if exists */}
+
+              <View style={styles.ridesSection}>
+                <Typo size={moderateScale(20)} variant="h3">
+                  {t("rides.pastRides")}
+                </Typo>
+                {completedRides.length > 0 ? (
+                  completedRides.map((ride: RideProps, id: number) => {
+                    return <RideCard key={id.toString()} ride={ride} />;
+                  })
+                ) : (
+                  <Typo variant="body" color={theme.text.muted}>
+                    {t("rides.completeFirstRide")}
+                  </Typo>
+                )}
               </View>
-              <Typo size={moderateScale(20)} variant="h3">
-                Active rides
-              </Typo>
+            </>
+          ) : (
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+                gap: verticalScale(10),
+              }}>
+              <Image
+                source={require("../../assets/images/no_history.png")}
+                style={styles.noHistoryImg}
+              />
+              <View
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderBottomWidth: theme.borderWidth.thin,
+                  borderBottomColor: theme.gray.border,
+                  paddingBottom: verticalScale(20),
+                  gap: verticalScale(5),
+                }}>
+                <Typo variant="h2">{t("rides.noRidesTitle")}</Typo>
+                <Typo
+                  variant="body"
+                  color={theme.text.muted}
+                  style={{ textAlign: "center" }}>
+                  {t("rides.noRidesSubtitle")}
+                </Typo>
+              </View>
+              <View
+                style={{
+                  paddingTop: verticalScale(20),
+                  width: "100%",
+                }}>
+                <Button
+                  onPress={navigateToHome}
+                  indicatorStyle={{ color: COLORS.white }}
+                  style={[
+                    styles.actionButton,
+                    {
+                      backgroundColor: COLORS.secondary,
+                    },
+                  ]}>
+                  <Typo
+                    size={moderateScale(17)}
+                    fontFamily={FONTS.bold}
+                    color={COLORS.white}>
+                    {t("rides.takeARide")}
+                  </Typo>
+                </Button>
+              </View>
             </View>
-
-            <RideCard ride={activeRide} />
-          </View>
-          <View style={styles.ridesSection}>
-            <Typo size={moderateScale(20)} variant="h3">
-              Past rides
-            </Typo>
-
-            <RideCard ride={activeRide} />
-            <RideCard ride={activeRide} />
-            <RideCard ride={activeRide} />
-            <RideCard ride={activeRide} />
-          </View>
+          )}
         </View>
       )}
     </ScreenWrapper>
@@ -266,6 +282,11 @@ const styles = StyleSheet.create({
   },
   ridesSection: {
     gap: verticalScale(10),
+  },
+  noCompletedRidesMessage: {
+    padding: verticalScale(20),
+    alignItems: "center",
+    gap: verticalScale(8),
   },
   // Skeleton styles
   skeletonContainer: {
@@ -348,5 +369,16 @@ const styles = StyleSheet.create({
     height: verticalScale(14),
     width: horizontalScale(35),
     borderRadius: moderateScale(4),
+  },
+  noHistoryImg: {
+    height: verticalScale(150),
+    aspectRatio: 1,
+  },
+  actionButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: horizontalScale(10),
+    borderRadius: THEME.borderRadius.circle,
+    minHeight: verticalScale(55),
   },
 });

@@ -52,7 +52,7 @@ export default function Login() {
       pendingNavigation.current = false; // Reset flag
       handlePostOAuthNavigation();
     }
-  }, [clerkSession, user]);
+  }, [clerkSession, user, pendingNavigation.current]);
 
   const handlePostOAuthNavigation = async () => {
     try {
@@ -94,16 +94,16 @@ export default function Login() {
         });
 
         console.log("Existing user found, navigating directly to Home");
-        // router.replace("/(tabs)/Home");
+        router.replace("/(tabs)/Home");
       } else {
         // New user - needs to select user type
         console.log("New user detected, navigating to UserTypeSelection");
-        // router.replace("/(auth)/UserTypeSelection");
+        router.replace("/(auth)/UserTypeSelection");
       }
     } catch (error) {
       console.error("Error in post-OAuth navigation:", error);
       // On error, assume new user and go to UserTypeSelection
-      // router.replace("/(auth)/UserTypeSelection");
+      router.replace("/(auth)/UserTypeSelection");
     }
   };
 

@@ -83,6 +83,8 @@ export default function ProfileScreen() {
     try {
       await signOut();
       setUserData({});
+      router.dismissAll();
+      router.replace("/(auth)/Login");
     } catch (error) {
       console.error("Sign out error:", JSON.stringify(error, null, 2));
     } finally {

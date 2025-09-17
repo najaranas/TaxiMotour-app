@@ -48,9 +48,13 @@ export default function RideCard({
   const cardPressHandler = () => {
     router.navigate({
       pathname: "/(rides)/[rideId]",
-      params: { rideId: ride.id.toString(), ride: JSON.stringify(ride) },
+      params: {
+        rideId: ride?.id?.toString() ?? "",
+        ride: JSON.stringify(ride),
+      },
     });
   };
+
   return (
     <Button
       onPress={!viewOnly ? cardPressHandler : undefined}
@@ -84,7 +88,7 @@ export default function RideCard({
           <View style={styles.locationRow}>
             <View style={styles.locationTextContainer}>
               <Typo variant="body" color={theme.text.primary} numberOfLines={1}>
-                {ride.pickupAddress}
+                {ride.pickup_address}
               </Typo>
               <Typo
                 variant="caption"
@@ -104,7 +108,7 @@ export default function RideCard({
                     variant="caption"
                     size={moderateScale(10)}
                     color={theme.button.primary}>
-                    {ride.payment}
+                    {ride.payment_method}
                   </Typo>
                 </View>
               </View>
@@ -115,7 +119,7 @@ export default function RideCard({
           <View style={styles.locationRow}>
             <View style={styles.locationTextContainer}>
               <Typo variant="body" color={theme.text.primary} numberOfLines={1}>
-                {ride.destinationAddress}
+                {ride.destination_address}
               </Typo>
               <Typo
                 variant="caption"

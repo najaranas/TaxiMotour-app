@@ -107,6 +107,17 @@
     "version": "الإصدار {{version}}",
     "developerRole": "مطور تطبيقات الجوال"
   },
+  "rides": {
+    "title": "تاريخ الرحلات",
+    "subtitle": "تتبع جميع رحلاتك المكتملة",
+    "activeRide": "الرحلة الحالية",
+    "pastRides": "الرحلات السابقة",
+    "noRidesTitle": "لا توجد رحلات بعد.",
+    "noRidesSubtitle": "احجز رحلتك الأولى وابدأ في بناء تاريخ سفرك معنا.",
+    "takeARide": "احجز رحلة",
+    "noCompletedRidesYet": "رحلتك الأولى قيد التقدم!",
+    "completeFirstRide": "أكمل رحلتك الأولى لبدء بناء تاريخ سفرك."
+  },
   "earnings": {
     "title": "شاشة الأرباح",
     "subtitle": "تتبع أرباحك ومدفوعاتك"
