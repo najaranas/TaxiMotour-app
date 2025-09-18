@@ -228,7 +228,9 @@ export default function RidesHistoryScreen() {
                   paddingBottom: verticalScale(20),
                   gap: verticalScale(5),
                 }}>
-                <Typo variant="h2">{t("rides.noRidesTitle")}</Typo>
+                <Typo variant="h2" style={{ textAlign: "center" }}>
+                  {t("rides.noRidesTitle")}
+                </Typo>
                 <Typo
                   variant="body"
                   color={theme.text.muted}

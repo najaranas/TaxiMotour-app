@@ -35,6 +35,7 @@ interface RideBookingSheetProps {
   onCurrentLocationChange: (location: LocationData) => void;
   onDestinationLocationChange: (location: LocationData) => void;
   onRoadDataChange: (roadData: LocationData[]) => void;
+  onContentLayout: (height: number) => void;
 }
 
 export default function RideBookingSheet({
@@ -45,6 +46,7 @@ export default function RideBookingSheet({
   onCurrentLocationChange,
   onDestinationLocationChange,
   onRoadDataChange,
+  onContentLayout,
 }: RideBookingSheetProps) {
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -162,12 +164,18 @@ export default function RideBookingSheet({
         key="view1"
         style={{
           gap: 10,
-          marginTop: verticalScale(5),
           paddingHorizontal: horizontalScale(15),
           padding: horizontalScale(16),
           backgroundColor: theme.background,
         }}>
         <Animated.View
+          onLayout={(e) => {
+            const height = e?.nativeEvent?.layout?.height;
+            if (height !== undefined) {
+              onContentLayout(height);
+              console.log("heightsd", height);
+            }
+          }}
           entering={FadeInRight.duration(300)}
           exiting={FadeOutLeft}>
           <Typo variant="h3">{t("home.letsGoPlaces")}</Typo>

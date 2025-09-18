@@ -1,5 +1,5 @@
-import { useCallback, useState } from "react";
-import { BackHandler, StyleSheet, View } from "react-native";
+import { useCallback, useState, useMemo } from "react";
+import { BackHandler, StyleSheet, View, Dimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useFocusEffect } from "expo-router";
 
@@ -32,6 +32,8 @@ interface LocationData {
   lat?: number | null;
 }
 
+const { height: screenHeight } = Dimensions.get("window");
+
 export default function Home() {
   // State management
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -48,11 +50,45 @@ export default function Home() {
   const [hasSelectedRoute, setHasSelectedRoute] = useState(false);
   const [isRideRequested, setIsRideRequested] = useState(false);
   const [isRequestingRide, setIsRequestingRide] = useState(false);
-  const { isMapLoading, clearRoute } = useMapStore();
 
+  // New state for content height
+  const [contentHeight, setContentHeight] = useState(0);
+  console.log("contentHeight", contentHeight);
+
+  const { isMapLoading, clearRoute } = useMapStore();
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
   const { t } = useTranslation();
+
+  // Calculate responsive snap points based on content height
+  const snapPoints = useMemo(() => {
+    if (contentHeight === 0) {
+      // Fallback to percentage while measuring content
+      return ["30%", "100%"];
+    }
+
+    // Convert content height to percentage of screen height
+    const contentHeightPercentage = Math.min(
+      Number(
+        (
+          (contentHeight + insets.bottom + horizontalScale(16)) /
+          screenHeight
+        ).toFixed(2)
+      ) * 100,
+      90 // Cap at 90% to ensure it doesn't take full screen on first snap
+    );
+    return [`${contentHeightPercentage}%`, "100%"];
+  }, [contentHeight, insets.bottom]);
+
+  // Handler for content height measurement
+  const handleContentLayout = useCallback(
+    (height: number) => {
+      if (height > 0 && height !== contentHeight) {
+        setContentHeight(height);
+      }
+    },
+    [contentHeight]
+  );
 
   // Handlers
   const handleSnapToIndex = useCallback(
@@ -164,6 +200,8 @@ export default function Home() {
 
   console.log("activeBottomSheetIndex", activeBottomSheetIndex);
   console.log("roadData roadData", roadData);
+  console.log("snapPoints", snapPoints);
+
   return (
     <ScreenWrapper safeArea={false} style={styles.container} hasBottomTabs>
       {/* Enhanced Map Component */}
@@ -180,7 +218,6 @@ export default function Home() {
       <StatusBarOverlay />
 
       {/* Navigation Drawer */}
-
       <View
         style={[StyleSheet.absoluteFill, { zIndex: 15 }]}
         pointerEvents={isDrawerOpen ? "auto" : "none"}>
@@ -207,12 +244,12 @@ export default function Home() {
       </View>
 
       {!hasSelectedRoute ? (
-        //  Ride Booking Bottom Sheet
+        //  Ride Booking Bottom Sheet with responsive snap points
         <CustomBottomSheet
           enableOverDrag={false}
           enablePanDownToClose={false}
           onRef={setBottomSheetMethods}
-          snapPoints={["20%", "100%"]}
+          snapPoints={snapPoints} // Use dynamic snap points
           index={activeBottomSheetIndex}
           zindex={10}
           onChange={setActiveBottomSheetIndex}>
@@ -224,6 +261,7 @@ export default function Home() {
             onCurrentLocationChange={handleCurrentLocationChange}
             onDestinationLocationChange={handleDestinationLocationChange}
             onRoadDataChange={handleRoadDataChange}
+            onContentLayout={handleContentLayout} // Pass layout handler
           />
         </CustomBottomSheet>
       ) : (
@@ -239,7 +277,6 @@ export default function Home() {
               },
             ]}>
             {/* Status indicator - Only show after ride is requested */}
-
             {(isRideRequested || isRequestingRide) && (
               <View
                 style={{
@@ -367,7 +404,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 6,
   },
-
   buttonColumn: {
     position: "absolute",
     bottom: 0,
