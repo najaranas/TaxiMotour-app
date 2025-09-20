@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { View, StyleSheet, Switch } from "react-native";
+import { View, StyleSheet, Switch, TouchableOpacity } from "react-native";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import { COLORS, FONTS } from "@/constants/theme";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -17,6 +17,7 @@ import CustomBottomSheetModal from "@/components/common/CustomBottomSheetModal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { useUserData } from "@/store/userStore";
+import { getSupabaseClient } from "@/services/supabaseClient";
 
 /**
  * ProfileScreen - Main profile screen component
@@ -31,13 +32,14 @@ import { useUserData } from "@/store/userStore";
 export default function ProfileScreen() {
   const { signOut } = useClerk();
   const { user } = useUser();
-  const { setUserData } = useUserData();
+  const { setUserData, userData } = useUserData();
 
   const { theme, themeName, setTheme } = useTheme();
   const { t } = useTranslation();
 
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const supabaseClient = getSupabaseClient();
 
   // State management
   const [isDarkModeEnabled, setIsDarkModeEnabled] = useState(false);
@@ -47,6 +49,41 @@ export default function ProfileScreen() {
   // Ref for CustomBottomSheetModal
   const [bottomSheetRef, setBottomSheetRef] =
     useState<BottomSheetMethods | null>(null);
+
+  // useEffect(() => {
+  //   insetImgToSupabase();
+  // }, [user?.imageUrl]);
+
+  const insetImgToSupabase = async () => {
+    const resposne = await supabaseClient
+      // .from(userData?.user_type === "driver" ? "drivers" : "passengers")
+      .from("drivers")
+      .update({ experience_years: "13" })
+      // .eq("user_id", user?.id);
+      .eq("user_id", user?.id)
+      .select();
+    console.log("ddarepsoibe", resposne);
+
+    // if (userData?.user_type) {
+    //   try {
+    //     // const resposne = await supabaseClient
+    //     //   // .from(userData?.user_type)
+    //     //   .from(userData?.user_type === "driver" ? "drivers" : "passengers")
+    //     //   // .update({ profile_image_url: user?.imageUrl })
+    //     //   .update({ experience_years: "1" })
+    //     //   .eq("user_id", user?.id);
+    //     const resposne = await supabaseClient
+    //       // .from(userData?.user_type === "driver" ? "drivers" : "passengers")
+    //       .from("drivers")
+    //       .update({ experience_years: "13" })
+    //       .eq("user_id", user?.id);
+
+    //     console.log("aezresposne", resposne);
+    //   } catch (error) {
+    //     console.log("erro updaing userimg to supabase", error);
+    //   }
+    // }
+  };
 
   useEffect(() => {
     if (themeName === "dark") {
@@ -96,6 +133,9 @@ export default function ProfileScreen() {
   // Component renderers
   const renderProfileHeader = () => (
     <View style={styles.profileHeader}>
+      <TouchableOpacity onPress={insetImgToSupabase}>
+        <Typo>aze</Typo>
+      </TouchableOpacity>
       <UserProfileImage
         imageUrl={user?.imageUrl}
         hasImage={user?.hasImage}

@@ -36,15 +36,8 @@ export default function EditPersonalInfo() {
   const { session } = useSession();
   const router = useRouter();
   const { theme } = useTheme();
-  const segments = useSegments();
   const { t } = useTranslation();
   const { userData, updateUserData } = useUserData();
-
-  const routes = useNavigationState((state) => state.routes);
-
-  console.log("Routes stack:", routes); // All routes in the current navigator
-
-  console.log("segments", segments);
 
   // Form states
   const [firstName, setFirstName] = useState(userData?.first_name || "");

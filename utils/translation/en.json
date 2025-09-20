@@ -118,7 +118,30 @@
     "noRidesSubtitle": "Book your first ride and start building your travel history with us.",
     "takeARide": "Book a Ride",
     "noCompletedRidesYet": "Your first ride is in progress!",
-    "completeFirstRide": "Complete your first ride to start building your travel history."
+    "completeFirstRide": "Complete your first ride to start building your travel history.",
+    "rideDetails": "Ride Details",
+    "rideMap": "Ride Map",
+    "pickupPoint": "Pickup point",
+    "destination": "Destination",
+    "payment": "Payment",
+    "distance": "Distance",
+    "rideFare": "Ride Fare",
+    "paymentMethod": "Payment Method",
+    "rideStatus": "Status",
+    "rideDate": "Date",
+    "duration": "Duration",
+    "feedback": "Feedback",
+    "driver": "Driver",
+    "cash": "Cash",
+    "card": "Card",
+    "mobile": "Mobile",
+    "pending": "Pending",
+    "active": "Active",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "noFeedback": "No feedback provided",
+    "reorderRide": "Reorder",
+    "details": "Details"
   },
   "earnings": {
     "title": "Earnings Screen",
@@ -138,6 +161,9 @@
     "failedToResendCode": "Failed to resend code. Please try again.",
     "sessionExpired": "Session expired. Please try again.",
     "verificationFailed": "Verification failed. Please try again."
+  },
+  "about": {
+    "title": "About"
   },
   "common": {
     "loading": "Loading...",

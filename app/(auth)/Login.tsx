@@ -13,7 +13,7 @@ import { useSession, useSSO, useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import * as AuthSession from "expo-auth-session";
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 import PhoneNumberField from "@/components/common/PhoneNumberField";
 import Seperator from "@/components/common/Seperator";
@@ -52,7 +52,7 @@ export default function Login() {
       pendingNavigation.current = false; // Reset flag
       handlePostOAuthNavigation();
     }
-  }, [clerkSession, user, pendingNavigation.current]);
+  }, [clerkSession, user]);
 
   const handlePostOAuthNavigation = async () => {
     try {
@@ -83,14 +83,15 @@ export default function Login() {
         const userData = driverData || passengerData;
 
         setUserData({
-          email_address: userData.email_address,
-          phone_number: userData.phone_number,
-          full_name: userData.full_name,
-          first_name: userData.first_name,
-          last_name: userData.last_name,
-          experience_years: userData.experience_years,
-          moto_type: userData.moto_type,
-          user_type: userData.user_type,
+          email_address: userData?.email_address,
+          phone_number: userData?.phone_number,
+          full_name: userData?.full_name,
+          first_name: userData?.first_name,
+          last_name: userData?.last_name,
+          experience_years: userData?.experience_years,
+          moto_type: userData?.moto_type,
+          user_type: userData?.user_type,
+          profile_image_url: user?.imageUrl,
         });
 
         console.log("Existing user found, navigating directly to Home");
@@ -104,6 +105,8 @@ export default function Login() {
       console.error("Error in post-OAuth navigation:", error);
       // On error, assume new user and go to UserTypeSelection
       router.replace("/(auth)/UserTypeSelection");
+    } finally {
+      setLoginLoading(null);
     }
   };
 
@@ -191,9 +194,8 @@ export default function Login() {
         );
       } else {
         console.log(`User cancelled ${providerName} OAuth`);
+        setLoginLoading(null);
       }
-    } finally {
-      setLoginLoading(null);
     }
   };
 

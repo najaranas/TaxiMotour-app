@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { RideCardProps } from "@/types/Types";
+import { DriverDataType, RideCardProps } from "@/types/Types";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import BackButton from "@/components/common/BackButton";
@@ -13,6 +13,9 @@ import Button from "@/components/common/Button";
 import THEME, { COLORS, FONTS } from "@/constants/theme";
 import { Map } from "lucide-react-native";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
+import { getSupabaseClient } from "@/services/supabaseClient";
 
 export default function RideDetails() {
   let { ride, rideId } = useLocalSearchParams() as unknown as {
@@ -21,16 +24,38 @@ export default function RideDetails() {
   };
   const { theme } = useTheme();
   const router = useRouter();
-
+  const { t } = useTranslation();
   const rideData = JSON.parse(ride) as RideCardProps["ride"];
+
+  const [driverData, setDriverData] = useState<DriverDataType | null>(null);
+
   console.log("Ride ID:", rideId);
-  console.log("Ride Dedstails:", rideData);
+  console.log("Ride Details:", rideData);
 
   const handleMapPress = () => {
     router.replace({
       pathname: "/(rides)/[rideId]/RideMap",
       params: { rideId: rideId, ride: ride },
     });
+  };
+  const supabaseClient = getSupabaseClient();
+
+  useEffect(() => {
+    getDriverData();
+  }, []);
+
+  const getDriverData = async () => {
+    try {
+      const response = await supabaseClient
+        .from("drivers")
+        .select("*")
+        .eq("id", rideData?.driver_id)
+        .single();
+
+      setDriverData(response?.data);
+    } catch (error) {
+      console.log("error getting driver data", error);
+    }
   };
 
   return (
@@ -41,13 +66,13 @@ export default function RideDetails() {
       <BackButton variant="arrow" />
       <View style={styles.mainContainer}>
         <Typo variant="h3" style={styles.title}>
-          Ride Details
+          {t("rides.rideDetails")}
         </Typo>
         <RideCard ride={rideData} viewOnly />
-        <Seperator text="Details" />
+        <Seperator text={t("rides.details")} />
 
-        <DriverInfo />
-        <FareInfo />
+        <DriverInfo driverData={driverData} />
+        <FareInfo rideData={rideData} />
         <View style={styles.buttonColumn}>
           <Button
             // onPress={trydata}
@@ -61,7 +86,7 @@ export default function RideDetails() {
               size={moderateScale(17)}
               fontFamily={FONTS.bold}
               color={COLORS.white}>
-              Re-order ride
+              {t("rides.reorderRide")}
             </Typo>
           </Button>
           <Button

@@ -102,8 +102,11 @@
     "rate": "Noter l'application",
     "share": "Partager l'application",
     "developer": "À propos du développeur",
+    "safety": "Sécurité",
+    "settings": "Paramètres",
     "createdBy": "Créé par {{creator}}",
     "version": "Version {{version}}",
+    "aboutDeveloper": "À propos du développeur",
     "developerRole": "Développeur d'applications mobiles"
   },
   "rides": {
@@ -115,7 +118,30 @@
     "noRidesSubtitle": "Réservez votre premier trajet et commencez à construire votre historique de voyage avec nous.",
     "takeARide": "Réserver un trajet",
     "noCompletedRidesYet": "Votre premier trajet est en cours!",
-    "completeFirstRide": "Terminez votre premier trajet pour commencer à construire votre historique de voyage."
+    "completeFirstRide": "Terminez votre premier trajet pour commencer à construire votre historique de voyage.",
+    "rideDetails": "Détails du trajet",
+    "rideMap": "Carte du trajet",
+    "pickupPoint": "Point de départ",
+    "destination": "Destination",
+    "payment": "Paiement",
+    "distance": "Distance",
+    "rideFare": "Tarif du trajet",
+    "paymentMethod": "Méthode de paiement",
+    "rideStatus": "Statut",
+    "rideDate": "Date",
+    "duration": "Durée",
+    "feedback": "Commentaires",
+    "driver": "Chauffeur",
+    "cash": "Espèces",
+    "card": "Carte",
+    "mobile": "Mobile",
+    "pending": "En attente",
+    "active": "Actif",
+    "completed": "Terminé",
+    "cancelled": "Annulé",
+    "noFeedback": "Aucun commentaire fourni",
+    "reorderRide": "Recommander",
+    "details": "Détails"
   },
   "earnings": {
     "title": "Écran des gains",
@@ -135,6 +161,9 @@
     "failedToResendCode": "Échec de renvoi du code. Veuillez réessayer.",
     "sessionExpired": "Session expirée. Veuillez réessayer.",
     "verificationFailed": "Vérification échouée. Veuillez réessayer."
+  },
+  "about": {
+    "title": "À propos"
   },
   "common": {
     "loading": "Chargement...",

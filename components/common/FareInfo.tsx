@@ -3,26 +3,65 @@ import Typo from "./Typo";
 import { useTheme } from "@/contexts/ThemeContext";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import { useState } from "react";
-import { useMapStore } from "@/store/mapStore";
+import type { RideProps, PaymentMethod, RideStatus } from "@/types/Types";
+import { formatDistance, formatRideDate } from "@/utils/rideUtils";
+import { useTranslation } from "react-i18next";
 
-export default function FareInfo() {
+interface FareInfoProps {
+  rideData?: RideProps;
+}
+
+export default function FareInfo({ rideData }: FareInfoProps) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
   const [viewWidth, setViewWidth] = useState(0);
-  const { routeGeoJSON } = useMapStore();
 
-  // Extract distance and duration from route data
-  const routeData = routeGeoJSON?.features?.[0]?.properties?.summary;
-  const distance = routeData?.distance
-    ? `${(routeData.distance / 1000).toFixed(1)}km`
-    : "N/A";
-  const duration = routeData?.duration
-    ? `${Math.round(routeData.duration / 60)}min`
-    : "N/A";
+  // Use ride data or fallback values for demo
+  const rideFare = rideData?.ride_fare || 15;
+  const paymentMethod = rideData?.payment_method || "cash";
+  const rideStatus = rideData?.status || "completed";
+  const rideDate = rideData?.created_at || new Date().toISOString();
+  const distance = rideData?.distance || 5000; // in meters
+  const duration = rideData?.duration || 900; // in seconds
+  const feedback = rideData?.feedback || null;
 
-  // Calculate basic fare (you can implement your fare calculation logic)
-  const baseFare = routeData?.distance
-    ? Math.max(5, Math.round((routeData.distance / 1000) * 2.5))
-    : 15;
+  // Format data for display
+  const formattedDistance = formatDistance(distance);
+  const formattedDate = formatRideDate(rideDate);
+  const formattedDuration = Math.round(duration / 60); // minutes
+
+  // Translation helpers
+  const getPaymentMethodText = (method: PaymentMethod) => {
+    switch (method) {
+      case "cash":
+        return t("rides.cash");
+      case "card":
+        return t("rides.card");
+      case "mobile_wallet":
+        return t("rides.mobile");
+      case "bank_transfer":
+        return t("rides.card"); // Use card as fallback for bank transfer
+      default:
+        return t("rides.cash");
+    }
+  };
+
+  const getStatusText = (status: RideStatus) => {
+    switch (status) {
+      case "pending":
+        return t("rides.pending");
+      case "accepted":
+        return t("rides.active");
+      case "in_progress":
+        return t("rides.active");
+      case "completed":
+        return t("rides.completed");
+      case "cancelled":
+        return t("rides.cancelled");
+      default:
+        return t("rides.completed");
+    }
+  };
 
   return (
     <View>
@@ -49,13 +88,13 @@ export default function FareInfo() {
               variant="body"
               size={moderateScale(12)}
               color={theme.text.muted}>
-              Ride Fare
+              {t("rides.rideFare")}
             </Typo>
             <Typo
               variant="body"
               size={moderateScale(14)}
               color={theme.text.secondary}>
-              TND{baseFare}
+              TND{rideFare}
             </Typo>
           </View>
           <View
@@ -68,13 +107,13 @@ export default function FareInfo() {
               variant="body"
               size={moderateScale(12)}
               color={theme.text.muted}>
-              Payment Method
+              {t("rides.paymentMethod")}
             </Typo>
             <Typo
               variant="body"
               size={moderateScale(14)}
               color={theme.text.secondary}>
-              Cash
+              {getPaymentMethodText(paymentMethod)}
             </Typo>
           </View>
           <View
@@ -87,13 +126,13 @@ export default function FareInfo() {
               variant="body"
               size={moderateScale(12)}
               color={theme.text.muted}>
-              Status
+              {t("rides.rideStatus")}
             </Typo>
             <Typo
               variant="body"
               size={moderateScale(14)}
               color={theme.text.secondary}>
-              Completed
+              {getStatusText(rideStatus)}
             </Typo>
           </View>
         </View>
@@ -113,13 +152,13 @@ export default function FareInfo() {
               variant="body"
               size={moderateScale(12)}
               color={theme.text.muted}>
-              Date
+              {t("rides.rideDate")}
             </Typo>
             <Typo
               variant="body"
               size={moderateScale(14)}
               color={theme.text.secondary}>
-              24 Jul 2025
+              {formattedDate}
             </Typo>
           </View>
           <View
@@ -132,13 +171,14 @@ export default function FareInfo() {
               variant="body"
               size={moderateScale(12)}
               color={theme.text.muted}>
-              Distance
+              {t("rides.distance")}
             </Typo>
             <Typo
               variant="body"
               size={moderateScale(14)}
               color={theme.text.secondary}>
-              {distance}
+              {formattedDistance.value}
+              {formattedDistance.unit}
             </Typo>
           </View>
           <View
@@ -151,13 +191,13 @@ export default function FareInfo() {
               variant="body"
               size={moderateScale(12)}
               color={theme.text.muted}>
-              Duration
+              {t("rides.duration")}
             </Typo>
             <Typo
               variant="body"
               size={moderateScale(14)}
               color={theme.text.secondary}>
-              {duration}
+              {formattedDuration}min
             </Typo>
           </View>
         </View>
@@ -173,7 +213,7 @@ export default function FareInfo() {
             variant="body"
             size={moderateScale(12)}
             color={theme.text.muted}>
-            Feedback
+            {t("rides.feedback")}
           </Typo>
           <ScrollView
             nestedScrollEnabled
@@ -191,9 +231,7 @@ export default function FareInfo() {
               variant="body"
               size={moderateScale(14)}
               color={theme.text.secondary}>
-              The ride was smooth and the driver was very professional. I had a
-              great experience overall. The ride was smooth and the driver was
-              very professional. I had a great experience overall.
+              {feedback || t("rides.noFeedback")}
             </Typo>
           </ScrollView>
         </View>

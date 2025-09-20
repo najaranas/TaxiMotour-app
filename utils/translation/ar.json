@@ -105,6 +105,7 @@
     "settings": "الإعدادات",
     "createdBy": "تطوير {{creator}}",
     "version": "الإصدار {{version}}",
+    "aboutDeveloper": "عن المطور",
     "developerRole": "مطور تطبيقات الجوال"
   },
   "rides": {
@@ -116,7 +117,30 @@
     "noRidesSubtitle": "احجز رحلتك الأولى وابدأ في بناء تاريخ سفرك معنا.",
     "takeARide": "احجز رحلة",
     "noCompletedRidesYet": "رحلتك الأولى قيد التقدم!",
-    "completeFirstRide": "أكمل رحلتك الأولى لبدء بناء تاريخ سفرك."
+    "completeFirstRide": "أكمل رحلتك الأولى لبدء بناء تاريخ سفرك.",
+    "rideDetails": "تفاصيل الرحلة",
+    "rideMap": "خريطة الرحلة",
+    "pickupPoint": "نقطة الانطلاق",
+    "destination": "الوجهة",
+    "payment": "الدفع",
+    "distance": "المسافة",
+    "rideFare": "تكلفة الرحلة",
+    "paymentMethod": "طريقة الدفع",
+    "rideStatus": "حالة الرحلة",
+    "rideDate": "التاريخ",
+    "duration": "المدة",
+    "feedback": "التعليقات",
+    "driver": "السائق",
+    "cash": "نقدي",
+    "card": "بطاقة",
+    "mobile": "محمول",
+    "pending": "في الانتظار",
+    "active": "نشط",
+    "completed": "مكتمل",
+    "cancelled": "ملغي",
+    "noFeedback": "لم يتم تقديم تعليقات",
+    "reorderRide": "إعادة طلب",
+    "details": "التفاصيل"
   },
   "earnings": {
     "title": "شاشة الأرباح",
@@ -136,6 +160,9 @@
     "failedToResendCode": "فشل في إعادة إرسال الرمز. يرجى المحاولة مرة أخرى.",
     "sessionExpired": "انتهت صلاحية الجلسة. يرجى المحاولة مرة أخرى.",
     "verificationFailed": "فشل التحقق. يرجى المحاولة مرة أخرى."
+  },
+  "about": {
+    "title": "حول"
   },
   "common": {
     "loading": "جاري التحميل...",

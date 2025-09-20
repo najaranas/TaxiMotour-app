@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
+import { ClerkProvider } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
@@ -18,7 +18,6 @@ SplashScreen.preventAutoHideAsync();
 
 // Inner component that uses useAuth
 function AppNavigator() {
-  const { isSignedIn } = useAuth();
   const { t } = useTranslation();
   const { theme } = useTheme();
 
@@ -44,70 +43,66 @@ function AppNavigator() {
       />
 
       {/* Auth screens - only accessible when not signed in */}
-      <Stack>
-        <Stack.Screen name="(auth)/Login" options={{ title: "login" }} />
-        <Stack.Screen
-          name="(auth)/PhoneVerification"
-          options={{ title: "phoneVerification" }}
-        />
-      </Stack>
+      <Stack.Screen name="(auth)/Login" options={{ title: "login" }} />
+      <Stack.Screen
+        name="(auth)/PhoneVerification"
+        options={{ title: "phoneVerification" }}
+      />
 
       {/* Main app screens - only accessible when signed in */}
-      <Stack>
-        {/* Tab navigation */}
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      {/* Tab navigation */}
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 
-        {/* Profile screens */}
-        <Stack.Screen
-          name="(profile)/PersonalInfo"
-          options={{ title: t("profile.personalInfo") }}
-        />
-        <Stack.Screen
-          name="(profile)/EditPersonalInfo"
-          options={{ title: t("profile.editPersonalInfo") }}
-        />
-        <Stack.Screen
-          name="(profile)/Selfie"
-          options={{ animation: "slide_from_bottom" }}
-        />
-        <Stack.Screen
-          name="(profile)/CheckSelfie"
-          options={{ title: t("profile.checkSelfie") }}
-        />
-        <Stack.Screen
-          name="(profile)/Languages"
-          options={{ title: t("profile.language") }}
-        />
-        <Stack.Screen
-          name="(profile)/Test"
-          options={{
-            title: "Test",
-            headerShown: true,
-          }}
-        />
+      {/* Profile screens */}
+      <Stack.Screen
+        name="(profile)/PersonalInfo"
+        options={{ title: t("profile.personalInfo") }}
+      />
+      <Stack.Screen
+        name="(profile)/EditPersonalInfo"
+        options={{ title: t("profile.editPersonalInfo") }}
+      />
+      <Stack.Screen
+        name="(profile)/Selfie"
+        options={{ animation: "slide_from_bottom" }}
+      />
+      <Stack.Screen
+        name="(profile)/CheckSelfie"
+        options={{ title: t("profile.checkSelfie") }}
+      />
+      <Stack.Screen
+        name="(profile)/Languages"
+        options={{ title: t("profile.language") }}
+      />
+      <Stack.Screen
+        name="(profile)/Test"
+        options={{
+          title: "Test",
+          headerShown: true,
+        }}
+      />
 
-        {/* Drawer screens */}
-        <Stack.Screen
-          name="(drawer)/About"
-          options={{ title: t("drawer.about") }}
-        />
+      {/* Drawer screens */}
+      <Stack.Screen
+        name="(drawer)/About"
+        options={{ title: t("drawer.about") }}
+      />
 
-        {/* Ride screens */}
-        <Stack.Screen
-          name="(rides)/[rideId]/index"
-          options={{ title: t("rides.rideDetails") }}
-        />
-        <Stack.Screen
-          name="(rides)/[rideId]/RideMap"
-          options={{
-            title: t("rides.rideMap"),
-            animation: "slide_from_bottom",
-          }}
-        />
+      {/* Ride screens */}
+      <Stack.Screen
+        name="(rides)/[rideId]/index"
+        options={{ title: t("rides.rideDetails") }}
+      />
+      <Stack.Screen
+        name="(rides)/[rideId]/RideMap"
+        options={{
+          title: t("rides.rideMap"),
+          animation: "slide_from_bottom",
+        }}
+      />
 
-        {/* About screen (root level) */}
-        <Stack.Screen name="About" options={{ title: t("about.title") }} />
-      </Stack>
+      {/* About screen (root level) */}
+      <Stack.Screen name="About" options={{ title: t("about.title") }} />
     </Stack>
   );
 }

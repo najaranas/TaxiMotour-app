@@ -320,6 +320,24 @@ export type RideCardProps = {
   hideExtraDetails?: boolean;
 };
 
+export type DriverDataType = {
+  id: string;
+  user_id: string;
+  moto_type: string;
+  experience_years: string;
+  created_at: string;
+  user_type: "driver";
+  phone_number: string;
+  email_address: string;
+  first_name: string;
+  last_name: string;
+  full_name: string;
+};
+
+export type DriverInfoProps = {
+  driverData: DriverDataType | null;
+};
+
 export interface userDataType {
   email_address?: string;
   phone_number?: string;
@@ -329,4 +347,5 @@ export interface userDataType {
   experience_years?: string;
   moto_type?: string;
   user_type?: "driver" | "passenger";
+  profile_image_url?: string;
 }

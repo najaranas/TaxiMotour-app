@@ -3,7 +3,7 @@ import { verticalScale } from "@/utils/styling";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { Image, StyleSheet, View } from "react-native";
-import { useAuth, useSession, useUser } from "@clerk/clerk-expo";
+import { useAuth, useClerk, useSession, useUser } from "@clerk/clerk-expo";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import { useUserData } from "@/store/userStore";
 import StorageManager from "@/utils/storage";
@@ -14,6 +14,7 @@ export default function Index() {
   const { user } = useUser();
   const { session } = useSession();
   const { setUserData } = useUserData();
+  const { signOut } = useClerk();
 
   useEffect(() => {
     if (isLoaded) {

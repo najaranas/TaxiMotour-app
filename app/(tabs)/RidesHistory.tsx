@@ -36,6 +36,24 @@ export default function RidesHistoryScreen() {
     setIsRefreshing(true);
     await fetchRidesData();
     setIsRefreshing(false);
+
+    // const result = await supabaseClient.from("rides").insert({
+    //   passenger_id: "6991be69-7c1f-4b02-a92f-71886367c91a",
+    //   driver_id: "a7a29551-1eb7-4b3f-9e67-d24af5015a55",
+    //   pickup_address: "Délégation Bab Souika",
+    //   pickup_lat: "36.805205476964815",
+    //   pickup_lon: "10.167988",
+    //   destination_address: "Tataouine",
+    //   destination_lat: "32.931524305926594",
+    //   destination_lon: "10.450395606458187",
+    //   ride_fare: "45.75",
+    //   distance: "425.8",
+    //   duration: "05:00:00",
+    //   payment_method: "card",
+    //   status: "completed",
+    //   feedback: "Long but comfortable ride, driver was professional",
+    // });
+    // console.log("resultresult", result);
   };
 
   console.log("completedRides", completedRides);
@@ -131,6 +149,26 @@ export default function RidesHistoryScreen() {
       </View>
     </View>
   );
+
+  useEffect(() => {
+    // Listen for new rides in real time
+    const channel = supabaseClient
+      .channel("public:rides")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "rides" },
+        (payload) => {
+          setCurrentActiveRide(payload.new as RideProps);
+          // setRides((prev) => [...prev, payload.new]); // auto update UI
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabaseClient.removeChannel(channel); // cleanup on unmount
+    };
+  }, []);
+
   return (
     <ScreenWrapper
       scroll

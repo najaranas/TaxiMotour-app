@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React, { useMemo } from "react";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import { LocateFixed, MapPin } from "lucide-react-native";
@@ -7,6 +7,8 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { RideCardProps } from "@/types/Types";
 import { useRouter } from "expo-router";
 import Button from "../common/Button";
+import { useTranslation } from "react-i18next";
+import { formatDistance } from "@/utils/rideUtils";
 
 export default function RideCard({
   ride,
@@ -15,6 +17,7 @@ export default function RideCard({
 }: RideCardProps) {
   const { theme } = useTheme();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const dynamicStyles = useMemo(
     () => ({
@@ -28,12 +31,10 @@ export default function RideCard({
       locationIcon: {
         ...styles.locationIcon,
         backgroundColor: theme.button.primary + "58",
-
         borderRadius: theme.borderRadius.circle,
       },
       dashedLine: {
         ...styles.dashedLine,
-
         borderColor: theme.gray.border,
       },
       paymentBadge: {
@@ -54,6 +55,8 @@ export default function RideCard({
       },
     });
   };
+
+  const formattedDistance = formatDistance(ride?.distance);
 
   return (
     <Button
@@ -94,14 +97,14 @@ export default function RideCard({
                 variant="caption"
                 size={moderateScale(12)}
                 color={theme.text.secondary}>
-                Pickup point
+                {t("rides.pickupPoint")}
               </Typo>
             </View>
 
             {!hideExtraDetails && (
               <View style={styles.paymentInfoContainer}>
                 <Typo variant="caption" color={theme.text.muted}>
-                  Payment
+                  {t("rides.payment")}
                 </Typo>
                 <View style={dynamicStyles.paymentBadge}>
                   <Typo
@@ -125,19 +128,19 @@ export default function RideCard({
                 variant="caption"
                 size={moderateScale(12)}
                 color={theme.text.secondary}>
-                Destination
+                {t("rides.destination")}
               </Typo>
             </View>
             {!hideExtraDetails && (
               <View style={styles.distanceInfoContainer}>
                 <Typo variant="caption" color={theme.text.muted}>
-                  Distance
+                  {t("rides.distance")}
                 </Typo>
                 <Typo
                   variant="body"
                   size={moderateScale(13)}
                   color={theme.text.primary}>
-                  {ride.distance}
+                  {`${formattedDistance.value} ${formattedDistance.unit}`}
                 </Typo>
               </View>
             )}
@@ -152,23 +155,18 @@ const styles = StyleSheet.create({
   locationInfoColumn: {
     justifyContent: "space-between",
     alignItems: "center",
-    // paddingVertical: verticalScale(),
   },
-
   rideInfoColumn: {
     flex: 1,
     gap: verticalScale(24),
   },
-
   dashedLine: {
     width: 1,
     flex: 1,
     borderRightWidth: 1.4,
-
     borderStyle: "dashed",
     marginVertical: verticalScale(2),
   },
-
   rideCard: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -202,7 +200,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   paymentInfoContainer: {
-    alignItems: "center",
+    alignItems: "flex-end",
     gap: verticalScale(4),
   },
   paymentBadge: {
@@ -210,7 +208,7 @@ const styles = StyleSheet.create({
     paddingVertical: verticalScale(4),
   },
   distanceInfoContainer: {
-    alignItems: "center",
+    alignItems: "flex-end",
     gap: verticalScale(4),
   },
 });

@@ -1,5 +1,5 @@
-import { Image, StyleSheet, Text, View } from "react-native";
-import React, { useState } from "react";
+import { Image, StyleSheet, View } from "react-native";
+import { useState } from "react";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import BackButton from "@/components/common/BackButton";
