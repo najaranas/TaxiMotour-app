@@ -16,6 +16,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { getSupabaseClient } from "@/services/supabaseClient";
+import { useSession } from "@clerk/clerk-expo";
 
 export default function RideDetails() {
   let { ride, rideId } = useLocalSearchParams() as unknown as {
@@ -26,6 +27,8 @@ export default function RideDetails() {
   const router = useRouter();
   const { t } = useTranslation();
   const rideData = JSON.parse(ride) as RideCardProps["ride"];
+  const { session } = useSession();
+  const supabaseClient = getSupabaseClient(session);
 
   const [driverData, setDriverData] = useState<DriverDataType | null>(null);
 
@@ -38,7 +41,6 @@ export default function RideDetails() {
       params: { rideId: rideId, ride: ride },
     });
   };
-  const supabaseClient = getSupabaseClient();
 
   useEffect(() => {
     getDriverData();

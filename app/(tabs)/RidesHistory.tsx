@@ -15,6 +15,7 @@ import { RideProps } from "@/types/Types";
 import Button from "@/components/common/Button";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { useUserData } from "@/store/userStore";
 
 export default function RidesHistoryScreen() {
   const { theme } = useTheme();
@@ -22,7 +23,7 @@ export default function RidesHistoryScreen() {
   const { user } = useUser();
   const router = useRouter();
   const { t } = useTranslation();
-
+  const { userData } = useUserData();
   const [completedRides, setCompletedRides] = useState<RideProps[]>([]);
   const [currentActiveRide, setCurrentActiveRide] = useState<RideProps | null>(
     null
@@ -62,7 +63,7 @@ export default function RidesHistoryScreen() {
     setIsLoadingRides(true);
     try {
       const supabaseUserId = await supabaseClient
-        .from("passengers")
+        .from(userData?.user_type + "s")
         .select("id")
         .eq("user_id", user?.id)
         .single();
@@ -70,18 +71,18 @@ export default function RidesHistoryScreen() {
       console.log(user?.id, "user?.id");
       console.log("supadbaseUserId", supabaseUserId);
 
-      const response = await supabaseClient
+      const fetchRidesResponse = await supabaseClient
         .from("rides")
         .select("*")
-        .eq("passenger_id", supabaseUserId?.data?.id);
-      console.log("responseaze", response?.data);
+        .eq(userData?.user_type + "_id", supabaseUserId?.data?.id);
+      console.log("fetchRidesResponse", fetchRidesResponse?.data);
       setCompletedRides(
-        response?.data?.filter(
+        fetchRidesResponse?.data?.filter(
           (ride: RideProps) => ride?.status !== "in_progress"
         ) || []
       );
       setCurrentActiveRide(
-        response?.data?.find(
+        fetchRidesResponse?.data?.find(
           (ride: RideProps) => ride?.status === "in_progress"
         ) || null
       );
@@ -96,6 +97,7 @@ export default function RidesHistoryScreen() {
     setCompletedRides,
     setCurrentActiveRide,
     setIsLoadingRides,
+    userData?.user_type,
   ]);
 
   useEffect(() => {

@@ -4,7 +4,11 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import { useState } from "react";
 import type { RideProps, PaymentMethod, RideStatus } from "@/types/Types";
-import { formatDistance, formatRideDate } from "@/utils/rideUtils";
+import {
+  formatDistance,
+  formatDuration,
+  formatRideDate,
+} from "@/utils/rideUtils";
 import { useTranslation } from "react-i18next";
 
 interface FareInfoProps {
@@ -17,21 +21,14 @@ export default function FareInfo({ rideData }: FareInfoProps) {
   const [viewWidth, setViewWidth] = useState(0);
 
   // Use ride data or fallback values for demo
-  const rideFare = rideData?.ride_fare || 15;
-  const paymentMethod = rideData?.payment_method || "cash";
-  const rideStatus = rideData?.status || "completed";
-  const rideDate = rideData?.created_at || new Date().toISOString();
-  const distance = rideData?.distance || 5000; // in meters
-  const duration = rideData?.duration || 900; // in seconds
-  const feedback = rideData?.feedback || null;
 
   // Format data for display
-  const formattedDistance = formatDistance(distance);
-  const formattedDate = formatRideDate(rideDate);
-  const formattedDuration = Math.round(duration / 60); // minutes
+  const formattedDistance = formatDistance(rideData?.distance);
+  const formattedDate = formatRideDate(rideData?.created_at);
+  const formattedDuration = formatDuration(rideData?.duration);
 
   // Translation helpers
-  const getPaymentMethodText = (method: PaymentMethod) => {
+  const getPaymentMethodText = (method: PaymentMethod | null | undefined) => {
     switch (method) {
       case "cash":
         return t("rides.cash");
@@ -46,7 +43,7 @@ export default function FareInfo({ rideData }: FareInfoProps) {
     }
   };
 
-  const getStatusText = (status: RideStatus) => {
+  const getStatusText = (status: RideStatus | undefined | null) => {
     switch (status) {
       case "pending":
         return t("rides.pending");
@@ -94,7 +91,7 @@ export default function FareInfo({ rideData }: FareInfoProps) {
               variant="body"
               size={moderateScale(14)}
               color={theme.text.secondary}>
-              TND{rideFare}
+              {rideData?.ride_fare + " TND" || "--"}
             </Typo>
           </View>
           <View
@@ -113,7 +110,7 @@ export default function FareInfo({ rideData }: FareInfoProps) {
               variant="body"
               size={moderateScale(14)}
               color={theme.text.secondary}>
-              {getPaymentMethodText(paymentMethod)}
+              {getPaymentMethodText(rideData?.payment_method)}
             </Typo>
           </View>
           <View
@@ -132,7 +129,7 @@ export default function FareInfo({ rideData }: FareInfoProps) {
               variant="body"
               size={moderateScale(14)}
               color={theme.text.secondary}>
-              {getStatusText(rideStatus)}
+              {getStatusText(rideData?.status)}
             </Typo>
           </View>
         </View>
@@ -158,7 +155,7 @@ export default function FareInfo({ rideData }: FareInfoProps) {
               variant="body"
               size={moderateScale(14)}
               color={theme.text.secondary}>
-              {formattedDate}
+              {formattedDate || "--"}
             </Typo>
           </View>
           <View
@@ -177,8 +174,7 @@ export default function FareInfo({ rideData }: FareInfoProps) {
               variant="body"
               size={moderateScale(14)}
               color={theme.text.secondary}>
-              {formattedDistance.value}
-              {formattedDistance.unit}
+              {formattedDistance || "--"}
             </Typo>
           </View>
           <View
@@ -197,7 +193,7 @@ export default function FareInfo({ rideData }: FareInfoProps) {
               variant="body"
               size={moderateScale(14)}
               color={theme.text.secondary}>
-              {formattedDuration}min
+              {formattedDuration}
             </Typo>
           </View>
         </View>
@@ -231,7 +227,7 @@ export default function FareInfo({ rideData }: FareInfoProps) {
               variant="body"
               size={moderateScale(14)}
               color={theme.text.secondary}>
-              {feedback || t("rides.noFeedback")}
+              {rideData?.feedback || t("rides.noFeedback")}
             </Typo>
           </ScrollView>
         </View>

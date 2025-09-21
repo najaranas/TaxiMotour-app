@@ -321,17 +321,10 @@ export type RideCardProps = {
 };
 
 export type DriverDataType = {
-  id: string;
-  user_id: string;
-  moto_type: string;
-  experience_years: string;
-  created_at: string;
-  user_type: "driver";
-  phone_number: string;
-  email_address: string;
-  first_name: string;
-  last_name: string;
-  full_name: string;
+  moto_type?: string;
+  phone_number?: string;
+  full_name?: string;
+  profile_image_url?: string;
 };
 
 export type DriverInfoProps = {

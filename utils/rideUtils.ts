@@ -1,20 +1,18 @@
+import i18n from "i18next";
 /**
  * Formats distance in a user-friendly way
  * @param distanceInMeters - Distance in meters
  * @returns Formatted distance object with value and unit
  */
-export const formatDistance = (distanceInMeters: string | number) => {
+export const formatDistance = (
+  distanceInMeters: string | number | undefined
+): string | "--" => {
+  if (!distanceInMeters) return "--";
   const distance = Math.round(Number(distanceInMeters));
   if (distance >= 1000) {
-    return {
-      value: (distance / 1000).toFixed(1),
-      unit: "km",
-    };
+    return `${(distance / 1000).toFixed(0)} km`;
   }
-  return {
-    value: Math.round(distance).toString(),
-    unit: "m",
-  };
+  return `${distance.toFixed(0)} m`;
 };
 
 /**
@@ -22,14 +20,18 @@ export const formatDistance = (distanceInMeters: string | number) => {
  * @param durationInSeconds - Duration in seconds
  * @returns Formatted duration string
  */
-export const formatDuration = (durationInSeconds: number): string => {
-  const minutes = Math.floor(durationInSeconds / 60);
-  const seconds = durationInSeconds % 60;
+export const formatDuration = (
+  durationInSeconds: number | undefined
+): string => {
+  if (!durationInSeconds) return "--";
 
-  if (minutes > 0) {
-    return `${minutes}min ${seconds > 0 ? `${seconds}s` : ""}`.trim();
+  const duration = Math.round(durationInSeconds);
+
+  if (duration > 3600) {
+    return `${(duration / 3600).toFixed(0)} h`;
+  } else {
+    return `${(duration / 60).toFixed(0)} min`;
   }
-  return `${seconds}s`;
 };
 
 /**
@@ -37,9 +39,12 @@ export const formatDuration = (durationInSeconds: number): string => {
  * @param dateString - ISO date string
  * @returns Formatted date string
  */
-export const formatRideDate = (dateString: string): string => {
+export const formatRideDate = (
+  dateString: string | undefined
+): string | "--" => {
+  if (!dateString) return "--";
   const date = new Date(dateString);
-  return date.toLocaleDateString("en-GB", {
+  return date.toLocaleDateString(i18n.language, {
     day: "2-digit",
     month: "short",
     year: "numeric",

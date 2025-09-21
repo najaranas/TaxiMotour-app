@@ -11,7 +11,7 @@ import { userTypes } from "@/constants/data";
 import BackButton from "@/components/common/BackButton";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "@/contexts/ThemeContext";
-import { useUser, useSession } from "@clerk/clerk-expo";
+import { useUser, useSession, useClerk } from "@clerk/clerk-expo";
 import { getSupabaseClient } from "@/services/supabaseClient";
 import { useUserData } from "@/store/userStore";
 import StorageManager from "@/utils/storage";
@@ -26,8 +26,10 @@ export default function UserTypeSelection() {
   const { theme } = useTheme();
   const { user } = useUser();
   const { session } = useSession();
-  const { setUserData } = useUserData();
+  const supabase = getSupabaseClient(session);
+  const { signOut } = useClerk();
 
+  const { setUserData } = useUserData();
   // Dynamic styles - memoized for performance, only recreated when theme changes
   const dynamicStyles = useMemo(
     () =>
@@ -70,14 +72,11 @@ export default function UserTypeSelection() {
       }),
     [theme]
   );
-
   const handleContinue = async () => {
     if (!selectedType || !user || !session) return;
 
     setIsLoading(true);
     try {
-      const supabase = getSupabaseClient(session);
-
       // Prepare user data
       const userData = {
         user_id: user.id,

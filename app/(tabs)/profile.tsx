@@ -4,7 +4,7 @@ import ScreenWrapper from "@/components/common/ScreenWrapper";
 import { COLORS, FONTS } from "@/constants/theme";
 import { useTheme } from "@/contexts/ThemeContext";
 
-import { useClerk, useUser } from "@clerk/clerk-expo";
+import { useClerk, useUser, useSession } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import Typo from "@/components/common/Typo";
@@ -32,14 +32,15 @@ import { getSupabaseClient } from "@/services/supabaseClient";
 export default function ProfileScreen() {
   const { signOut } = useClerk();
   const { user } = useUser();
-  const { setUserData, userData } = useUserData();
+  const { session } = useSession(); // Add this line
+  const { setUserData } = useUserData();
 
   const { theme, themeName, setTheme } = useTheme();
   const { t } = useTranslation();
 
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const supabaseClient = getSupabaseClient();
+  const supabaseClient = getSupabaseClient(session); // Pass session
 
   // State management
   const [isDarkModeEnabled, setIsDarkModeEnabled] = useState(false);
@@ -50,39 +51,24 @@ export default function ProfileScreen() {
   const [bottomSheetRef, setBottomSheetRef] =
     useState<BottomSheetMethods | null>(null);
 
-  // useEffect(() => {
-  //   insetImgToSupabase();
-  // }, [user?.imageUrl]);
+  useEffect(() => {
+    insetImgToSupabase();
+  }, [user?.imageUrl]);
 
   const insetImgToSupabase = async () => {
-    const resposne = await supabaseClient
-      // .from(userData?.user_type === "driver" ? "drivers" : "passengers")
-      .from("drivers")
-      .update({ experience_years: "13" })
-      // .eq("user_id", user?.id);
-      .eq("user_id", user?.id)
-      .select();
-    console.log("ddarepsoibe", resposne);
+    try {
+      const response = await supabaseClient
+        .from("drivers")
+        .update({
+          profile_image_url: user?.imageUrl,
+          experience_years: 13, // Use correct column name and number type
+        })
+        .eq("user_id", user?.id);
 
-    // if (userData?.user_type) {
-    //   try {
-    //     // const resposne = await supabaseClient
-    //     //   // .from(userData?.user_type)
-    //     //   .from(userData?.user_type === "driver" ? "drivers" : "passengers")
-    //     //   // .update({ profile_image_url: user?.imageUrl })
-    //     //   .update({ experience_years: "1" })
-    //     //   .eq("user_id", user?.id);
-    //     const resposne = await supabaseClient
-    //       // .from(userData?.user_type === "driver" ? "drivers" : "passengers")
-    //       .from("drivers")
-    //       .update({ experience_years: "13" })
-    //       .eq("user_id", user?.id);
-
-    //     console.log("aezresposne", resposne);
-    //   } catch (error) {
-    //     console.log("erro updaing userimg to supabase", error);
-    //   }
-    // }
+      console.log("Update response:", response);
+    } catch (error) {
+      console.log("💥 Error:", error);
+    }
   };
 
   useEffect(() => {

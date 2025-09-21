@@ -10,8 +10,7 @@ import Button from "@/components/common/Button";
 import { useState, useRef } from "react";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 import { useUser, useSession } from "@clerk/clerk-expo";
-import { useLocalSearchParams, useRouter, useSegments } from "expo-router";
-import { useNavigationState } from "@react-navigation/native";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { getSupabaseClient } from "@/services/supabaseClient";
 import { useUserData } from "@/store/userStore";
@@ -38,6 +37,7 @@ export default function EditPersonalInfo() {
   const { theme } = useTheme();
   const { t } = useTranslation();
   const { userData, updateUserData } = useUserData();
+  const supabase = getSupabaseClient(session);
 
   // Form states
   const [firstName, setFirstName] = useState(userData?.first_name || "");
@@ -104,8 +104,6 @@ export default function EditPersonalInfo() {
   const handleSave = async () => {
     setIsLoading(true);
     try {
-      const supabase = getSupabaseClient(session);
-
       if (editType === "name") {
         const updateData: {
           firstName?: string;
@@ -126,7 +124,7 @@ export default function EditPersonalInfo() {
         try {
           const fullName = `${firstName.trim()} ${lastName.trim()}`;
           const { error } = await supabase
-            .from(userData?.user_type === "driver" ? "drivers" : "passengers")
+            .from(userData?.user_type + "s")
             .update({
               first_name: firstName.trim(),
               last_name: lastName.trim(),
@@ -180,9 +178,7 @@ export default function EditPersonalInfo() {
               // Update Supabase with the verified email
               try {
                 const { error } = await supabase
-                  .from(
-                    userData?.user_type === "driver" ? "drivers" : "passengers"
-                  )
+                  .from(userData?.user_type + "s")
                   .update({ email_address: email.trim() })
                   .eq("user_id", user?.id);
 
@@ -253,9 +249,7 @@ export default function EditPersonalInfo() {
               // Update Supabase with the verified phone
               try {
                 const { error } = await supabase
-                  .from(
-                    userData?.user_type === "driver" ? "drivers" : "passengers"
-                  )
+                  .from(userData?.user_type + "s")
                   .update({ phone_number: phone.trim() })
                   .eq("user_id", user?.id);
 
@@ -301,7 +295,7 @@ export default function EditPersonalInfo() {
       } else if (editType === "motoType") {
         try {
           const { error } = await supabase
-            .from(userData?.user_type === "driver" ? "drivers" : "passengers")
+            .from(userData?.user_type + "s")
             .update({ moto_type: motoType.trim() })
             .eq("user_id", user?.id);
 
@@ -321,7 +315,7 @@ export default function EditPersonalInfo() {
       } else if (editType === "experience") {
         try {
           const { error } = await supabase
-            .from(userData?.user_type === "driver" ? "drivers" : "passengers")
+            .from(userData?.user_type + "s")
             .update({ experience_years: experience.trim() })
             .eq("user_id", user?.id);
 

@@ -45,7 +45,7 @@ export default function RideCard({
     }),
     [theme]
   );
-
+  console.log("ride", ride.distance);
   const cardPressHandler = () => {
     router.navigate({
       pathname: "/(rides)/[rideId]",
@@ -91,7 +91,7 @@ export default function RideCard({
           <View style={styles.locationRow}>
             <View style={styles.locationTextContainer}>
               <Typo variant="body" color={theme.text.primary} numberOfLines={1}>
-                {ride.pickup_address}
+                {ride.pickup_address || "--"}
               </Typo>
               <Typo
                 variant="caption"
@@ -111,7 +111,7 @@ export default function RideCard({
                     variant="caption"
                     size={moderateScale(10)}
                     color={theme.button.primary}>
-                    {ride.payment_method}
+                    {ride.payment_method || "--"}
                   </Typo>
                 </View>
               </View>
@@ -122,7 +122,7 @@ export default function RideCard({
           <View style={styles.locationRow}>
             <View style={styles.locationTextContainer}>
               <Typo variant="body" color={theme.text.primary} numberOfLines={1}>
-                {ride.destination_address}
+                {ride.destination_address || "--"}
               </Typo>
               <Typo
                 variant="caption"
@@ -140,7 +140,7 @@ export default function RideCard({
                   variant="body"
                   size={moderateScale(13)}
                   color={theme.text.primary}>
-                  {`${formattedDistance.value} ${formattedDistance.unit}`}
+                  {formattedDistance || "--"}
                 </Typo>
               </View>
             )}

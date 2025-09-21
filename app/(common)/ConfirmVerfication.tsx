@@ -33,6 +33,7 @@ export default function ConfirmVerification() {
   const resendTime = 20;
   const [timerId, setTimerId] = useState<number | null>(null);
   const [resendTimer, setResendTimer] = useState<number>(resendTime);
+  const supabase = getSupabaseClient(session);
 
   const startResendTimer = () => {
     setResendTimer(resendTime);
@@ -99,9 +100,8 @@ export default function ConfirmVerification() {
 
           // Update Supabase with the verified email
           try {
-            const supabase = getSupabaseClient(session);
             const { error } = await supabase
-              .from(userData?.user_type === "driver" ? "drivers" : "passengers")
+              .from(userData?.user_type + "s")
               .update({ email_address: contactValue })
               .eq("user_id", user?.id);
 
@@ -136,9 +136,8 @@ export default function ConfirmVerification() {
 
           // Update Supabase with the verified phone
           try {
-            const supabase = getSupabaseClient(session);
             const { error } = await supabase
-              .from(userData?.user_type === "driver" ? "drivers" : "passengers")
+              .from(userData?.user_type + "s")
               .update({ phone_number: contactValue })
               .eq("user_id", user?.id);
 

@@ -32,6 +32,8 @@ export default function Login() {
 
   const { startSSOFlow } = useSSO();
   const { session: clerkSession } = useSession();
+  const supabase = getSupabaseClient(clerkSession);
+
   const { user } = useUser();
   const { setUserData } = useUserData();
 
@@ -59,8 +61,6 @@ export default function Login() {
       console.log("Handling post-OAuth navigation...");
       console.log("clerkSession", clerkSession);
       console.log("user", user);
-
-      const supabase = getSupabaseClient(clerkSession);
 
       const [driversResponse, passengersResponse] = await Promise.all([
         supabase.from("drivers").select("*").eq("user_id", user?.id).single(),
@@ -103,8 +103,6 @@ export default function Login() {
       }
     } catch (error) {
       console.error("Error in post-OAuth navigation:", error);
-      // On error, assume new user and go to UserTypeSelection
-      router.replace("/(auth)/UserTypeSelection");
     } finally {
       setLoginLoading(null);
     }
@@ -161,6 +159,7 @@ export default function Login() {
         oauthSuccessful = true;
       } else {
         console.log("OAuth cancelled or incomplete");
+        setLoginLoading(null);
       }
 
       if (oauthSuccessful) {

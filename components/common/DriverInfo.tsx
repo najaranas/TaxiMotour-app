@@ -105,7 +105,6 @@ export default function DriverInfo({ driverData }: DriverInfoProps) {
   if (!driverData) {
     return renderSkeletonContainer();
   }
-
   return (
     <View style={dynamicStyles.container}>
       <View
@@ -118,8 +117,9 @@ export default function DriverInfo({ driverData }: DriverInfoProps) {
         <UserProfileImage
           editable={false}
           showEditIcon={false}
-          // hasImage={}
-          imageUrl={""}
+          hasImage={!!driverData?.profile_image_url}
+          // !!undefined === false
+          imageUrl={driverData?.profile_image_url}
           size={40}
         />
         <View
