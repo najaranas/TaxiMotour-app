@@ -7,37 +7,71 @@ import { useRouter } from "expo-router";
 import Typo from "@/components/common/Typo";
 import THEME, { COLORS, FONTS } from "@/constants/theme";
 import Button from "@/components/common/Button";
-import { useUser } from "@clerk/clerk-expo";
-import { getSelfieImage } from "../../store/selfieImageStore";
+import { useSession, useUser } from "@clerk/clerk-expo";
+import { useSelfieStore } from "../../store/selfieImageStore";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
+import { getSupabaseClient } from "@/services/supabaseClient";
 
 export default function CheckSelfie() {
-  const selfieImage = getSelfieImage();
+  const { selfieImage, clearSelfieImage } = useSelfieStore();
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const { user } = useUser();
   const { theme } = useTheme();
+  const { session } = useSession();
   const router = useRouter();
   const { t } = useTranslation();
+  const supabaseClient = getSupabaseClient(session);
 
   const handleRetake = () => {
     router.back();
   };
 
+  const syncImageToSupabase = async (imageUrl: string) => {
+    try {
+      const response = await supabaseClient
+        .from("drivers")
+        .update({
+          profile_image_url: imageUrl,
+        })
+        .eq("user_id", user?.id)
+        .select();
+
+      console.log("✅ Synced to Supabase:", response.data);
+    } catch (error) {
+      console.log("💥 Error syncing to Supabase:", error);
+    }
+  };
+
   const handleConfirm = async () => {
     try {
       setIsUploading(true);
-      if (selfieImage?.base64) {
+      if (selfieImage?.base64 && user) {
         const base64WithPrefix = "data:image/jpeg;base64," + selfieImage.base64;
-        await user?.setProfileImage({ file: base64WithPrefix });
+
+        // Upload to Clerk and wait for completion
+        await user.setProfileImage({ file: base64WithPrefix });
+
+        // Wait for the user to be fully updated
+        await user.reload();
+
+        // Now sync to Supabase with the correct URL
+        if (user.imageUrl) {
+          await syncImageToSupabase(user.imageUrl);
+        }
+
+        // Clear the selfie from store since it's uploaded
+        clearSelfieImage();
+
+        // Navigate back to profile
+        router.replace("/(tabs)/Profile");
       } else {
-        console.log("Invalid image data");
+        console.log("Invalid image data or user not found");
       }
     } catch (error) {
-      console.log(error);
+      console.log("💥 Error uploading image:", error);
     } finally {
       setIsUploading(false);
-      router.replace("/(tabs)/Profile");
     }
   };
   return (

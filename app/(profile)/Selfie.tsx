@@ -15,7 +15,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { useFocusEffect, useRouter } from "expo-router";
-import { setSelfieImage } from "../../store/selfieImageStore";
+import { useSelfieStore } from "../../store/selfieImageStore";
 import { useTranslation } from "react-i18next";
 
 const AnimatedRefreshCcw = Animated.createAnimatedComponent(RefreshCcw);
@@ -23,11 +23,11 @@ const AnimatedRefreshCcw = Animated.createAnimatedComponent(RefreshCcw);
 export default function Selfie() {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const { setSelfieImage } = useSelfieStore();
   const cameraRef = useRef<CameraView>(null);
   const [cameraFace, setCameraFace] = useState<"front" | "back">("front");
   const [isTorchActive, setIsTorchActive] = useState<boolean>(false);
   const [isTakeImgClicked, setIsTakeImgClicked] = useState<boolean>(false);
-  const [isCameraReady, setIsCameraReady] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const router = useRouter();
 
@@ -72,7 +72,6 @@ export default function Selfie() {
       setIsFocused(true);
       return () => {
         console.log("unmounted");
-        setIsCameraReady(false);
         setIsFocused(false);
       };
     }, [])
@@ -101,10 +100,9 @@ export default function Selfie() {
                 ratio="1:1"
                 style={styles.cameraView}
                 facing={cameraFace}
-                onCameraReady={() => setIsCameraReady(true)}
+                onCameraReady={() => true}
                 onMountError={(error) => {
                   console.error("Camera mount error:", error);
-                  setIsCameraReady(false);
                 }}
               />
             )}

@@ -19,6 +19,7 @@ import PhoneNumberField from "@/components/common/PhoneNumberField";
 import Seperator from "@/components/common/Seperator";
 import { getSupabaseClient } from "@/services/supabaseClient";
 import { useUserData } from "@/store/userStore";
+import StorageManager from "@/utils/storage";
 
 // Complete the WebBrowser auth session
 WebBrowser.maybeCompleteAuthSession();
@@ -82,7 +83,7 @@ export default function Login() {
         // Existing user - go directly to Home
         const userData = driverData || passengerData;
 
-        setUserData({
+        const mappedUserData = {
           email_address: userData?.email_address,
           phone_number: userData?.phone_number,
           full_name: userData?.full_name,
@@ -92,8 +93,10 @@ export default function Login() {
           moto_type: userData?.moto_type,
           user_type: userData?.user_type,
           profile_image_url: user?.imageUrl,
-        });
+        };
 
+        setUserData(mappedUserData);
+        StorageManager.storeObject("userData", mappedUserData);
         console.log("Existing user found, navigating directly to Home");
         router.replace("/(tabs)/Home");
       } else {

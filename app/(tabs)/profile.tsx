@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { View, StyleSheet, Switch, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Switch } from "react-native";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import { COLORS, FONTS } from "@/constants/theme";
 import { useTheme } from "@/contexts/ThemeContext";
 
-import { useClerk, useUser, useSession } from "@clerk/clerk-expo";
+import { useClerk, useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import Typo from "@/components/common/Typo";
@@ -17,7 +17,6 @@ import CustomBottomSheetModal from "@/components/common/CustomBottomSheetModal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { useUserData } from "@/store/userStore";
-import { getSupabaseClient } from "@/services/supabaseClient";
 
 /**
  * ProfileScreen - Main profile screen component
@@ -32,15 +31,13 @@ import { getSupabaseClient } from "@/services/supabaseClient";
 export default function ProfileScreen() {
   const { signOut } = useClerk();
   const { user } = useUser();
-  const { session } = useSession(); // Add this line
-  const { setUserData } = useUserData();
+  const { userData, setUserData } = useUserData();
 
   const { theme, themeName, setTheme } = useTheme();
   const { t } = useTranslation();
 
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const supabaseClient = getSupabaseClient(session); // Pass session
 
   // State management
   const [isDarkModeEnabled, setIsDarkModeEnabled] = useState(false);
@@ -50,26 +47,6 @@ export default function ProfileScreen() {
   // Ref for CustomBottomSheetModal
   const [bottomSheetRef, setBottomSheetRef] =
     useState<BottomSheetMethods | null>(null);
-
-  useEffect(() => {
-    insetImgToSupabase();
-  }, [user?.imageUrl]);
-
-  const insetImgToSupabase = async () => {
-    try {
-      const response = await supabaseClient
-        .from("drivers")
-        .update({
-          profile_image_url: user?.imageUrl,
-          experience_years: 13, // Use correct column name and number type
-        })
-        .eq("user_id", user?.id);
-
-      console.log("Update response:", response);
-    } catch (error) {
-      console.log("💥 Error:", error);
-    }
-  };
 
   useEffect(() => {
     if (themeName === "dark") {
@@ -119,9 +96,6 @@ export default function ProfileScreen() {
   // Component renderers
   const renderProfileHeader = () => (
     <View style={styles.profileHeader}>
-      <TouchableOpacity onPress={insetImgToSupabase}>
-        <Typo>aze</Typo>
-      </TouchableOpacity>
       <UserProfileImage
         imageUrl={user?.imageUrl}
         hasImage={user?.hasImage}
@@ -131,8 +105,8 @@ export default function ProfileScreen() {
         editable={true}
       />
       <Typo style={styles.profileGreeting} variant="h3">
-        {user?.firstName
-          ? t("profile.hiUser", { name: user.firstName })
+        {userData?.first_name
+          ? t("profile.hiUser", { name: userData?.first_name })
           : t("profile.welcome")}
       </Typo>
     </View>

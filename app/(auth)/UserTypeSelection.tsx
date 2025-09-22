@@ -100,9 +100,7 @@ export default function UserTypeSelection() {
         // Handle error - maybe show an alert
         return;
       }
-
-      // Update local user store
-      setUserData({
+      const mappedUserData = {
         email_address: userData.email_address,
         phone_number: userData.phone_number,
         full_name: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
@@ -111,11 +109,12 @@ export default function UserTypeSelection() {
         experience_years: userData.experience_years,
         moto_type: userData.moto_type,
         user_type: userData.user_type,
-      });
+      };
+      // Update local user store
+      setUserData(mappedUserData);
+      StorageManager.storeObject("userData", mappedUserData);
 
       console.log(`User successfully created as ${selectedType}`);
-
-      StorageManager.removeFromStorage("signUpCompleted");
 
       router.dismissAll();
       router.replace("/(tabs)/Home");
@@ -126,10 +125,6 @@ export default function UserTypeSelection() {
     }
   };
 
-  useEffect(() => {
-    StorageManager.storeBoolean("signUpCompleted", false);
-  }, []);
-
   return (
     <ScreenWrapper
       safeArea
@@ -138,7 +133,6 @@ export default function UserTypeSelection() {
       contentContainerStyle={staticStyles.scrollContent}
       showsVerticalScrollIndicator={false}>
       {/* Header */}
-      <BackButton />
       <View style={staticStyles.header}>
         <Typo
           variant="h1"
