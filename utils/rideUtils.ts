@@ -21,11 +21,11 @@ export const formatDistance = (
  * @returns Formatted duration string
  */
 export const formatDuration = (
-  durationInSeconds: number | undefined
+  durationInSeconds: string | number | undefined
 ): string => {
   if (!durationInSeconds) return "--";
 
-  const duration = Math.round(durationInSeconds);
+  const duration = Math.round(Number(durationInSeconds));
 
   if (duration > 3600) {
     return `${(duration / 3600).toFixed(0)} h`;

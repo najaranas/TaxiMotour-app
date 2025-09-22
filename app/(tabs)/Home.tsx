@@ -25,6 +25,11 @@ import Typo from "@/components/common/Typo";
 import { useTranslation } from "react-i18next";
 import { PulseIndicator } from "react-native-indicators";
 import { useMapStore } from "@/store/mapStore";
+import { getSupabaseClient } from "@/services/supabaseClient";
+import { RideProps } from "@/types/Types";
+import { useUserData } from "@/store/userStore";
+import { pricingService } from "@/constants/app";
+import { useSession } from "@clerk/clerk-expo";
 
 interface LocationData {
   place?: string;
@@ -51,15 +56,15 @@ export default function Home() {
   const [isRideRequested, setIsRideRequested] = useState(false);
   const [isRequestingRide, setIsRequestingRide] = useState(false);
 
-  // New state for content height
   const [contentHeight, setContentHeight] = useState(0);
-  console.log("contentHeight", contentHeight);
-
-  const { isMapLoading, clearRoute } = useMapStore();
+  const { isMapLoading, clearRoute, routeGeoJSON, routeLoading } =
+    useMapStore();
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
+  const { session } = useSession();
   const { t } = useTranslation();
-
+  const { userData } = useUserData();
+  const supabaseClient = getSupabaseClient(session);
   // Calculate responsive snap points based on content height
   const snapPoints = useMemo(() => {
     if (contentHeight === 0) {
@@ -136,11 +141,35 @@ export default function Home() {
     handleSnapToIndex(1);
   }, [handleSnapToIndex, clearRoute]);
 
-  const handleRequestRide = useCallback(async () => {
+  console.log("11routeGeoJSON", routeGeoJSON);
+  console.log("11roadData.length ", roadData.length);
+
+  const handleRequestRide = async () => {
     try {
       setIsRequestingRide(true);
-      // Simulate API call - replace with your actual API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      if (routeGeoJSON && roadData.length > 0) {
+        const requestRideResponse = await supabaseClient.from("rides").insert({
+          passenger_id: userData?.id,
+          pickup_address: roadData[0]?.place,
+          pickup_lat: `${roadData[0]?.lat}`,
+          pickup_lon: `${roadData[0]?.lon}`,
+          destination_address: roadData[0]?.place,
+          destination_lat: `${roadData[0]?.lat}`,
+          destination_lon: `${roadData[0]?.lon}`,
+          ride_fare: `${pricingService?.calculateRidePrice(
+            routeGeoJSON?.features[0]?.properties?.summary?.distance,
+            routeGeoJSON?.features[0]?.properties?.summary?.duration
+          )}`,
+          distance: `${routeGeoJSON?.features[0]?.properties?.summary?.distance}`,
+          duration: `${routeGeoJSON?.features[0]?.properties?.summary?.duration}`,
+          status: "pending",
+        } as RideProps);
+
+        console.log("requestRideResponse", requestRideResponse);
+      } else {
+        console.log("aaezaeza");
+      }
       setIsRideRequested(true);
     } catch (error) {
       console.error("Failed to request ride:", error);
@@ -148,7 +177,7 @@ export default function Home() {
     } finally {
       setIsRequestingRide(false);
     }
-  }, []);
+  };
 
   const handleCancelRide = useCallback(() => {
     setIsRideRequested(false);
@@ -266,7 +295,8 @@ export default function Home() {
         </CustomBottomSheet>
       ) : (
         //  Ride Action Buttons - Show when route is selected
-        !isMapLoading && (
+        !isMapLoading &&
+        !routeLoading && (
           <View
             style={[
               styles.buttonColumn,

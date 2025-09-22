@@ -71,19 +71,14 @@ export default function Login() {
           .eq("user_id", user?.id)
           .single(),
       ]);
-
       console.log("User ID:", user?.id);
       console.log("Drivers response:", driversResponse);
       console.log("Passengers response:", passengersResponse);
 
-      const driverData = driversResponse.data;
-      const passengerData = passengersResponse.data;
-
-      if (driverData || passengerData) {
-        // Existing user - go directly to Home
-        const userData = driverData || passengerData;
-
+      const userData = driversResponse?.data || passengersResponse?.data;
+      if (userData) {
         const mappedUserData = {
+          id: userData?.id,
           email_address: userData?.email_address,
           phone_number: userData?.phone_number,
           full_name: userData?.full_name,

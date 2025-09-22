@@ -227,7 +227,7 @@ export default function EditPersonalInfo() {
           const existingPhone = user?.phoneNumbers.find(
             (phoneNum) => phoneNum.phoneNumber === phone.trim()
           );
-
+          console.log("existingPhone", existingPhone);
           if (existingPhone) {
             // If phone exists but isn't verified, send verification
             if (existingPhone.verification?.status !== "verified") {
@@ -274,7 +274,7 @@ export default function EditPersonalInfo() {
             const phoneNumber = await user?.createPhoneNumber({
               phoneNumber: phone.trim(),
             });
-
+            console.log("creaet phoneNumber", phoneNumber);
             if (phoneNumber) {
               // Send verification SMS
               await phoneNumber.prepareVerification();

@@ -288,18 +288,18 @@ export type RideProps = {
   passenger_id: string;
   driver_id: string;
   pickup_address: string;
-  pickup_lat: number;
-  pickup_lon: number;
+  pickup_lat: string;
+  pickup_lon: string;
   destination_address: string;
-  destination_lat: number;
-  destination_lon: number;
-  ride_fare: number;
-  distance: number; // in kilometers
-  duration: number; // in seconds
+  destination_lat: string;
+  destination_lon: string;
+  ride_fare?: string;
+  distance?: string; // in kilometers
+  duration?: string; // in seconds
   status: RideStatus;
   feedback?: string | null;
-  payment_method: PaymentMethod;
-  created_at: string; // ISO string timestamp
+  payment_method?: PaymentMethod;
+  created_at?: string; // ISO string timestamp
   updated_at?: string; // ISO string timestamp
 };
 
@@ -332,6 +332,7 @@ export type DriverInfoProps = {
 };
 
 export interface userDataType {
+  id?: string;
   email_address?: string;
   phone_number?: string;
   full_name?: string;

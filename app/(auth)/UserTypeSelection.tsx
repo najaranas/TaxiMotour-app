@@ -28,7 +28,6 @@ export default function UserTypeSelection() {
   const { session } = useSession();
   const supabase = getSupabaseClient(session);
   const { signOut } = useClerk();
-
   const { setUserData } = useUserData();
   // Dynamic styles - memoized for performance, only recreated when theme changes
   const dynamicStyles = useMemo(
@@ -93,14 +92,19 @@ export default function UserTypeSelection() {
 
       // Insert user into appropriate table
       const tableName = selectedType === "driver" ? "drivers" : "passengers";
-      const { error } = await supabase.from(tableName).insert(userData);
-
+      const { error, data: newUserData } = await supabase
+        .from(tableName)
+        .insert(userData)
+        .select("id")
+        .single();
+      console.log(newUserData);
       if (error) {
         console.error(`Error inserting user into ${tableName}:`, error);
         // Handle error - maybe show an alert
         return;
       }
       const mappedUserData = {
+        id: newUserData?.id,
         email_address: userData.email_address,
         phone_number: userData.phone_number,
         full_name: `${user.firstName || ""} ${user.lastName || ""}`.trim(),

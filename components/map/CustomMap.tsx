@@ -24,7 +24,6 @@ export default function CustomMap({ roadData, viewPadding }: MapProps) {
   // Control when we allow camera to follow user to avoid native error spam
   const [canFollowUser, setCanFollowUser] = useState(false);
   const mapCameraRef = useRef<MapLibreRN.CameraRef>(null);
-  console.log("routeGeoJSON", routeGeoJSON);
 
   useEffect(() => {
     if (roadData && roadData.length >= 2) {

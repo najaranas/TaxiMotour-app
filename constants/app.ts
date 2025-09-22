@@ -71,3 +71,34 @@ export const SUCCESS_MESSAGES = {
   LOCATION_SELECTED: "Location selected successfully",
   ROUTE_CALCULATED: "Route calculated successfully",
 } as const;
+
+export const pricingService = {
+  PRICING_CONFIG: {
+    BASE_FARE: 1.5, // TND
+    COST_PER_KM: 0.35, // TND per km
+    COST_PER_MINUTE: 0.1, // TND per minute
+    NIGHT_SURCHARGE: 1.25, // 25% surcharge
+  },
+
+  calculateRidePrice(distanceInMeters: number, durationInSeconds: number) {
+    const km = distanceInMeters / 1000;
+    const durationInMinutes = durationInSeconds / 60;
+    const { BASE_FARE, COST_PER_KM, COST_PER_MINUTE, NIGHT_SURCHARGE } =
+      this.PRICING_CONFIG;
+
+    let price =
+      BASE_FARE + km * COST_PER_KM + durationInMinutes * COST_PER_MINUTE;
+
+    if (this.isNightTime()) {
+      price *= NIGHT_SURCHARGE;
+    }
+
+    return String(price.toFixed(3)); // keep 3 decimals like taxis
+  },
+
+  isNightTime(): boolean {
+    const now = new Date();
+    const hour = now.getHours();
+    return hour >= 22 || hour < 6;
+  },
+} as const;

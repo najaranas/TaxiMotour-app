@@ -3,7 +3,7 @@ import { verticalScale } from "@/utils/styling";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { Image, StyleSheet, View } from "react-native";
-import { useAuth, useClerk, useSession, useUser } from "@clerk/clerk-expo";
+import { useAuth, useSession, useUser } from "@clerk/clerk-expo";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import { useUserData } from "@/store/userStore";
 import StorageManager from "@/utils/storage";
@@ -15,7 +15,6 @@ export default function Index() {
   const { user } = useUser();
   const { session } = useSession();
   const { setUserData } = useUserData();
-  const { signOut } = useClerk();
   const supabaseClient = getSupabaseClient(session);
 
   useEffect(() => {
@@ -51,18 +50,19 @@ export default function Index() {
           .eq("user_id", user?.id)
           .single(),
       ]);
-
-      if (driversResponse || passengersResponse) {
+      const seachedData = driversResponse || passengersResponse;
+      if (seachedData) {
         const mappedUserData = {
-          email_address: driversResponse?.data?.email_address,
-          phone_number: driversResponse?.data?.phone_number,
-          full_name: driversResponse?.data?.full_name,
-          first_name: driversResponse?.data?.first_name,
-          last_name: driversResponse?.data?.last_name,
-          experience_years: driversResponse?.data?.experience_years,
-          moto_type: driversResponse?.data?.moto_type,
-          user_type: driversResponse?.data?.user_type,
-          profile_image_url: driversResponse?.data?.imageUrl,
+          id: seachedData?.data?.id,
+          email_address: seachedData?.data?.email_address,
+          phone_number: seachedData?.data?.phone_number,
+          full_name: seachedData?.data?.full_name,
+          first_name: seachedData?.data?.first_name,
+          last_name: seachedData?.data?.last_name,
+          experience_years: seachedData?.data?.experience_years,
+          moto_type: seachedData?.data?.moto_type,
+          user_type: seachedData?.data?.user_type,
+          profile_image_url: seachedData?.data?.imageUrl,
         };
 
         setUserData(mappedUserData);
