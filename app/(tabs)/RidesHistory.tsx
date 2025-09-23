@@ -41,7 +41,7 @@ export default function RidesHistoryScreen() {
 
   console.log("completedRides", completedRides);
 
-  const fetchRidesData = useCallback(async () => {
+  const fetchRidesData = async () => {
     setIsLoadingRides(true);
     try {
       const supabaseUserId = await supabaseClient
@@ -73,14 +73,7 @@ export default function RidesHistoryScreen() {
     } finally {
       setIsLoadingRides(false);
     }
-  }, [
-    user?.id,
-    supabaseClient,
-    setCompletedRides,
-    setCurrentActiveRide,
-    setIsLoadingRides,
-    userData?.user_type,
-  ]);
+  };
 
   useEffect(() => {
     fetchRidesData();
@@ -140,7 +133,12 @@ export default function RidesHistoryScreen() {
       .channel("public:rides")
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "rides" },
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "rides",
+          filter: "status=eq.in_progress",
+        },
         (payload) => {
           setCurrentActiveRide(payload.new as RideProps);
           // setRides((prev) => [...prev, payload.new]); // auto update UI

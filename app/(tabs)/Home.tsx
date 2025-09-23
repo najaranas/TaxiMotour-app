@@ -1,5 +1,11 @@
-import { useCallback, useState, useMemo } from "react";
-import { BackHandler, StyleSheet, View, Dimensions } from "react-native";
+import { useCallback, useState, useMemo, useEffect } from "react";
+import {
+  BackHandler,
+  StyleSheet,
+  View,
+  Dimensions,
+  ScrollView,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useFocusEffect } from "expo-router";
 
@@ -26,10 +32,11 @@ import { useTranslation } from "react-i18next";
 import { PulseIndicator } from "react-native-indicators";
 import { useMapStore } from "@/store/mapStore";
 import { getSupabaseClient } from "@/services/supabaseClient";
-import { RideProps } from "@/types/Types";
+import { RideProps, RideRequestCardProps, userDataType } from "@/types/Types";
 import { useUserData } from "@/store/userStore";
 import { pricingService } from "@/constants/app";
 import { useSession } from "@clerk/clerk-expo";
+import RideRequestCard from "@/components/home/RideRequestCard";
 
 interface LocationData {
   place?: string;
@@ -65,7 +72,13 @@ export default function Home() {
   const { t } = useTranslation();
   const { userData } = useUserData();
   const supabaseClient = getSupabaseClient(session);
-  // Calculate responsive snap points based on content height
+
+  const [pendingRideRequests, setPendingRideRequests] = useState<
+    (RideProps & userDataType)[]
+  >([]);
+
+  console.log("pendingRideRequests", pendingRideRequests);
+
   const snapPoints = useMemo(() => {
     if (contentHeight === 0) {
       // Fallback to percentage while measuring content
@@ -154,9 +167,9 @@ export default function Home() {
           pickup_address: roadData[0]?.place,
           pickup_lat: `${roadData[0]?.lat}`,
           pickup_lon: `${roadData[0]?.lon}`,
-          destination_address: roadData[0]?.place,
-          destination_lat: `${roadData[0]?.lat}`,
-          destination_lon: `${roadData[0]?.lon}`,
+          destination_address: roadData[1]?.place,
+          destination_lat: `${roadData[1]?.lat}`,
+          destination_lon: `${roadData[1]?.lon}`,
           ride_fare: `${pricingService?.calculateRidePrice(
             routeGeoJSON?.features[0]?.properties?.summary?.distance,
             routeGeoJSON?.features[0]?.properties?.summary?.duration
@@ -227,9 +240,52 @@ export default function Home() {
     ])
   );
 
-  console.log("activeBottomSheetIndex", activeBottomSheetIndex);
-  console.log("roadData roadData", roadData);
-  console.log("snapPoints", snapPoints);
+  useEffect(() => {
+    console.log("aze?.new");
+
+    const channel = supabaseClient
+      ?.channel("public:rides")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "rides",
+          // filter: "status=eq.pending",
+        },
+        (payload) => {
+          console.log("payload?.new", payload?.new);
+          handleNewPendingRide(payload.new as RideProps);
+        }
+      )
+      .subscribe();
+    return () => {
+      supabaseClient.removeChannel(channel); // cleanup on unmount
+    };
+  }, []);
+
+  const handleNewPendingRide = async (newPendingRideData: RideProps) => {
+    // setRequestedPassengers();
+
+    try {
+      const passengerData = await supabaseClient
+        ?.from("passengers")
+        ?.select("*")
+        ?.eq("id", newPendingRideData?.passenger_id)
+        ?.single();
+      if (passengerData?.data) {
+        setPendingRideRequests((prev) => [
+          ...prev,
+          {
+            ...newPendingRideData,
+            ...passengerData.data,
+          },
+        ]);
+      }
+    } catch (error) {
+      console.error("Error fetching passenger data:", error);
+    }
+  };
 
   return (
     <ScreenWrapper safeArea={false} style={styles.container} hasBottomTabs>
@@ -262,7 +318,12 @@ export default function Home() {
       <View
         style={[
           styles.menuButtonContainer,
-          { top: insets.top + verticalScale(20) },
+          {
+            top: insets.top + verticalScale(20),
+            alignItems: "flex-start",
+            flexDirection: "row",
+            gap: horizontalScale(10),
+          },
         ]}>
         <Button onPress={() => setIsDrawerOpen(true)}>
           <View
@@ -270,6 +331,26 @@ export default function Home() {
             <MenuIcon color={theme.text.secondary} size={horizontalScale(25)} />
           </View>
         </Button>
+        {/* Passengers  */}
+        <ScrollView style={{ flex: 1 }}>
+          {pendingRideRequests?.map((pendingRideRequestsItem, index) => {
+            const rideRequestData: RideRequestCardProps["rideRequestData"] = {
+              distance: pendingRideRequestsItem?.distance,
+              moto_type: pendingRideRequestsItem?.moto_type,
+              duration: pendingRideRequestsItem?.duration,
+              name: pendingRideRequestsItem?.full_name,
+              passengerImg: pendingRideRequestsItem?.profile_image_url,
+              ride_fare: pendingRideRequestsItem?.ride_fare,
+              phone_number: pendingRideRequestsItem?.phone_number,
+            };
+            return (
+              <RideRequestCard
+                rideRequestData={rideRequestData}
+                key={index.toString()}
+              />
+            );
+          })}
+        </ScrollView>
       </View>
 
       {!hasSelectedRoute ? (
@@ -418,6 +499,7 @@ const styles = StyleSheet.create({
   menuButtonContainer: {
     position: "absolute",
     left: horizontalScale(20),
+    right: horizontalScale(20),
     zIndex: 5,
   },
   menuButton: {

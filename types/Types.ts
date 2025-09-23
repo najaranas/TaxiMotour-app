@@ -343,3 +343,15 @@ export interface userDataType {
   user_type?: "driver" | "passenger";
   profile_image_url?: string;
 }
+
+export interface RideRequestCardProps {
+  rideRequestData: {
+    passengerImg?: string;
+    name?: string;
+    moto_type?: string;
+    duration?: string;
+    distance?: string;
+    ride_fare?: string;
+    phone_number?: string;
+  };
+}
