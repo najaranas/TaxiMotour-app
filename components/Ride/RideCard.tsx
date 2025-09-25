@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import { LocateFixed, MapPin } from "lucide-react-native";
 import Typo from "../common/Typo";
@@ -8,7 +8,7 @@ import { RideCardProps } from "@/types/Types";
 import { useRouter } from "expo-router";
 import Button from "../common/Button";
 import { useTranslation } from "react-i18next";
-import { formatDistance } from "@/utils/rideUtils";
+import { formatDistance, formatFare } from "@/utils/rideUtils";
 
 export default function RideCard({
   ride,
@@ -111,7 +111,7 @@ export default function RideCard({
                     variant="caption"
                     size={moderateScale(10)}
                     color={theme.button.primary}>
-                    {ride.payment_method || "--"}
+                    {formatFare(ride.ride_fare)}
                   </Typo>
                 </View>
               </View>

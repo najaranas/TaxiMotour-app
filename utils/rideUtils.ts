@@ -50,3 +50,16 @@ export const formatRideDate = (
     year: "numeric",
   });
 };
+
+/**
+ * Formats duration in minutes and seconds
+ * @param durationInSeconds - Duration in seconds
+ * @returns Formatted duration string
+ */
+export const formatFare = (
+  durationInSeconds: string | number | undefined
+): string => {
+  if (!durationInSeconds) return "--";
+
+  return `${Math.round(Number(durationInSeconds))} TND`;
+};

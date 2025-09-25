@@ -7,6 +7,7 @@ import type { RideProps, PaymentMethod, RideStatus } from "@/types/Types";
 import {
   formatDistance,
   formatDuration,
+  formatFare,
   formatRideDate,
 } from "@/utils/rideUtils";
 import { useTranslation } from "react-i18next";
@@ -91,7 +92,7 @@ export default function FareInfo({ rideData }: FareInfoProps) {
               variant="body"
               size={moderateScale(14)}
               color={theme.text.secondary}>
-              {rideData?.ride_fare + " TND" || "--"}
+              {formatFare(rideData?.ride_fare)}
             </Typo>
           </View>
           <View

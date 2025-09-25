@@ -1,4 +1,3 @@
-import React from "react";
 import { View, StyleSheet } from "react-native";
 import { RideRequestCardProps } from "@/types/Types";
 import UserProfileImage from "../common/UserProfileImage";
