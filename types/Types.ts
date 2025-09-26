@@ -284,7 +284,7 @@ export type PaymentMethod = "cash" | "card" | "mobile_wallet" | "bank_transfer";
 
 // Complete ride type based on Supabase schema
 export type RideProps = {
-  id?: string; // UUID from Supabase
+  ride_id?: string; // UUID from Supabase
   passenger_id: string;
   driver_id: string;
   pickup_address: string;
@@ -346,6 +346,9 @@ export interface userDataType {
 
 export interface RideRequestCardProps {
   rideRequestData: {
+    ride_id?: string;
+    pickup_address?: string;
+    destination_address?: string;
     passengerImg?: string;
     name?: string;
     moto_type?: string;
@@ -354,4 +357,5 @@ export interface RideRequestCardProps {
     ride_fare?: string;
     phone_number?: string;
   };
+  removeCardFromRequestedRides?: (ride_id: string) => void;
 }

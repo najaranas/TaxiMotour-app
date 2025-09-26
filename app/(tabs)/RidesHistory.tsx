@@ -60,7 +60,7 @@ export default function RidesHistoryScreen() {
       console.log("fetchRidesResponse", fetchRidesResponse?.data);
       setCompletedRides(
         fetchRidesResponse?.data?.filter(
-          (ride: RideProps) => ride?.status !== "in_progress"
+          (ride: RideProps) => ride?.status === "completed"
         ) || []
       );
       setCurrentActiveRide(

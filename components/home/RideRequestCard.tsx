@@ -3,31 +3,65 @@ import { RideRequestCardProps } from "@/types/Types";
 import UserProfileImage from "../common/UserProfileImage";
 import Typo from "../common/Typo";
 import { useTheme } from "@/contexts/ThemeContext";
-import { COLORS } from "@/constants/theme";
+import THEME, { COLORS } from "@/constants/theme";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import Button from "../common/Button";
+import { formatDistance, formatDuration, formatFare } from "@/utils/rideUtils";
+import { t } from "i18next";
+import Animated, { LightSpeedInRight } from "react-native-reanimated";
+import { getSupabaseClient } from "@/services/supabaseClient";
+import { LocateFixed, MapPin } from "lucide-react-native";
 
 export default function RideRequestCard({
   rideRequestData,
+  removeCardFromRequestedRides,
 }: RideRequestCardProps) {
   const { theme } = useTheme();
 
+  const supabaseClient = getSupabaseClient();
+
+  const handleAccept = async () => {
+    try {
+      const { error } = await supabaseClient
+        .from("rides")
+        .update({ status: "accepted" })
+        .eq("id", rideRequestData?.ride_id)
+        .single();
+
+      if (!error) {
+        removeCardFromList();
+      }
+    } catch (error) {
+      console.log("error updating ride request", error);
+    }
+  };
+
+  const handleDecline = () => {
+    console.log("clicked");
+    removeCardFromList();
+  };
+
+  const removeCardFromList = () => {
+    if (removeCardFromRequestedRides && rideRequestData?.ride_id) {
+      removeCardFromRequestedRides(rideRequestData.ride_id);
+    }
+  };
+
   return (
-    <View
+    <Animated.View
+      entering={LightSpeedInRight}
       style={[
         styles.card,
         {
           backgroundColor: theme.background,
-
           borderRadius: theme.borderRadius.medium,
           shadowRadius: 0,
         },
       ]}>
-      {/* Your fare pill */}
       <View
         style={[styles.yourFare, { borderRadius: theme.borderRadius.medium }]}>
-        <Typo variant="caption" style={styles.yourFareText}>
-          Your fare
+        <Typo variant="caption" color={COLORS.black}>
+          {t("rides.rideFare")}
         </Typo>
       </View>
 
@@ -49,27 +83,54 @@ export default function RideRequestCard({
             <View style={styles.nameRow}>
               <Typo variant="body">{rideRequestData?.name}</Typo>
             </View>
-            {rideRequestData?.moto_type && (
-              <Typo variant="body">{rideRequestData?.phone_number}</Typo>
+            {rideRequestData?.phone_number && (
+              <Typo variant="body">{`+216 ${rideRequestData?.phone_number}`}</Typo>
             )}
           </View>
         </View>
 
         {/* Right: Time + Distance */}
         <View style={styles.rightSection}>
-          <Typo variant="body">4 min</Typo>
-          <Typo variant="body">794 m</Typo>
+          <Typo variant="body">
+            {formatDistance(rideRequestData?.distance)}
+          </Typo>
+          <Typo variant="body">
+            {formatDuration(rideRequestData?.duration)}
+          </Typo>
+        </View>
+      </View>
+
+      <View style={{ gap: verticalScale(5) }}>
+        <View style={styles.addressRow}>
+          {
+            <MapPin
+              color={theme.text.secondary}
+              strokeWidth={1.5}
+              size={moderateScale(20)}
+            />
+          }
+          <Typo variant="body">{rideRequestData?.pickup_address}</Typo>
+        </View>
+        <View style={styles.addressRow}>
+          {
+            <LocateFixed
+              color={theme.text.secondary}
+              strokeWidth={1.5}
+              size={moderateScale(20)}
+            />
+          }
+
+          <Typo variant="body">{rideRequestData?.destination_address}</Typo>
         </View>
       </View>
 
       {/* Price */}
-      <Typo variant="h1" style={[styles.price, { color: theme.text.primary }]}>
-        TND{rideRequestData?.ride_fare}
-      </Typo>
+      <Typo variant="h1">{formatFare(rideRequestData?.ride_fare)}</Typo>
 
       {/* Action buttons */}
       <View style={styles.buttonsRow}>
         <Button
+          onPress={handleDecline}
           style={[
             styles.actionButton,
             {
@@ -77,10 +138,13 @@ export default function RideRequestCard({
               backgroundColor: "#F1F1F1",
             },
           ]}>
-          <Typo variant="body">Decline</Typo>
+          <Typo variant="body" color={COLORS.black}>
+            Decline
+          </Typo>
         </Button>
 
         <Button
+          onPress={handleAccept}
           style={[
             styles.actionButton,
             {
@@ -88,10 +152,12 @@ export default function RideRequestCard({
               backgroundColor: "#D7FF3E",
             },
           ]}>
-          <Typo variant="body">Accept</Typo>
+          <Typo variant="body" color={COLORS.black}>
+            Accept
+          </Typo>
         </Button>
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -106,9 +172,6 @@ const styles = StyleSheet.create({
     paddingVertical: verticalScale(5),
     alignSelf: "flex-start",
   },
-  yourFareText: {
-    color: COLORS.black,
-  },
   headerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -118,31 +181,33 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     flex: 1,
-    gap: 12,
+    gap: horizontalScale(12),
   },
   avatarContainer: {
-    borderWidth: 3,
+    borderWidth: THEME.borderWidth.regular,
     borderColor: "#7C3AED",
-    borderRadius: 30,
-    padding: 2,
+    borderRadius: THEME.borderRadius.circle,
+    padding: horizontalScale(2),
   },
   infoContainer: {
     flex: 1,
-    gap: 2,
+    gap: horizontalScale(2),
   },
   nameRow: {
     flexDirection: "row",
     alignItems: "center",
   },
 
-  tier: {
-    color: "#7C3AED",
-  },
   rightSection: {
     alignItems: "flex-end",
-    gap: 2,
+    gap: horizontalScale(2),
   },
-  price: {},
+
+  addressRow: {
+    flexDirection: "row",
+    gap: horizontalScale(5),
+    alignItems: "center",
+  },
   buttonsRow: {
     flexDirection: "row",
     gap: horizontalScale(5),

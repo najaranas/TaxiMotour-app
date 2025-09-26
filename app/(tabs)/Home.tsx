@@ -1,11 +1,5 @@
 import { useCallback, useState, useMemo, useEffect } from "react";
-import {
-  BackHandler,
-  StyleSheet,
-  View,
-  Dimensions,
-  ScrollView,
-} from "react-native";
+import { BackHandler, StyleSheet, View, Dimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useFocusEffect } from "expo-router";
 
@@ -37,6 +31,7 @@ import { useUserData } from "@/store/userStore";
 import { pricingService } from "@/constants/app";
 import { useSession } from "@clerk/clerk-expo";
 import RideRequestCard from "@/components/home/RideRequestCard";
+import Animated, { SequencedTransition } from "react-native-reanimated";
 
 interface LocationData {
   place?: string;
@@ -88,15 +83,14 @@ export default function Home() {
     // Convert content height to percentage of screen height
     const contentHeightPercentage = Math.min(
       Number(
-        (
-          (contentHeight + insets.bottom + horizontalScale(16)) /
-          screenHeight
-        ).toFixed(2)
+        ((contentHeight + insets.bottom) / (screenHeight - insets.top)).toFixed(
+          2
+        )
       ) * 100,
       90 // Cap at 90% to ensure it doesn't take full screen on first snap
     );
     return [`${contentHeightPercentage}%`, "100%"];
-  }, [contentHeight, insets.bottom]);
+  }, [contentHeight, insets.bottom, insets.top]);
 
   // Handler for content height measurement
   const handleContentLayout = useCallback(
@@ -243,22 +237,43 @@ export default function Home() {
   useEffect(() => {
     console.log("aze?.new");
 
-    const channel = supabaseClient
-      ?.channel("public:rides")
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "rides",
-          // filter: "status=eq.pending",
-        },
-        (payload) => {
-          console.log("payload?.new", payload?.new);
-          handleNewPendingRide(payload.new as RideProps);
-        }
-      )
-      .subscribe();
+    let channel;
+    if (userData?.user_type === "driver") {
+      channel = supabaseClient
+        ?.channel("public:rides")
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "rides",
+            filter: "status=eq.pending",
+          },
+          (payload) => {
+            console.log("new driver ride", payload?.new);
+            handleNewPendingRide(payload.new as RideProps);
+          }
+        )
+        .subscribe();
+    } else {
+      channel = supabaseClient
+        ?.channel("public:rides")
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "rides",
+            filter: "status=eq.accepted",
+          },
+          (payload) => {
+            console.log("new passengers ride", payload?.new);
+            handleNewPendingRide(payload.new as RideProps);
+          }
+        )
+        .subscribe();
+    }
+
     return () => {
       supabaseClient.removeChannel(channel); // cleanup on unmount
     };
@@ -285,6 +300,13 @@ export default function Home() {
     } catch (error) {
       console.error("Error fetching passenger data:", error);
     }
+  };
+
+  const removeCardFromRequestedRides = (rideID: string) => {
+    console.log("here");
+    setPendingRideRequests((prevRidesRequeted) =>
+      prevRidesRequeted.filter((ridesRequeted) => ridesRequeted.id !== rideID)
+    );
   };
 
   return (
@@ -331,28 +353,56 @@ export default function Home() {
             <MenuIcon color={theme.text.secondary} size={horizontalScale(25)} />
           </View>
         </Button>
-        {/* Passengers  */}
-        <ScrollView style={{ flex: 1 }}>
-          {pendingRideRequests?.map((pendingRideRequestsItem, index) => {
-            const rideRequestData: RideRequestCardProps["rideRequestData"] = {
-              distance: pendingRideRequestsItem?.distance,
-              moto_type: pendingRideRequestsItem?.moto_type,
-              duration: pendingRideRequestsItem?.duration,
-              name: pendingRideRequestsItem?.full_name,
-              passengerImg: pendingRideRequestsItem?.profile_image_url,
-              ride_fare: pendingRideRequestsItem?.ride_fare,
-              phone_number: pendingRideRequestsItem?.phone_number,
-            };
-            return (
-              <RideRequestCard
-                rideRequestData={rideRequestData}
-                key={index.toString()}
-              />
-            );
-          })}
-        </ScrollView>
-      </View>
 
+        {/* Passengers  */}
+        {userData?.user_type === "passenger" && (
+          <Animated.FlatList
+            itemLayoutAnimation={SequencedTransition}
+            style={{
+              // minHeight: pendingRideRequests.length > 1 ? verticalScale(200) : 0,
+              backgroundColor: "red",
+              maxHeight:
+                screenHeight && screenHeight
+                  ? Math.max(
+                      screenHeight -
+                        insets.top -
+                        insets.bottom -
+                        (contentHeight + verticalScale(50)),
+                      verticalScale(500)
+                    )
+                  : verticalScale(500),
+            }}
+            data={pendingRideRequests}
+            keyExtractor={(item, index) =>
+              `ride-${item.id}` || `fallback-${index}`
+            }
+            ItemSeparatorComponent={() => (
+              <View style={{ height: verticalScale(10) }} />
+            )}
+            renderItem={({ item: pendingRideRequestsItem }) => {
+              const rideRequestData: RideRequestCardProps["rideRequestData"] = {
+                ride_id: pendingRideRequestsItem?.ride_id,
+                pickup_address: pendingRideRequestsItem?.pickup_address,
+                destination_address:
+                  pendingRideRequestsItem?.destination_address,
+                distance: pendingRideRequestsItem?.distance,
+                moto_type: pendingRideRequestsItem?.moto_type,
+                duration: pendingRideRequestsItem?.duration,
+                name: pendingRideRequestsItem?.full_name,
+                passengerImg: pendingRideRequestsItem?.profile_image_url,
+                ride_fare: pendingRideRequestsItem?.ride_fare,
+                phone_number: pendingRideRequestsItem?.phone_number,
+              };
+              return (
+                <RideRequestCard
+                  removeCardFromRequestedRides={removeCardFromRequestedRides}
+                  rideRequestData={rideRequestData}
+                />
+              );
+            }}
+          />
+        )}
+      </View>
       {!hasSelectedRoute ? (
         //  Ride Booking Bottom Sheet with responsive snap points
         <CustomBottomSheet
