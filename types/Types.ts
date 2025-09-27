@@ -351,11 +351,25 @@ export interface RideRequestCardProps {
     destination_address?: string;
     passengerImg?: string;
     name?: string;
+    duration?: string;
+    distance?: string;
+    ride_fare?: string;
+    phone_number?: string;
+  };
+
+  removeCardFromRequestedRides?: (ride_id: string) => void;
+}
+export interface PassengerAceptedCardProps {
+  acceptedRideData: {
+    ride_id?: string;
+    pickup_address?: string;
+    destination_address?: string;
+    riderImg?: string;
+    name?: string;
     moto_type?: string;
     duration?: string;
     distance?: string;
     ride_fare?: string;
     phone_number?: string;
   };
-  removeCardFromRequestedRides?: (ride_id: string) => void;
 }

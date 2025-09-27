@@ -1,5 +1,5 @@
 import { View, StyleSheet } from "react-native";
-import { RideRequestCardProps } from "@/types/Types";
+import { PassengerAceptedCardProps } from "@/types/Types";
 import UserProfileImage from "../common/UserProfileImage";
 import Typo from "../common/Typo";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -13,42 +13,15 @@ import { getSupabaseClient } from "@/services/supabaseClient";
 import { LocateFixed, MapPin } from "lucide-react-native";
 import { useUserData } from "@/store/userStore";
 
-export default function RideRequestCard({
-  rideRequestData,
-  removeCardFromRequestedRides,
-}: RideRequestCardProps) {
+export default function PassengerAceptedCard({
+  acceptedRideData,
+}: PassengerAceptedCardProps) {
   const { theme } = useTheme();
   const { userData } = useUserData();
-
-  const supabaseClient = getSupabaseClient();
-
-  const handleAccept = async () => {
-    console.log("userData?.id", userData?.id);
-    console.log("?.ride_id", rideRequestData?.ride_id);
-    try {
-      const response = await supabaseClient
-        .from("rides")
-        .update({ status: "accepted", driver_id: userData?.id })
-        .eq("ride_id", rideRequestData?.ride_id);
-
-      console.log("ride resuest response", response);
-      if (response?.error) {
-        removeCardFromList();
-      }
-    } catch (error) {
-      console.log("error updating ride request", error);
-    }
-  };
+  console.log("acceptedRideData?.name", acceptedRideData?.name);
 
   const handleDecline = () => {
     console.log("clicked");
-    removeCardFromList();
-  };
-
-  const removeCardFromList = () => {
-    if (removeCardFromRequestedRides && rideRequestData?.ride_id) {
-      removeCardFromRequestedRides(rideRequestData.ride_id);
-    }
   };
 
   return (
@@ -75,8 +48,8 @@ export default function RideRequestCard({
         <View style={styles.leftSection}>
           <View style={styles.avatarContainer}>
             <UserProfileImage
-              hasImage={!!rideRequestData?.passengerImg}
-              imageUrl={rideRequestData?.passengerImg}
+              hasImage={!!acceptedRideData?.riderImg}
+              imageUrl={acceptedRideData?.riderImg}
               editable={false}
               showEditIcon={false}
               size={moderateScale(50)}
@@ -84,11 +57,20 @@ export default function RideRequestCard({
           </View>
 
           <View style={styles.infoContainer}>
-            <View style={styles.nameRow}>
-              <Typo variant="body">{rideRequestData?.name}</Typo>
-            </View>
-            {rideRequestData?.phone_number && (
-              <Typo variant="body">{`+216 ${rideRequestData?.phone_number}`}</Typo>
+            {acceptedRideData?.name && (
+              <Typo variant="body" lineBreakMode="middle">
+                {acceptedRideData?.name}
+              </Typo>
+            )}
+            {acceptedRideData?.phone_number && (
+              <Typo
+                variant="body"
+                lineBreakMode="head">{`+216 ${acceptedRideData?.phone_number}`}</Typo>
+            )}
+            {acceptedRideData?.moto_type && (
+              <Typo variant="body" lineBreakMode="middle">
+                {acceptedRideData?.moto_type}
+              </Typo>
             )}
           </View>
         </View>
@@ -96,10 +78,10 @@ export default function RideRequestCard({
         {/* Right: Time + Distance */}
         <View style={styles.rightSection}>
           <Typo variant="body">
-            {formatDistance(rideRequestData?.distance)}
+            {formatDistance(acceptedRideData?.distance)}
           </Typo>
           <Typo variant="body">
-            {formatDuration(rideRequestData?.duration)}
+            {formatDuration(acceptedRideData?.duration)}
           </Typo>
         </View>
       </View>
@@ -114,26 +96,24 @@ export default function RideRequestCard({
             />
           }
           <Typo variant="body" style={{ flexShrink: 1 }}>
-            {rideRequestData?.pickup_address}
+            {acceptedRideData?.pickup_address}
           </Typo>
         </View>
         <View style={styles.addressRow}>
-          {
-            <LocateFixed
-              color={theme.text.secondary}
-              strokeWidth={1.5}
-              size={moderateScale(20)}
-            />
-          }
+          <LocateFixed
+            color={theme.text.secondary}
+            strokeWidth={1.5}
+            size={moderateScale(20)}
+          />
 
           <Typo variant="body" style={{ flexShrink: 1 }}>
-            {rideRequestData?.destination_address}
+            {acceptedRideData?.destination_address}
           </Typo>
         </View>
       </View>
 
       {/* Price */}
-      <Typo variant="h1">{formatFare(rideRequestData?.ride_fare)}</Typo>
+      <Typo variant="h1">{formatFare(acceptedRideData?.ride_fare)}</Typo>
 
       {/* Action buttons */}
       <View style={styles.buttonsRow}>
@@ -143,25 +123,11 @@ export default function RideRequestCard({
             styles.actionButton,
             {
               borderRadius: theme.borderRadius.medium,
-              backgroundColor: "#F1F1F1",
+              backgroundColor: COLORS.danger,
             },
           ]}>
           <Typo variant="body" color={COLORS.black}>
-            Decline
-          </Typo>
-        </Button>
-
-        <Button
-          onPress={handleAccept}
-          style={[
-            styles.actionButton,
-            {
-              borderRadius: theme.borderRadius.medium,
-              backgroundColor: "#D7FF3E",
-            },
-          ]}>
-          <Typo variant="body" color={COLORS.black}>
-            Accept
+            Cancel Ride
           </Typo>
         </Button>
       </View>

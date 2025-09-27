@@ -26,12 +26,18 @@ import { useTranslation } from "react-i18next";
 import { PulseIndicator } from "react-native-indicators";
 import { useMapStore } from "@/store/mapStore";
 import { getSupabaseClient } from "@/services/supabaseClient";
-import { RideProps, RideRequestCardProps, userDataType } from "@/types/Types";
+import {
+  PassengerAceptedCardProps,
+  RideProps,
+  RideRequestCardProps,
+  userDataType,
+} from "@/types/Types";
 import { useUserData } from "@/store/userStore";
 import { pricingService } from "@/constants/app";
 import { useSession } from "@clerk/clerk-expo";
 import RideRequestCard from "@/components/home/RideRequestCard";
 import Animated, { SequencedTransition } from "react-native-reanimated";
+import PassengerAceptedCard from "@/components/home/PassengerAceptedCard";
 
 interface LocationData {
   place?: string;
@@ -71,7 +77,11 @@ export default function Home() {
   const [pendingRideRequests, setPendingRideRequests] = useState<
     (RideProps & userDataType)[]
   >([]);
+  const [acceptedRide, serAcceptedRide] = useState<
+    PassengerAceptedCardProps["acceptedRideData"] | null
+  >(null);
 
+  console.log("acceptedRide", acceptedRide);
   console.log("pendingRideRequests", pendingRideRequests);
 
   const snapPoints = useMemo(() => {
@@ -235,8 +245,6 @@ export default function Home() {
   );
 
   useEffect(() => {
-    console.log("aze?.new");
-
     let channel;
     if (userData?.user_type === "driver") {
       channel = supabaseClient
@@ -251,7 +259,7 @@ export default function Home() {
           },
           (payload) => {
             console.log("new driver ride", payload?.new);
-            handleNewPendingRide(payload.new as RideProps);
+            handleNewPendingRideForDriver(payload.new as RideProps);
           }
         )
         .subscribe();
@@ -268,7 +276,7 @@ export default function Home() {
           },
           (payload) => {
             console.log("new passengers ride", payload?.new);
-            handleNewPendingRide(payload.new as RideProps);
+            handleAcceptedRideForPassenger(payload.new as RideProps);
           }
         )
         .subscribe();
@@ -279,7 +287,9 @@ export default function Home() {
     };
   }, []);
 
-  const handleNewPendingRide = async (newPendingRideData: RideProps) => {
+  const handleNewPendingRideForDriver = async (
+    newPendingRideData: RideProps
+  ) => {
     // setRequestedPassengers();
 
     try {
@@ -296,6 +306,40 @@ export default function Home() {
             ...passengerData.data,
           },
         ]);
+      }
+    } catch (error) {
+      console.error("Error fetching passenger data:", error);
+    }
+  };
+
+  const handleAcceptedRideForPassenger = async (newAcceptedRide: RideProps) => {
+    console.log("newAcceptedRide?.driver_id", newAcceptedRide?.driver_id);
+    try {
+      const { data } = await supabaseClient
+        ?.from("drivers")
+        ?.select("*")
+        ?.eq("id", newAcceptedRide?.driver_id)
+        ?.single();
+
+      const driverData = data as userDataType;
+
+      if (driverData) {
+        console.log("piw piw");
+        // serAcceptedRide({
+        //   ...newAcceptedRide,
+        //   ...driverData.data,
+        // });
+        serAcceptedRide({
+          ride_id: newAcceptedRide?.ride_id,
+          pickup_address: newAcceptedRide?.pickup_address,
+          destination_address: newAcceptedRide?.destination_address,
+          distance: newAcceptedRide?.distance,
+          duration: newAcceptedRide?.duration,
+          name: driverData?.first_name,
+          riderImg: driverData?.profile_image_url,
+          ride_fare: newAcceptedRide?.ride_fare,
+          phone_number: driverData?.phone_number,
+        });
       }
     } catch (error) {
       console.error("Error fetching passenger data:", error);
@@ -354,27 +398,26 @@ export default function Home() {
           </View>
         </Button>
 
-        {/* Passengers  */}
-        {userData?.user_type === "passenger" && (
+        {/* Driver ride Request Data  */}
+        {userData?.user_type === "driver" && (
           <Animated.FlatList
             itemLayoutAnimation={SequencedTransition}
             style={{
-              // minHeight: pendingRideRequests.length > 1 ? verticalScale(200) : 0,
-              backgroundColor: "red",
               maxHeight:
-                screenHeight && screenHeight
-                  ? Math.max(
-                      screenHeight -
-                        insets.top -
-                        insets.bottom -
-                        (contentHeight + verticalScale(50)),
-                      verticalScale(500)
-                    )
-                  : verticalScale(500),
+                // screenHeight && screenHeight
+                // ? Math.max(
+                //     screenHeight -
+                //       insets.top -
+                //       insets.bottom -
+                //       (contentHeight + verticalScale(40)),
+                //     verticalScale(500)
+                //   )
+                // : verticalScale(500),
+                verticalScale(400),
             }}
             data={pendingRideRequests}
             keyExtractor={(item, index) =>
-              `ride-${item.id}` || `fallback-${index}`
+              `ride-${item.ride_id}` || `fallback-${index}`
             }
             ItemSeparatorComponent={() => (
               <View style={{ height: verticalScale(10) }} />
@@ -386,7 +429,6 @@ export default function Home() {
                 destination_address:
                   pendingRideRequestsItem?.destination_address,
                 distance: pendingRideRequestsItem?.distance,
-                moto_type: pendingRideRequestsItem?.moto_type,
                 duration: pendingRideRequestsItem?.duration,
                 name: pendingRideRequestsItem?.full_name,
                 passengerImg: pendingRideRequestsItem?.profile_image_url,
@@ -401,6 +443,13 @@ export default function Home() {
               );
             }}
           />
+        )}
+        {/* passenger accepted ride Data  */}
+
+        {userData?.user_type === "passenger" && acceptedRide && (
+          <View style={{ flex: 1 }}>
+            <PassengerAceptedCard acceptedRideData={acceptedRide} />
+          </View>
         )}
       </View>
       {!hasSelectedRoute ? (
