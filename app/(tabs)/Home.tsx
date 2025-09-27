@@ -73,6 +73,9 @@ export default function Home() {
   const { t } = useTranslation();
   const { userData } = useUserData();
   const supabaseClient = getSupabaseClient(session);
+  const [requestedRideData, setRequestedRideData] = useState<RideProps | null>(
+    null
+  );
 
   const [pendingRideRequests, setPendingRideRequests] = useState<
     (RideProps & userDataType)[]
@@ -166,22 +169,28 @@ export default function Home() {
       setIsRequestingRide(true);
 
       if (routeGeoJSON && roadData.length > 0) {
-        const requestRideResponse = await supabaseClient.from("rides").insert({
-          passenger_id: userData?.id,
-          pickup_address: roadData[0]?.place,
-          pickup_lat: `${roadData[0]?.lat}`,
-          pickup_lon: `${roadData[0]?.lon}`,
-          destination_address: roadData[1]?.place,
-          destination_lat: `${roadData[1]?.lat}`,
-          destination_lon: `${roadData[1]?.lon}`,
-          ride_fare: `${pricingService?.calculateRidePrice(
-            routeGeoJSON?.features[0]?.properties?.summary?.distance,
-            routeGeoJSON?.features[0]?.properties?.summary?.duration
-          )}`,
-          distance: `${routeGeoJSON?.features[0]?.properties?.summary?.distance}`,
-          duration: `${routeGeoJSON?.features[0]?.properties?.summary?.duration}`,
-          status: "pending",
-        } as RideProps);
+        const requestRideResponse = await supabaseClient
+          .from("rides")
+          .insert({
+            passenger_id: userData?.id,
+            pickup_address: roadData[0]?.place,
+            pickup_lat: `${roadData[0]?.lat}`,
+            pickup_lon: `${roadData[0]?.lon}`,
+            destination_address: roadData[1]?.place,
+            destination_lat: `${roadData[1]?.lat}`,
+            destination_lon: `${roadData[1]?.lon}`,
+            ride_fare: `${pricingService?.calculateRidePrice(
+              routeGeoJSON?.features[0]?.properties?.summary?.distance,
+              routeGeoJSON?.features[0]?.properties?.summary?.duration
+            )}`,
+            distance: `${routeGeoJSON?.features[0]?.properties?.summary?.distance}`,
+            duration: `${routeGeoJSON?.features[0]?.properties?.summary?.duration}`,
+            status: "pending",
+          } as RideProps)
+          .select("*")
+          .single();
+
+        setRequestedRideData(requestRideResponse?.data);
 
         console.log("requestRideResponse", requestRideResponse);
       } else {
@@ -255,7 +264,7 @@ export default function Home() {
             event: "INSERT",
             schema: "public",
             table: "rides",
-            filter: "status=eq.pending",
+            filter: `status=eq.pending`,
           },
           (payload) => {
             console.log("new driver ride", payload?.new);
@@ -269,14 +278,20 @@ export default function Home() {
         .on(
           "postgres_changes",
           {
-            event: "UPDATE",
+            event: "*",
             schema: "public",
             table: "rides",
-            filter: "status=eq.accepted",
+            filter: `ride_id=eq.${requestedRideData?.ride_id}`,
           },
           (payload) => {
-            console.log("new passengers ride", payload?.new);
-            handleAcceptedRideForPassenger(payload.new as RideProps);
+            console.log("bip bip");
+            if (
+              payload.eventType === "UPDATE" &&
+              payload?.new?.status === "accepted"
+            ) {
+              console.log("new passengers ride", payload?.new);
+              handleAcceptedRideForPassenger(payload.new as RideProps);
+            }
           }
         )
         .subscribe();
@@ -285,7 +300,7 @@ export default function Home() {
     return () => {
       supabaseClient.removeChannel(channel); // cleanup on unmount
     };
-  }, []);
+  }, [userData?.user_type, requestedRideData?.ride_id]);
 
   const handleNewPendingRideForDriver = async (
     newPendingRideData: RideProps

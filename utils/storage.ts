@@ -125,6 +125,31 @@ const StorageManager = {
       StorageManager.removeFromStorage(key);
     });
   },
+
+  // Clear all user-related data but preserve app settings
+  clearAllUserData: (): void => {
+    console.log("Clearing all user data from storage...");
+    const allKeys = StorageManager.getAllStorageKeys();
+
+    // Keys to preserve (app settings that should persist across logins)
+    const preserveKeys = [STORAGE_KEYS.THEME, STORAGE_KEYS.LANGUAGE];
+
+    // Remove all keys except the ones we want to preserve
+    allKeys.forEach((key) => {
+      if (!preserveKeys.includes(key as any)) {
+        StorageManager.removeFromStorage(key);
+      }
+    });
+
+    console.log("User data cleared from storage");
+  },
+
+  // Clear absolutely everything (nuclear option)
+  clearAllStorageCompletely: (): void => {
+    console.log("Clearing all storage completely...");
+    storage.clearAll();
+    console.log("All storage cleared");
+  },
 };
 
 export default StorageManager;

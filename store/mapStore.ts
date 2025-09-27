@@ -22,6 +22,7 @@ interface MapStore {
   setMapLoading: (loading: boolean) => void;
   fetchRoute: (roadData: LocationData[]) => Promise<void>;
   clearRoute: () => void;
+  clearAllMapData: () => void;
 }
 
 export const useMapStore = create<MapStore>((set) => ({
@@ -63,4 +64,13 @@ export const useMapStore = create<MapStore>((set) => ({
   },
 
   clearRoute: () => set({ routeGeoJSON: null, routeError: null }),
+
+  clearAllMapData: () => {
+    set({
+      routeGeoJSON: null,
+      routeLoading: false,
+      routeError: null,
+      isMapLoading: false,
+    });
+  },
 }));

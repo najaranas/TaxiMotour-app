@@ -77,6 +77,27 @@ export default function RidesHistoryScreen() {
 
   useEffect(() => {
     fetchRidesData();
+
+    // Listen for new rides in real time
+    const channel = supabaseClient
+      .channel("public:rides")
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "rides",
+          filter: "status=eq.in_progress",
+        },
+        (payload) => {
+          setCurrentActiveRide(payload.new as RideProps);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabaseClient.removeChannel(channel); // cleanup on unmount
+    };
   }, []);
 
   const navigateToHome = () => {
@@ -126,30 +147,6 @@ export default function RidesHistoryScreen() {
       </View>
     </View>
   );
-
-  useEffect(() => {
-    // Listen for new rides in real time
-    const channel = supabaseClient
-      .channel("public:rides")
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "rides",
-          filter: "status=eq.in_progress",
-        },
-        (payload) => {
-          setCurrentActiveRide(payload.new as RideProps);
-          // setRides((prev) => [...prev, payload.new]); // auto update UI
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabaseClient.removeChannel(channel); // cleanup on unmount
-    };
-  }, []);
 
   return (
     <ScreenWrapper

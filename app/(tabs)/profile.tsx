@@ -17,6 +17,7 @@ import CustomBottomSheetModal from "@/components/common/CustomBottomSheetModal";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { useUserData } from "@/store/userStore";
+import { useLogout } from "@/hooks/useLogout";
 
 /**
  * ProfileScreen - Main profile screen component
@@ -31,7 +32,8 @@ import { useUserData } from "@/store/userStore";
 export default function ProfileScreen() {
   const { signOut } = useClerk();
   const { user } = useUser();
-  const { userData, setUserData } = useUserData();
+  const { userData } = useUserData();
+  const { clearAllUserData } = useLogout();
 
   const { theme, themeName, setTheme } = useTheme();
   const { t } = useTranslation();
@@ -77,16 +79,38 @@ export default function ProfileScreen() {
     bottomSheetRef?.dismiss?.();
   };
 
-  // Logout handler
+  // Logout handler with comprehensive data clearing
   const handleSignOut = async () => {
     setIsSigningOut(true);
     try {
+      console.log("Starting logout process...");
+
+      // 1. Clear all user-related data (stores + storage)
+      const clearResult = await clearAllUserData();
+
+      if (!clearResult.success) {
+        console.warn("Data clearing had issues:", clearResult.error);
+        // Continue with logout even if clearing had issues
+      }
+
+      // 2. Sign out from Clerk
       await signOut();
-      setUserData({});
+
+      // 3. Navigate to login screen
       router.dismissAll();
       router.replace("/(auth)/Login");
+
+      console.log("Logout completed successfully");
     } catch (error) {
       console.error("Sign out error:", JSON.stringify(error, null, 2));
+
+      // Even if there's an error, try to navigate to login
+      try {
+        router.dismissAll();
+        router.replace("/(auth)/Login");
+      } catch (navError) {
+        console.error("Navigation error during logout:", navError);
+      }
     } finally {
       setIsSigningOut(false);
       hideLogoutModal();

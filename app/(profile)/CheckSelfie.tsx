@@ -12,11 +12,13 @@ import { useSelfieStore } from "../../store/selfieImageStore";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { getSupabaseClient } from "@/services/supabaseClient";
+import { useUserData } from "@/store/userStore";
 
 export default function CheckSelfie() {
   const { selfieImage, clearSelfieImage } = useSelfieStore();
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const { user } = useUser();
+  const { userData } = useUserData();
   const { theme } = useTheme();
   const { session } = useSession();
   const router = useRouter();
@@ -29,15 +31,15 @@ export default function CheckSelfie() {
 
   const syncImageToSupabase = async (imageUrl: string) => {
     try {
+      console.log("new imf ", imageUrl);
       const response = await supabaseClient
-        .from("drivers")
+        .from(userData?.user_type + "s")
         .update({
           profile_image_url: imageUrl,
         })
-        .eq("user_id", user?.id)
-        .select();
+        .eq("user_id", user?.id);
 
-      console.log("✅ Synced to Supabase:", response.data);
+      console.log("✅ Synced to Supabase:", response);
     } catch (error) {
       console.log("💥 Error syncing to Supabase:", error);
     }

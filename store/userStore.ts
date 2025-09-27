@@ -5,6 +5,7 @@ interface userData {
   userData: userDataType | null;
   setUserData: (newData: userDataType | null) => void;
   updateUserData: (newData: userDataType | null) => void;
+  clearUserData: () => void;
 }
 
 export const useUserData = create<userData>((set) => ({
@@ -14,4 +15,8 @@ export const useUserData = create<userData>((set) => ({
     set((state) => ({
       userData: { ...state.userData, ...newData },
     })),
+  clearUserData: () => {
+    console.log("Clearing user data from store...");
+    set({ userData: null });
+  },
 }));
