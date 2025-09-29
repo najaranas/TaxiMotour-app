@@ -358,10 +358,12 @@ export interface RideRequestCardProps {
   };
 
   removeCardFromRequestedRides?: (ride_id: string) => void;
+  removeOtherFromRequestedRides?: (ride_id: string) => void;
 }
 export interface PassengerAceptedCardProps {
   acceptedRideData: {
     ride_id?: string;
+    status?: RideStatus;
     pickup_address?: string;
     destination_address?: string;
     riderImg?: string;

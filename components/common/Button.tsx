@@ -1,6 +1,7 @@
 import { COLORS } from "@/constants/theme";
 import { useTheme } from "@/contexts/ThemeContext";
 import { ButtonProps } from "@/types/Types";
+import { moderateScale } from "@/utils/styling";
 import { TouchableOpacity } from "react-native";
 import { MaterialIndicator } from "react-native-indicators";
 
@@ -27,7 +28,7 @@ export default function Button({
       ]}>
       {loading ? (
         <MaterialIndicator
-          size={indicatorStyle?.size || 25}
+          size={indicatorStyle?.size || moderateScale(25)}
           color={indicatorStyle?.color || theme.text.secondary}
           key="loading"
         />

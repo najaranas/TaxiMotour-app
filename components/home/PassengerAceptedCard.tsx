@@ -116,7 +116,7 @@ export default function PassengerAceptedCard({
       <Typo variant="h1">{formatFare(acceptedRideData?.ride_fare)}</Typo>
 
       {/* Action buttons */}
-      <View style={styles.buttonsRow}>
+      {/* <View style={styles.buttonsRow}>
         <Button
           onPress={handleDecline}
           style={[
@@ -126,11 +126,27 @@ export default function PassengerAceptedCard({
               backgroundColor: COLORS.danger,
             },
           ]}>
-          <Typo variant="body" color={COLORS.black}>
-            Cancel Ride
+          <Typo variant="body" color={COLORS.white}>
+            Decline
           </Typo>
         </Button>
-      </View>
+
+      <Button
+          // onPress={handleAccept}
+          indicatorStyle={{ size: moderateScale(20) }}
+          // loading={isAceptLoading}
+          style={[
+            styles.actionButton,
+            {
+              borderRadius: theme.borderRadius.medium,
+              backgroundColor: "#D7FF3E",
+            },
+          ]}>
+          <Typo variant="body" color={COLORS.black}>
+            Accept
+          </Typo>
+        </Button> 
+      </View> */}
     </Animated.View>
   );
 }

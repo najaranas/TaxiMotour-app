@@ -80,7 +80,7 @@ export default function Home() {
   const [pendingRideRequests, setPendingRideRequests] = useState<
     (RideProps & userDataType)[]
   >([]);
-  const [acceptedRide, serAcceptedRide] = useState<
+  const [acceptedRide, setAcceptedRide] = useState<
     PassengerAceptedCardProps["acceptedRideData"] | null
   >(null);
 
@@ -161,9 +161,6 @@ export default function Home() {
     handleSnapToIndex(1);
   }, [handleSnapToIndex, clearRoute]);
 
-  console.log("11routeGeoJSON", routeGeoJSON);
-  console.log("11roadData.length ", roadData.length);
-
   const handleRequestRide = async () => {
     try {
       setIsRequestingRide(true);
@@ -207,6 +204,7 @@ export default function Home() {
 
   const handleCancelRide = useCallback(() => {
     setIsRideRequested(false);
+    setAcceptedRide(null);
     // You might want to call an API to cancel the ride request here
   }, []);
 
@@ -261,7 +259,7 @@ export default function Home() {
         .on(
           "postgres_changes",
           {
-            event: "INSERT",
+            event: "UPDATE",
             schema: "public",
             table: "rides",
             filter: `status=eq.pending`,
@@ -284,13 +282,17 @@ export default function Home() {
             filter: `ride_id=eq.${requestedRideData?.ride_id}`,
           },
           (payload) => {
-            console.log("bip bip");
             if (
               payload.eventType === "UPDATE" &&
               payload?.new?.status === "accepted"
             ) {
               console.log("new passengers ride", payload?.new);
               handleAcceptedRideForPassenger(payload.new as RideProps);
+            } else if (
+              payload.eventType === "UPDATE" &&
+              payload?.new?.status === "in_progress"
+            ) {
+              setAcceptedRide((prev) => ({ ...prev, status: "in_progress" }));
             }
           }
         )
@@ -305,8 +307,6 @@ export default function Home() {
   const handleNewPendingRideForDriver = async (
     newPendingRideData: RideProps
   ) => {
-    // setRequestedPassengers();
-
     try {
       const passengerData = await supabaseClient
         ?.from("passengers")
@@ -340,12 +340,13 @@ export default function Home() {
 
       if (driverData) {
         console.log("piw piw");
-        // serAcceptedRide({
+        // setAcceptedRide({
         //   ...newAcceptedRide,
         //   ...driverData.data,
         // });
-        serAcceptedRide({
+        setAcceptedRide({
           ride_id: newAcceptedRide?.ride_id,
+          status: newAcceptedRide?.status,
           pickup_address: newAcceptedRide?.pickup_address,
           destination_address: newAcceptedRide?.destination_address,
           distance: newAcceptedRide?.distance,
@@ -362,9 +363,19 @@ export default function Home() {
   };
 
   const removeCardFromRequestedRides = (rideID: string) => {
-    console.log("here");
+    console.log("remove", rideID);
+
     setPendingRideRequests((prevRidesRequeted) =>
-      prevRidesRequeted.filter((ridesRequeted) => ridesRequeted.id !== rideID)
+      prevRidesRequeted.filter(
+        (ridesRequeted) => ridesRequeted.ride_id !== rideID
+      )
+    );
+  };
+  const removeOtherFromRequestedRides = (rideID: string) => {
+    setPendingRideRequests((prevRidesRequeted) =>
+      prevRidesRequeted.filter(
+        (ridesRequeted) => ridesRequeted.ride_id === rideID
+      )
     );
   };
 
@@ -453,6 +464,7 @@ export default function Home() {
               return (
                 <RideRequestCard
                   removeCardFromRequestedRides={removeCardFromRequestedRides}
+                  removeOtherFromRequestedRides={removeOtherFromRequestedRides}
                   rideRequestData={rideRequestData}
                 />
               );
@@ -467,140 +479,140 @@ export default function Home() {
           </View>
         )}
       </View>
-      {!hasSelectedRoute ? (
-        //  Ride Booking Bottom Sheet with responsive snap points
-        <CustomBottomSheet
-          enableOverDrag={false}
-          enablePanDownToClose={false}
-          onRef={setBottomSheetMethods}
-          snapPoints={snapPoints} // Use dynamic snap points
-          index={activeBottomSheetIndex}
-          zindex={10}
-          onChange={setActiveBottomSheetIndex}>
-          <RideBookingSheet
-            activeIndex={activeBottomSheetIndex}
-            onSnapToIndex={handleSnapToIndex}
-            currentLocation={currentLocation}
-            destinationLocation={destinationLocation}
-            onCurrentLocationChange={handleCurrentLocationChange}
-            onDestinationLocationChange={handleDestinationLocationChange}
-            onRoadDataChange={handleRoadDataChange}
-            onContentLayout={handleContentLayout} // Pass layout handler
-          />
-        </CustomBottomSheet>
-      ) : (
-        //  Ride Action Buttons - Show when route is selected
-        !isMapLoading &&
-        !routeLoading && (
-          <View
-            style={[
-              styles.buttonColumn,
-              {
-                backgroundColor: theme.background,
-                borderTopRightRadius: theme.borderRadius.pill,
-                borderTopLeftRadius: theme.borderRadius.pill,
-              },
-            ]}>
-            {/* Status indicator - Only show after ride is requested */}
-            {(isRideRequested || isRequestingRide) && (
-              <View
-                style={{
-                  flexDirection: "row",
-                  gap: horizontalScale(10),
-                  alignItems: "center",
-                }}>
-                <View>
-                  <PulseIndicator
-                    color={COLORS.secondary}
-                    size={moderateScale(30)}
-                  />
-                </View>
-                <Typo
-                  variant="body"
-                  size={moderateScale(16)}
-                  color={theme.text.primary}>
-                  {isRideRequested
-                    ? t("home.waitingForOffers")
-                    : t("home.findingDriver")}
-                </Typo>
-              </View>
-            )}
 
-            {/* Action buttons */}
-            <View style={{ gap: horizontalScale(10), width: "100%" }}>
-              {!isRideRequested ? (
-                <>
-                  <Button
-                    onPress={handleRequestRide}
-                    loading={isRequestingRide}
-                    disabled={isRequestingRide}
-                    indicatorStyle={{ color: COLORS.white }}
-                    style={[
-                      styles.actionButton,
-                      { backgroundColor: COLORS.secondary },
-                    ]}>
-                    <Typo
-                      size={moderateScale(17)}
-                      fontFamily={FONTS.bold}
-                      color={COLORS.white}>
-                      {t("home.requestRide")}
-                    </Typo>
-                  </Button>
-                  <Button
-                    onPress={handleChangeRoute}
-                    disabled={isRequestingRide}
-                    style={[
-                      styles.actionButton,
-                      {
-                        backgroundColor: isRequestingRide
-                          ? COLORS.gray["200"]
-                          : COLORS.gray["100"],
-                      },
-                    ]}>
-                    <Typo
-                      size={moderateScale(17)}
-                      fontFamily={FONTS.medium}
+      {/* BottomSheet */}
+      {userData?.user_type === "passenger" &&
+        (!hasSelectedRoute ? (
+          //  Ride Booking Bottom Sheet with responsive snap points
+          <CustomBottomSheet
+            enableOverDrag={false}
+            enablePanDownToClose={false}
+            onRef={setBottomSheetMethods}
+            snapPoints={snapPoints} // Use dynamic snap points
+            index={activeBottomSheetIndex}
+            zindex={10}
+            onChange={setActiveBottomSheetIndex}>
+            <RideBookingSheet
+              activeIndex={activeBottomSheetIndex}
+              onSnapToIndex={handleSnapToIndex}
+              currentLocation={currentLocation}
+              destinationLocation={destinationLocation}
+              onCurrentLocationChange={handleCurrentLocationChange}
+              onDestinationLocationChange={handleDestinationLocationChange}
+              onRoadDataChange={handleRoadDataChange}
+              onContentLayout={handleContentLayout} // Pass layout handler
+            />
+          </CustomBottomSheet>
+        ) : (
+          //  Ride Action Buttons - Show when route is selected
+          !isMapLoading &&
+          !routeLoading && (
+            <View
+              style={[
+                styles.buttonColumn,
+                {
+                  backgroundColor: theme.background,
+                  borderTopRightRadius: theme.borderRadius.pill,
+                  borderTopLeftRadius: theme.borderRadius.pill,
+                },
+              ]}>
+              {/* Status indicator - Only show after ride is requested */}
+              {(isRideRequested || isRequestingRide) && (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    gap: horizontalScale(10),
+                    alignItems: "center",
+                  }}>
+                  <View>
+                    <PulseIndicator
                       color={
-                        isRequestingRide ? COLORS.gray["400"] : COLORS.black
-                      }>
-                      {t("home.changeRoute")}
-                    </Typo>
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button
-                    onPress={handleCancelRide}
-                    style={[
-                      styles.actionButton,
-                      { backgroundColor: COLORS.danger },
-                    ]}>
-                    <Typo
-                      size={moderateScale(17)}
-                      fontFamily={FONTS.bold}
-                      color={COLORS.white}>
-                      {t("home.cancelRide")}
-                    </Typo>
-                  </Button>
-                  <Button
-                    onPress={handleChangeRoute}
-                    style={[
-                      styles.actionButton,
-                      { backgroundColor: COLORS.gray["100"] },
-                    ]}>
-                    <Typo
-                      size={moderateScale(17)}
-                      fontFamily={FONTS.medium}
-                      color={COLORS.black}>
-                      {t("home.changeRoute")}
-                    </Typo>
-                  </Button>
-                </>
+                        acceptedRide?.status === "in_progress"
+                          ? COLORS?.success
+                          : acceptedRide?.status === "accepted"
+                          ? COLORS?.info
+                          : COLORS?.warning
+                      }
+                      size={moderateScale(30)}
+                    />
+                  </View>
+                  <Typo
+                    variant="body"
+                    size={moderateScale(16)}
+                    color={theme.text.primary}>
+                    {acceptedRide?.status === "in_progress"
+                      ? "ride in progress"
+                      : acceptedRide?.status === "accepted"
+                      ? "rider is on the way"
+                      : isRideRequested
+                      ? t("home.waitingForOffers")
+                      : t("home.findingDriver")}
+                  </Typo>
+                </View>
               )}
+
+              {/* Action buttons */}
+              <View style={{ gap: horizontalScale(10), width: "100%" }}>
+                {!isRideRequested ? (
+                  <>
+                    <Button
+                      onPress={handleRequestRide}
+                      loading={isRequestingRide}
+                      disabled={isRequestingRide}
+                      indicatorStyle={{ color: COLORS.white }}
+                      style={[
+                        styles.actionButton,
+                        { backgroundColor: COLORS.secondary },
+                      ]}>
+                      <Typo
+                        size={moderateScale(17)}
+                        fontFamily={FONTS.bold}
+                        color={COLORS.white}>
+                        {t("home.requestRide")}
+                      </Typo>
+                    </Button>
+                    <Button
+                      onPress={handleChangeRoute}
+                      disabled={isRequestingRide}
+                      style={[
+                        styles.actionButton,
+                        {
+                          backgroundColor: isRequestingRide
+                            ? COLORS.gray["200"]
+                            : COLORS.gray["100"],
+                        },
+                      ]}>
+                      <Typo
+                        size={moderateScale(17)}
+                        fontFamily={FONTS.medium}
+                        color={
+                          isRequestingRide ? COLORS.gray["400"] : COLORS.black
+                        }>
+                        {t("home.changeRoute")}
+                      </Typo>
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      onPress={handleCancelRide}
+                      style={[
+                        styles.actionButton,
+                        { backgroundColor: COLORS.danger },
+                      ]}>
+                      <Typo
+                        size={moderateScale(17)}
+                        fontFamily={FONTS.bold}
+                        color={COLORS.white}>
+                        {t("home.cancelRide")}
+                      </Typo>
+                    </Button>
+                  </>
+                )}
+              </View>
             </View>
-          </View>
-        )
-      )}
+          )
+        ))}
     </ScreenWrapper>
   );
 }

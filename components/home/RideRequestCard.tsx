@@ -12,31 +12,41 @@ import Animated, { LightSpeedInRight } from "react-native-reanimated";
 import { getSupabaseClient } from "@/services/supabaseClient";
 import { LocateFixed, MapPin } from "lucide-react-native";
 import { useUserData } from "@/store/userStore";
+import { useState } from "react";
+import { PulseIndicator } from "react-native-indicators";
+import { useRouter } from "expo-router";
 
 export default function RideRequestCard({
   rideRequestData,
   removeCardFromRequestedRides,
+  removeOtherFromRequestedRides,
 }: RideRequestCardProps) {
   const { theme } = useTheme();
   const { userData } = useUserData();
-
+  const [isAceptLoading, setIsAceptLoading] = useState<boolean>(false);
+  const [rideStatus, setRideStatus] = useState<
+    "accepted" | "in_progress" | "completed" | null
+  >(null);
   const supabaseClient = getSupabaseClient();
+  const router = useRouter();
 
   const handleAccept = async () => {
-    console.log("userData?.id", userData?.id);
-    console.log("?.ride_id", rideRequestData?.ride_id);
     try {
+      setIsAceptLoading(true);
       const response = await supabaseClient
         .from("rides")
         .update({ status: "accepted", driver_id: userData?.id })
         .eq("ride_id", rideRequestData?.ride_id);
 
       console.log("ride resuest response", response);
-      if (response?.error) {
-        removeCardFromList();
+      if (rideRequestData?.ride_id) {
+        removeOtherFromRequestedRides?.(rideRequestData.ride_id);
+        setRideStatus("accepted");
       }
     } catch (error) {
       console.log("error updating ride request", error);
+    } finally {
+      setIsAceptLoading(false);
     }
   };
 
@@ -45,9 +55,39 @@ export default function RideRequestCard({
     removeCardFromList();
   };
 
+  const handleInProgress = async () => {
+    try {
+      await supabaseClient
+        .from("rides")
+        .update({
+          status: "in_progress",
+        })
+        .eq("ride_id", rideRequestData?.ride_id);
+      setRideStatus("in_progress");
+    } catch (error) {
+      console.log("error updating ride request", error);
+    }
+  };
+
+  const handleCompleted = async () => {
+    try {
+      // await supabaseClient
+      //   .from("rides")
+      //   .update({
+      //     status: "completed",
+      //   })
+      //   .eq("ride_id", rideRequestData?.ride_id);
+      setRideStatus(null);
+      router?.replace("/(rides)/RideCompleted");
+      // RideCompleted
+    } catch (error) {
+      console.log("error updating ride request", error);
+    }
+  };
+
   const removeCardFromList = () => {
-    if (removeCardFromRequestedRides && rideRequestData?.ride_id) {
-      removeCardFromRequestedRides(rideRequestData.ride_id);
+    if (rideRequestData?.ride_id) {
+      removeCardFromRequestedRides?.(rideRequestData?.ride_id);
     }
   };
 
@@ -68,7 +108,6 @@ export default function RideRequestCard({
           {t("rides.rideFare")}
         </Typo>
       </View>
-
       {/* Main content row */}
       <View style={styles.headerRow}>
         {/* Left: Profile + Info */}
@@ -135,35 +174,88 @@ export default function RideRequestCard({
       {/* Price */}
       <Typo variant="h1">{formatFare(rideRequestData?.ride_fare)}</Typo>
 
-      {/* Action buttons */}
+      {/* ride Status */}
+      {rideStatus && (
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: horizontalScale(5),
+          }}>
+          <View>
+            <PulseIndicator
+              color={
+                rideStatus === "accepted"
+                  ? COLORS?.info
+                  : rideStatus === "in_progress"
+                  ? COLORS?.success
+                  : COLORS?.warning
+              }
+            />
+          </View>
+          <Typo
+            variant="body"
+            size={moderateScale(16)}
+            color={theme.text.primary}>
+            {rideStatus === "accepted"
+              ? "on  the way to the client"
+              : rideStatus === "in_progress"
+              ? "ride in prgoress"
+              : undefined}
+          </Typo>
+        </View>
+      )}
       <View style={styles.buttonsRow}>
-        <Button
-          onPress={handleDecline}
-          style={[
-            styles.actionButton,
-            {
-              borderRadius: theme.borderRadius.medium,
-              backgroundColor: "#F1F1F1",
-            },
-          ]}>
-          <Typo variant="body" color={COLORS.black}>
-            Decline
-          </Typo>
-        </Button>
-
-        <Button
-          onPress={handleAccept}
-          style={[
-            styles.actionButton,
-            {
-              borderRadius: theme.borderRadius.medium,
-              backgroundColor: "#D7FF3E",
-            },
-          ]}>
-          <Typo variant="body" color={COLORS.black}>
-            Accept
-          </Typo>
-        </Button>
+        {rideStatus === "accepted" || rideStatus === "in_progress" ? (
+          <Button
+            onPress={
+              rideStatus === "accepted" ? handleInProgress : handleCompleted
+            }
+            style={[
+              styles.actionButton,
+              {
+                borderRadius: theme.borderRadius.medium,
+                backgroundColor: "#F1F1F1",
+              },
+            ]}>
+            <Typo variant="body" color={COLORS.black}>
+              {rideStatus === "accepted"
+                ? "Make ride in Progress"
+                : "Make ride Completed"}
+            </Typo>
+          </Button>
+        ) : (
+          <>
+            <Button
+              onPress={handleDecline}
+              style={[
+                styles.actionButton,
+                {
+                  borderRadius: theme.borderRadius.medium,
+                  backgroundColor: "#F1F1F1",
+                },
+              ]}>
+              <Typo variant="body" color={COLORS.black}>
+                Decline
+              </Typo>
+            </Button>
+            <Button
+              onPress={handleAccept}
+              indicatorStyle={{ size: moderateScale(20) }}
+              loading={isAceptLoading}
+              style={[
+                styles.actionButton,
+                {
+                  borderRadius: theme.borderRadius.medium,
+                  backgroundColor: "#D7FF3E",
+                },
+              ]}>
+              <Typo variant="body" color={COLORS.black}>
+                Accept
+              </Typo>
+            </Button>
+          </>
+        )}
       </View>
     </Animated.View>
   );

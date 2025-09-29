@@ -1,8 +1,8 @@
 # 🚗 TaxiMotour - Modern Ride Sharing App
 
-[![React Native](https://img.shields.io/badge/React%20Native-0.76-blue?logo=react)](https://reactnative.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178c6?logo=typescript)](https://www.typescriptlang.org)
-[![Expo](https://img.shields.io/badge/Expo-SDK%2053-black?logo=expo)](https://expo.dev)
+[![React Native](https://img.shields.io/badge/React%20Native-0.81-blue?logo=react)](https://reactnative.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9+-3178c6?logo=typescript)](https://www.typescriptlang.org)
+[![Expo](https://img.shields.io/badge/Expo-SDK%2054-black?logo=expo)](https://expo.dev)
 [![Supabase](https://img.shields.io/badge/Supabase-Backend-3ecf8e?logo=supabase)](https://supabase.io)
 
 A comprehensive ride-sharing mobile application built with React Native and Expo, connecting passengers with motorcycle taxi drivers across Tunisia. Features real-time ride tracking, secure authentication, and multi-language support.
