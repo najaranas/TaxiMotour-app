@@ -1,7 +1,7 @@
 import { useCallback, useState, useMemo, useEffect } from "react";
 import { BackHandler, StyleSheet, View, Dimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 
 // Components
 import ScreenWrapper from "@/components/common/ScreenWrapper";
@@ -27,7 +27,7 @@ import { PulseIndicator } from "react-native-indicators";
 import { useMapStore } from "@/store/mapStore";
 import { getSupabaseClient } from "@/services/supabaseClient";
 import {
-  PassengerAceptedCardProps,
+  PassengerAcceptedCardProps,
   RideProps,
   RideRequestCardProps,
   userDataType,
@@ -37,7 +37,7 @@ import { pricingService } from "@/constants/app";
 import { useSession } from "@clerk/clerk-expo";
 import RideRequestCard from "@/components/home/RideRequestCard";
 import Animated, { SequencedTransition } from "react-native-reanimated";
-import PassengerAceptedCard from "@/components/home/PassengerAceptedCard";
+import PassengerAcceptedCard from "@/components/home/PassengerAceptedCard";
 
 interface LocationData {
   place?: string;
@@ -48,6 +48,9 @@ interface LocationData {
 const { height: screenHeight } = Dimensions.get("window");
 
 export default function Home() {
+  // Router and hooks
+  const router = useRouter();
+
   // State management
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [bottomSheetMethods, setBottomSheetMethods] = useState<any>(null);
@@ -81,11 +84,8 @@ export default function Home() {
     (RideProps & userDataType)[]
   >([]);
   const [acceptedRide, setAcceptedRide] = useState<
-    PassengerAceptedCardProps["acceptedRideData"] | null
+    PassengerAcceptedCardProps["acceptedRideData"] | null
   >(null);
-
-  console.log("acceptedRide", acceptedRide);
-  console.log("pendingRideRequests", pendingRideRequests);
 
   const snapPoints = useMemo(() => {
     if (contentHeight === 0) {
@@ -132,6 +132,7 @@ export default function Home() {
   };
 
   const handleRoadDataChange = (newRoadData: LocationData[]) => {
+    console.log("handleRoadDataChange", newRoadData);
     // Only update road data if we have valid coordinates
     const validRoadData = newRoadData.filter((location) =>
       apiUtils.validateCoordinates(location.lat ?? null, location.lon ?? null)
@@ -201,12 +202,87 @@ export default function Home() {
       setIsRequestingRide(false);
     }
   };
+  const handleCancelRide = useCallback(async () => {
+    try {
+      setIsRequestingRide(true);
 
-  const handleCancelRide = useCallback(() => {
-    setIsRideRequested(false);
+      // Cancel ride in database if it exists
+      if (requestedRideData?.ride_id) {
+        await supabaseClient
+          .from("rides")
+          .update({ status: "cancelled" })
+          .eq("ride_id", requestedRideData.ride_id);
+      }
+
+      // Clear local state
+      setIsRideRequested(false);
+      setAcceptedRide(null);
+      setRequestedRideData(null);
+
+      console.log("Ride cancelled successfully");
+    } catch (error) {
+      console.error("Error cancelling ride:", error);
+    } finally {
+      setIsRequestingRide(false);
+    }
+  }, [requestedRideData?.ride_id, supabaseClient]);
+
+  const clearAllRideData = useCallback(() => {
+    console.log("Clearing all ride data...");
+    setRequestedRideData(null);
     setAcceptedRide(null);
-    // You might want to call an API to cancel the ride request here
-  }, []);
+    setIsRideRequested(false);
+    setIsRequestingRide(false);
+    setPendingRideRequests([]);
+    setHasSelectedRoute(false);
+    setRoadData([]);
+    setCurrentLocation("");
+    setDestinationLocation("");
+    clearRoute();
+    console.log("All ride data cleared successfully");
+  }, [clearRoute]);
+
+  const handleRideCompleted = useCallback(() => {
+    try {
+      console.log("Navigating to ride completion screen...");
+      // Using correct route name based on file structure
+      router?.push({
+        pathname: "/(rides)/RideResult",
+        params: {
+          rideId: acceptedRide?.ride_id || "",
+          status: "completed",
+        },
+      });
+      // Clear ride data after navigation
+      const timeout = setTimeout(() => clearAllRideData(), 100);
+      return () => clearTimeout(timeout);
+    } catch (error) {
+      console.error("Error navigating to ride completion:", error);
+    }
+  }, [router, acceptedRide?.ride_id, clearAllRideData]);
+
+  const handleRideCancelled = useCallback(() => {
+    try {
+      console.log("Navigating to ride cancellation screen...");
+      // Using correct route name based on file structure
+      router?.push({
+        pathname: "/(rides)/RideResult",
+        params: {
+          rideId: acceptedRide?.ride_id || requestedRideData?.ride_id || "",
+          status: "canceled",
+        },
+      });
+      // Clear ride data after navigation
+      setTimeout(() => clearAllRideData(), 100);
+    } catch (error) {
+      console.error("Error navigating to ride cancellation:", error);
+    }
+  }, [
+    router,
+    acceptedRide?.ride_id,
+    requestedRideData?.ride_id,
+    clearAllRideData,
+  ]);
 
   // Cleanup on focus change
   useFocusEffect(
@@ -251,25 +327,163 @@ export default function Home() {
     ])
   );
 
+  const handleNewPendingRideForDriver = useCallback(
+    async (newRideRequest: RideProps) => {
+      try {
+        console.log(
+          "Processing new ride request for driver:",
+          newRideRequest.ride_id
+        );
+
+        const { data: passengerProfile, error } = await supabaseClient
+          ?.from("passengers")
+          ?.select("*")
+          ?.eq("id", newRideRequest?.passenger_id)
+          ?.single();
+
+        if (error) {
+          console.error("Error fetching passenger data:", error);
+          return;
+        }
+
+        if (passengerProfile) {
+          setPendingRideRequests((previousRequests) => {
+            // Check for duplicates
+            const isDuplicate = previousRequests.some(
+              (request) => request.ride_id === newRideRequest.ride_id
+            );
+
+            if (isDuplicate) {
+              console.log("Duplicate ride request detected, skipping...");
+              return previousRequests;
+            }
+
+            console.log("Adding new ride request to list");
+            return [
+              ...previousRequests,
+              {
+                ...newRideRequest,
+                ...passengerProfile,
+              },
+            ];
+          });
+        }
+      } catch (error) {
+        console.error("Error processing new ride request:", error);
+      }
+    },
+    [supabaseClient]
+  );
+
+  const handleAcceptedRideForPassenger = useCallback(
+    async (acceptedRideData: RideProps) => {
+      try {
+        console.log(
+          "Processing accepted ride for passenger:",
+          acceptedRideData?.driver_id
+        );
+
+        const { data: driverProfile, error } = await supabaseClient
+          ?.from("drivers")
+          ?.select("*")
+          ?.eq("id", acceptedRideData?.driver_id)
+          ?.single();
+
+        if (error) {
+          console.error("Error fetching driver data:", error);
+          return;
+        }
+
+        if (driverProfile) {
+          console.log("Setting accepted ride with driver details");
+          setAcceptedRide({
+            ride_id: acceptedRideData?.ride_id,
+            status: acceptedRideData?.status,
+            pickup_address: acceptedRideData?.pickup_address,
+            destination_address: acceptedRideData?.destination_address,
+            distance: acceptedRideData?.distance,
+            duration: acceptedRideData?.duration,
+            name: driverProfile?.first_name,
+            riderImg: driverProfile?.profile_image_url,
+            ride_fare: acceptedRideData?.ride_fare,
+            phone_number: driverProfile?.phone_number,
+          });
+        }
+      } catch (error) {
+        console.error("Error processing accepted ride:", error);
+      }
+    },
+    [supabaseClient]
+  );
+
+  const removeRideRequestFromList = useCallback((rideIdToRemove: string) => {
+    try {
+      console.log("Removing ride request:", rideIdToRemove);
+
+      setPendingRideRequests((previousRequests) =>
+        previousRequests.filter(
+          (rideRequest) => rideRequest.ride_id !== rideIdToRemove
+        )
+      );
+
+      console.log("Ride request removed successfully");
+    } catch (error) {
+      console.error("Error removing ride request:", error);
+    }
+  }, []);
+
+  const keepOnlySelectedRideRequest = useCallback((selectedRideId: string) => {
+    try {
+      console.log("Keeping only selected ride request:", selectedRideId);
+
+      setPendingRideRequests((previousRequests) =>
+        previousRequests.filter(
+          (rideRequest) => rideRequest.ride_id === selectedRideId
+        )
+      );
+
+      console.log("Other ride requests removed successfully");
+    } catch (error) {
+      console.error("Error filtering ride requests:", error);
+    }
+  }, []);
+
+  // Real-time subscriptions for ride updates
   useEffect(() => {
     let channel;
     if (userData?.user_type === "driver") {
-      channel = supabaseClient
-        ?.channel("public:rides")
-        .on(
+      channel = supabaseClient?.channel("public:rides").on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "rides",
+          filter: `status=eq.pending`,
+        },
+        (payload) => {
+          console.log("new driver ride", payload?.new);
+          handleNewPendingRideForDriver(payload.new as RideProps);
+        }
+      );
+      if (acceptedRide?.ride_id) {
+        channel = channel.on(
           "postgres_changes",
           {
             event: "UPDATE",
             schema: "public",
             table: "rides",
-            filter: `status=eq.pending`,
+            filter: `ride_id=eq.${acceptedRide.ride_id}`,
           },
           (payload) => {
-            console.log("new driver ride", payload?.new);
-            handleNewPendingRideForDriver(payload.new as RideProps);
+            console.log("ride update", payload?.new);
+
+            if (payload.new.status === "cancelled") {
+              handleRideCancelled();
+            }
           }
-        )
-        .subscribe();
+        );
+      }
+      channel?.subscribe();
     } else {
       channel = supabaseClient
         ?.channel("public:rides")
@@ -293,6 +507,11 @@ export default function Home() {
               payload?.new?.status === "in_progress"
             ) {
               setAcceptedRide((prev) => ({ ...prev, status: "in_progress" }));
+            } else if (
+              payload.eventType === "UPDATE" &&
+              payload?.new?.status === "completed"
+            ) {
+              handleRideCompleted();
             }
           }
         )
@@ -302,82 +521,16 @@ export default function Home() {
     return () => {
       supabaseClient.removeChannel(channel); // cleanup on unmount
     };
-  }, [userData?.user_type, requestedRideData?.ride_id]);
-
-  const handleNewPendingRideForDriver = async (
-    newPendingRideData: RideProps
-  ) => {
-    try {
-      const passengerData = await supabaseClient
-        ?.from("passengers")
-        ?.select("*")
-        ?.eq("id", newPendingRideData?.passenger_id)
-        ?.single();
-      if (passengerData?.data) {
-        setPendingRideRequests((prev) => [
-          ...prev,
-          {
-            ...newPendingRideData,
-            ...passengerData.data,
-          },
-        ]);
-      }
-    } catch (error) {
-      console.error("Error fetching passenger data:", error);
-    }
-  };
-
-  const handleAcceptedRideForPassenger = async (newAcceptedRide: RideProps) => {
-    console.log("newAcceptedRide?.driver_id", newAcceptedRide?.driver_id);
-    try {
-      const { data } = await supabaseClient
-        ?.from("drivers")
-        ?.select("*")
-        ?.eq("id", newAcceptedRide?.driver_id)
-        ?.single();
-
-      const driverData = data as userDataType;
-
-      if (driverData) {
-        console.log("piw piw");
-        // setAcceptedRide({
-        //   ...newAcceptedRide,
-        //   ...driverData.data,
-        // });
-        setAcceptedRide({
-          ride_id: newAcceptedRide?.ride_id,
-          status: newAcceptedRide?.status,
-          pickup_address: newAcceptedRide?.pickup_address,
-          destination_address: newAcceptedRide?.destination_address,
-          distance: newAcceptedRide?.distance,
-          duration: newAcceptedRide?.duration,
-          name: driverData?.first_name,
-          riderImg: driverData?.profile_image_url,
-          ride_fare: newAcceptedRide?.ride_fare,
-          phone_number: driverData?.phone_number,
-        });
-      }
-    } catch (error) {
-      console.error("Error fetching passenger data:", error);
-    }
-  };
-
-  const removeCardFromRequestedRides = (rideID: string) => {
-    console.log("remove", rideID);
-
-    setPendingRideRequests((prevRidesRequeted) =>
-      prevRidesRequeted.filter(
-        (ridesRequeted) => ridesRequeted.ride_id !== rideID
-      )
-    );
-  };
-  const removeOtherFromRequestedRides = (rideID: string) => {
-    setPendingRideRequests((prevRidesRequeted) =>
-      prevRidesRequeted.filter(
-        (ridesRequeted) => ridesRequeted.ride_id === rideID
-      )
-    );
-  };
+  }, [
+    userData?.user_type,
+    requestedRideData?.ride_id,
+    acceptedRide?.ride_id,
+    supabaseClient,
+    handleNewPendingRideForDriver,
+    handleAcceptedRideForPassenger,
+    handleRideCancelled,
+    handleRideCompleted,
+  ]);
 
   return (
     <ScreenWrapper safeArea={false} style={styles.container} hasBottomTabs>
@@ -406,7 +559,7 @@ export default function Home() {
         </CustomDrawer>
       </View>
 
-      {/* Menu Button */}
+      {/* Menu Button and Request List*/}
       <View
         style={[
           styles.menuButtonContainer,
@@ -463,9 +616,11 @@ export default function Home() {
               };
               return (
                 <RideRequestCard
-                  removeCardFromRequestedRides={removeCardFromRequestedRides}
-                  removeOtherFromRequestedRides={removeOtherFromRequestedRides}
+                  removeCardFromRequestedRides={removeRideRequestFromList}
+                  removeOtherFromRequestedRides={keepOnlySelectedRideRequest}
                   rideRequestData={rideRequestData}
+                  setAcceptedRide={setAcceptedRide}
+                  clearAllRideData={clearAllRideData}
                 />
               );
             }}
@@ -475,7 +630,7 @@ export default function Home() {
 
         {userData?.user_type === "passenger" && acceptedRide && (
           <View style={{ flex: 1 }}>
-            <PassengerAceptedCard acceptedRideData={acceptedRide} />
+            <PassengerAcceptedCard acceptedRideData={acceptedRide} />
           </View>
         )}
       </View>
@@ -541,9 +696,9 @@ export default function Home() {
                     size={moderateScale(16)}
                     color={theme.text.primary}>
                     {acceptedRide?.status === "in_progress"
-                      ? "ride in progress"
+                      ? t("ride.status.inProgress")
                       : acceptedRide?.status === "accepted"
-                      ? "rider is on the way"
+                      ? t("ride.status.driverOnTheWay")
                       : isRideRequested
                       ? t("home.waitingForOffers")
                       : t("home.findingDriver")}

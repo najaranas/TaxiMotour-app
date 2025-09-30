@@ -95,6 +95,70 @@
     "cancelRide": "Annuler le trajet",
     "findingDriver": "Recherche de votre chauffeur..."
   },
+  "ride": {
+    "status": {
+      "inProgress": "Trajet en cours",
+      "driverOnTheWay": "Le chauffeur est en route",
+      "pending": "En attente du chauffeur",
+      "accepted": "Trajet accepté",
+      "completed": "Trajet terminé",
+      "canceled": "Trajet annulé"
+    },
+    "actions": {
+      "complete": "Terminer le trajet",
+      "cancel": "Annuler le trajet",
+      "accept": "Accepter le trajet",
+      "decline": "Refuser le trajet"
+    },
+    "navigation": {
+      "toCompletion": "Navigation vers l'écran de fin",
+      "toCancellation": "Navigation vers l'écran d'annulation"
+    }
+  },
+  "rideResult": {
+    "completed": {
+      "title": "Trajet Terminé !",
+      "subtitle": "Merci d'avoir voyagé avec nous"
+    },
+    "canceled": {
+      "title": "Trajet Annulé",
+      "subtitle": "Nous nous excusons pour le dérangement"
+    },
+    "feedback": {
+      "title": "Partagez Votre Avis",
+      "placeholder": "Parlez-nous de votre expérience de trajet..."
+    },
+    "actions": {
+      "submitFeedback": "Soumettre l'Avis",
+      "goHome": "Retour à l'Accueil",
+      "skipAndGoHome": "Passer & Retour à l'Accueil"
+    },
+    "success": {
+      "title": "Merci !",
+      "feedbackSubmitted": "Votre avis a été soumis avec succès"
+    },
+    "error": {
+      "title": "Erreur",
+      "emptyFeedback": "Veuillez saisir votre avis avant de soumettre",
+      "submissionFailed": "Échec de la soumission de l'avis. Veuillez réessayer."
+    }
+  },
+  "passengerCard": {
+    "rideFare": "Tarif du Trajet"
+  },
+  "rideRequestCard": {
+    "rideFare": "Tarif du Trajet",
+    "status": {
+      "onTheWay": "En route vers le passager",
+      "inProgress": "Trajet en cours"
+    },
+    "actions": {
+      "accept": "Accepter",
+      "decline": "Refuser",
+      "startRide": "Commencer le Trajet",
+      "completeRide": "Terminer le Trajet"
+    }
+  },
   "drawer": {
     "myAccount": "Mon compte",
     "history": "Historique",

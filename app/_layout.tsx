@@ -101,10 +101,11 @@ function AppNavigator() {
         }}
       />
       <Stack.Screen
-        name="(rides)/RideCompleted"
+        name="(rides)/RideStatus"
         options={{
           title: t("about.title"),
           presentation: "modal",
+          animation: "slide_from_bottom",
         }}
       />
       {/* About screen (root level) */}

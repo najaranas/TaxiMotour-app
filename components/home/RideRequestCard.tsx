@@ -7,7 +7,7 @@ import THEME, { COLORS } from "@/constants/theme";
 import { horizontalScale, moderateScale, verticalScale } from "@/utils/styling";
 import Button from "../common/Button";
 import { formatDistance, formatDuration, formatFare } from "@/utils/rideUtils";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 import Animated, { LightSpeedInRight } from "react-native-reanimated";
 import { getSupabaseClient } from "@/services/supabaseClient";
 import { LocateFixed, MapPin } from "lucide-react-native";
@@ -20,74 +20,123 @@ export default function RideRequestCard({
   rideRequestData,
   removeCardFromRequestedRides,
   removeOtherFromRequestedRides,
+  setAcceptedRide,
+  clearAllRideData,
 }: RideRequestCardProps) {
   const { theme } = useTheme();
   const { userData } = useUserData();
-  const [isAceptLoading, setIsAceptLoading] = useState<boolean>(false);
-  const [rideStatus, setRideStatus] = useState<
+  const { t } = useTranslation();
+  const router = useRouter();
+  const supabaseClient = getSupabaseClient();
+
+  const [isAcceptingRide, setIsAcceptingRide] = useState<boolean>(false);
+  const [currentRideStatus, setCurrentRideStatus] = useState<
     "accepted" | "in_progress" | "completed" | null
   >(null);
-  const supabaseClient = getSupabaseClient();
-  const router = useRouter();
 
-  const handleAccept = async () => {
+  const handleAcceptRideRequest = async () => {
+    if (!rideRequestData?.ride_id) {
+      console.error("No ride ID found");
+      return;
+    }
+
     try {
-      setIsAceptLoading(true);
-      const response = await supabaseClient
+      setIsAcceptingRide(true);
+      console.log("Accepting ride request:", rideRequestData.ride_id);
+
+      const { error } = await supabaseClient
         .from("rides")
         .update({ status: "accepted", driver_id: userData?.id })
-        .eq("ride_id", rideRequestData?.ride_id);
+        .eq("ride_id", rideRequestData.ride_id);
 
-      console.log("ride resuest response", response);
-      if (rideRequestData?.ride_id) {
-        removeOtherFromRequestedRides?.(rideRequestData.ride_id);
-        setRideStatus("accepted");
+      if (error) {
+        throw error;
       }
+
+      console.log("Ride request accepted successfully");
+      removeOtherFromRequestedRides?.(rideRequestData.ride_id);
+      setCurrentRideStatus("accepted");
+      setAcceptedRide?.(rideRequestData);
     } catch (error) {
-      console.log("error updating ride request", error);
+      console.error("Error accepting ride request:", error);
     } finally {
-      setIsAceptLoading(false);
+      setIsAcceptingRide(false);
     }
   };
 
-  const handleDecline = () => {
-    console.log("clicked");
-    removeCardFromList();
+  const handleDeclineRideRequest = () => {
+    console.log("Declining ride request:", rideRequestData?.ride_id);
+    removeRideRequestFromList();
   };
 
-  const handleInProgress = async () => {
+  const handleStartRideProgress = async () => {
+    if (!rideRequestData?.ride_id) {
+      console.error("No ride ID found");
+      return;
+    }
+
     try {
-      await supabaseClient
+      console.log("Starting ride progress for:", rideRequestData.ride_id);
+
+      const { error } = await supabaseClient
         .from("rides")
-        .update({
-          status: "in_progress",
-        })
-        .eq("ride_id", rideRequestData?.ride_id);
-      setRideStatus("in_progress");
+        .update({ status: "in_progress" })
+        .eq("ride_id", rideRequestData.ride_id);
+
+      if (error) {
+        throw error;
+      }
+
+      setCurrentRideStatus("in_progress");
+      console.log("Ride status updated to in_progress");
     } catch (error) {
-      console.log("error updating ride request", error);
+      console.error("Error updating ride to in_progress:", error);
     }
   };
 
-  const handleCompleted = async () => {
+  const handleCompleteRide = async () => {
+    if (!rideRequestData?.ride_id) {
+      console.error("No ride ID found");
+      return;
+    }
+
     try {
-      // await supabaseClient
-      //   .from("rides")
-      //   .update({
-      //     status: "completed",
-      //   })
-      //   .eq("ride_id", rideRequestData?.ride_id);
-      setRideStatus(null);
-      router?.replace("/(rides)/RideCompleted");
-      // RideCompleted
+      console.log("Completing ride:", rideRequestData.ride_id);
+
+      const { error } = await supabaseClient
+        .from("rides")
+        .update({ status: "completed" })
+        .eq("ride_id", rideRequestData.ride_id);
+
+      if (error) {
+        throw error;
+      }
+
+      setCurrentRideStatus("completed");
+      console.log("Ride completed successfully");
+
+      // Navigate to ride result screen
+      router.push({
+        pathname: "/(rides)/RideResult",
+        params: {
+          status: "completed",
+          rideId: rideRequestData.ride_id,
+        },
+      });
+
+      // Clear ride data after a short delay
+      setTimeout(() => {
+        clearAllRideData?.();
+      }, 100);
     } catch (error) {
-      console.log("error updating ride request", error);
+      console.error("Error completing ride:", error);
     }
   };
 
-  const removeCardFromList = () => {
+  const removeRideRequestFromList = () => {
     if (rideRequestData?.ride_id) {
-      removeCardFromRequestedRides?.(rideRequestData?.ride_id);
+      console.log("Removing ride request from list:", rideRequestData.ride_id);
+      removeCardFromRequestedRides?.(rideRequestData.ride_id);
     }
   };
 
@@ -103,16 +152,20 @@ export default function RideRequestCard({
         },
       ]}>
       <View
-        style={[styles.yourFare, { borderRadius: theme.borderRadius.medium }]}>
+        style={[
+          styles.rideFareBadge,
+          { borderRadius: theme.borderRadius.medium },
+        ]}>
         <Typo variant="caption" color={COLORS.black}>
-          {t("rides.rideFare")}
+          {t("rideRequestCard.rideFare")}
         </Typo>
       </View>
-      {/* Main content row */}
-      <View style={styles.headerRow}>
-        {/* Left: Profile + Info */}
-        <View style={styles.leftSection}>
-          <View style={styles.avatarContainer}>
+
+      {/* Passenger Information Row */}
+      <View style={styles.passengerInfoRow}>
+        {/* Left: Profile + Passenger Details */}
+        <View style={styles.passengerSection}>
+          <View style={styles.profileImageContainer}>
             <UserProfileImage
               hasImage={!!rideRequestData?.passengerImg}
               imageUrl={rideRequestData?.passengerImg}
@@ -122,18 +175,20 @@ export default function RideRequestCard({
             />
           </View>
 
-          <View style={styles.infoContainer}>
+          <View style={styles.passengerDetailsContainer}>
             <View style={styles.nameRow}>
               <Typo variant="body">{rideRequestData?.name}</Typo>
             </View>
             {rideRequestData?.phone_number && (
-              <Typo variant="body">{`+216 ${rideRequestData?.phone_number}`}</Typo>
+              <Typo variant="body">
+                {`+216 ${rideRequestData?.phone_number}`}
+              </Typo>
             )}
           </View>
         </View>
 
-        {/* Right: Time + Distance */}
-        <View style={styles.rightSection}>
+        {/* Right: Trip Details */}
+        <View style={styles.tripDetailsSection}>
           <Typo variant="body">
             {formatDistance(rideRequestData?.distance)}
           </Typo>
@@ -143,115 +198,113 @@ export default function RideRequestCard({
         </View>
       </View>
 
-      <View style={{ gap: verticalScale(5) }}>
+      {/* Trip Route Information */}
+      <View style={styles.routeContainer}>
         <View style={styles.addressRow}>
-          {
-            <MapPin
-              color={theme.text.secondary}
-              strokeWidth={1.5}
-              size={moderateScale(20)}
-            />
-          }
-          <Typo variant="body" style={{ flexShrink: 1 }}>
+          <MapPin
+            color={theme.text.secondary}
+            strokeWidth={1.5}
+            size={moderateScale(20)}
+          />
+          <Typo variant="body" style={styles.addressText}>
             {rideRequestData?.pickup_address}
           </Typo>
         </View>
         <View style={styles.addressRow}>
-          {
-            <LocateFixed
-              color={theme.text.secondary}
-              strokeWidth={1.5}
-              size={moderateScale(20)}
-            />
-          }
-
-          <Typo variant="body" style={{ flexShrink: 1 }}>
+          <LocateFixed
+            color={theme.text.secondary}
+            strokeWidth={1.5}
+            size={moderateScale(20)}
+          />
+          <Typo variant="body" style={styles.addressText}>
             {rideRequestData?.destination_address}
           </Typo>
         </View>
       </View>
 
-      {/* Price */}
-      <Typo variant="h1">{formatFare(rideRequestData?.ride_fare)}</Typo>
+      {/* Ride Fare */}
+      <Typo variant="h1" style={styles.fareAmount}>
+        {formatFare(rideRequestData?.ride_fare)}
+      </Typo>
 
-      {/* ride Status */}
-      {rideStatus && (
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            gap: horizontalScale(5),
-          }}>
-          <View>
+      {/* Ride Status Indicator */}
+      {currentRideStatus && (
+        <View style={styles.statusContainer}>
+          <View style={styles.statusIndicator}>
             <PulseIndicator
               color={
-                rideStatus === "accepted"
+                currentRideStatus === "accepted"
                   ? COLORS?.info
-                  : rideStatus === "in_progress"
+                  : currentRideStatus === "in_progress"
                   ? COLORS?.success
                   : COLORS?.warning
               }
+              size={moderateScale(20)}
             />
           </View>
           <Typo
             variant="body"
             size={moderateScale(16)}
             color={theme.text.primary}>
-            {rideStatus === "accepted"
-              ? "on  the way to the client"
-              : rideStatus === "in_progress"
-              ? "ride in prgoress"
+            {currentRideStatus === "accepted"
+              ? t("rideRequestCard.status.onTheWay")
+              : currentRideStatus === "in_progress"
+              ? t("rideRequestCard.status.inProgress")
               : undefined}
           </Typo>
         </View>
       )}
-      <View style={styles.buttonsRow}>
-        {rideStatus === "accepted" || rideStatus === "in_progress" ? (
+      {/* Action Buttons */}
+      <View style={styles.actionButtonsRow}>
+        {currentRideStatus === "accepted" ||
+        currentRideStatus === "in_progress" ? (
           <Button
             onPress={
-              rideStatus === "accepted" ? handleInProgress : handleCompleted
+              currentRideStatus === "accepted"
+                ? handleStartRideProgress
+                : handleCompleteRide
             }
             style={[
-              styles.actionButton,
+              styles.primaryActionButton,
               {
                 borderRadius: theme.borderRadius.medium,
-                backgroundColor: "#F1F1F1",
+                backgroundColor: COLORS.secondary,
               },
             ]}>
-            <Typo variant="body" color={COLORS.black}>
-              {rideStatus === "accepted"
-                ? "Make ride in Progress"
-                : "Make ride Completed"}
+            <Typo variant="body" color={COLORS.white}>
+              {currentRideStatus === "accepted"
+                ? t("rideRequestCard.actions.startRide")
+                : t("rideRequestCard.actions.completeRide")}
             </Typo>
           </Button>
         ) : (
           <>
             <Button
-              onPress={handleDecline}
+              onPress={handleDeclineRideRequest}
               style={[
-                styles.actionButton,
+                styles.secondaryActionButton,
                 {
                   borderRadius: theme.borderRadius.medium,
-                  backgroundColor: "#F1F1F1",
+                  backgroundColor: theme.surface,
+                  borderWidth: 1,
+                  borderColor: COLORS.gray[300],
                 },
               ]}>
-              <Typo variant="body" color={COLORS.black}>
-                Decline
-              </Typo>
+              <Typo variant="body">{t("rideRequestCard.actions.decline")}</Typo>
             </Button>
             <Button
-              onPress={handleAccept}
+              onPress={handleAcceptRideRequest}
               indicatorStyle={{ size: moderateScale(20) }}
-              loading={isAceptLoading}
+              loading={isAcceptingRide}
               style={[
-                styles.actionButton,
+                styles.primaryActionButton,
                 {
                   borderRadius: theme.borderRadius.medium,
                   backgroundColor: "#D7FF3E",
                 },
               ]}>
               <Typo variant="body" color={COLORS.black}>
-                Accept
+                {t("rideRequestCard.actions.accept")}
               </Typo>
             </Button>
           </>
@@ -264,58 +317,85 @@ export default function RideRequestCard({
 const styles = StyleSheet.create({
   card: {
     padding: horizontalScale(16),
-    gap: horizontalScale(8),
+    gap: verticalScale(12),
   },
-  yourFare: {
+  rideFareBadge: {
     backgroundColor: "#D7FF3E",
     paddingHorizontal: horizontalScale(10),
     paddingVertical: verticalScale(5),
     alignSelf: "flex-start",
   },
-  headerRow: {
+  passengerInfoRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
-  leftSection: {
+  passengerSection: {
     flexDirection: "row",
     alignItems: "center",
     flex: 1,
     gap: horizontalScale(12),
   },
-  avatarContainer: {
+  profileImageContainer: {
     borderWidth: THEME.borderWidth.regular,
     borderColor: "#7C3AED",
     borderRadius: THEME.borderRadius.circle,
     padding: horizontalScale(2),
   },
-  infoContainer: {
+  passengerDetailsContainer: {
     flex: 1,
-    gap: horizontalScale(2),
+    gap: verticalScale(2),
   },
   nameRow: {
     flexDirection: "row",
     alignItems: "center",
   },
-
-  rightSection: {
+  tripDetailsSection: {
     alignItems: "flex-end",
-    gap: horizontalScale(2),
+    gap: verticalScale(2),
   },
-
+  routeContainer: {
+    gap: verticalScale(8),
+  },
   addressRow: {
     flexDirection: "row",
-    gap: horizontalScale(5),
+    gap: horizontalScale(8),
     alignItems: "center",
   },
-  buttonsRow: {
-    flexDirection: "row",
-    gap: horizontalScale(5),
+  addressText: {
+    flex: 1,
+    flexShrink: 1,
   },
-  actionButton: {
+  fareAmount: {
+    textAlign: "center",
+    marginVertical: verticalScale(8),
+  },
+  statusContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: horizontalScale(8),
+    paddingVertical: verticalScale(8),
+  },
+  statusIndicator: {
+    width: moderateScale(24),
+    height: moderateScale(24),
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  actionButtonsRow: {
+    flexDirection: "row",
+    gap: horizontalScale(8),
+  },
+  primaryActionButton: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingBlock: verticalScale(7),
+    paddingVertical: verticalScale(12),
+  },
+  secondaryActionButton: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: verticalScale(12),
   },
 });

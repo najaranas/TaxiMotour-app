@@ -94,6 +94,70 @@
     "cancelRide": "إلغاء الرحلة",
     "findingDriver": "جاري البحث عن سائقك..."
   },
+  "ride": {
+    "status": {
+      "inProgress": "الرحلة قيد التنفيذ",
+      "driverOnTheWay": "السائق في الطريق",
+      "pending": "في انتظار السائق",
+      "accepted": "تم قبول الرحلة",
+      "completed": "اكتملت الرحلة",
+      "canceled": "تم إلغاء الرحلة"
+    },
+    "actions": {
+      "complete": "إنهاء الرحلة",
+      "cancel": "إلغاء الرحلة",
+      "accept": "قبول الرحلة",
+      "decline": "رفض الرحلة"
+    },
+    "navigation": {
+      "toCompletion": "الانتقال إلى شاشة الإنهاء",
+      "toCancellation": "الانتقال إلى شاشة الإلغاء"
+    }
+  },
+  "rideResult": {
+    "completed": {
+      "title": "اكتملت الرحلة!",
+      "subtitle": "شكراً لاستخدام خدمتنا"
+    },
+    "canceled": {
+      "title": "تم إلغاء الرحلة",
+      "subtitle": "نعتذر عن الإزعاج"
+    },
+    "feedback": {
+      "title": "شاركنا رأيك",
+      "placeholder": "أخبرنا عن تجربتك في الرحلة..."
+    },
+    "actions": {
+      "submitFeedback": "إرسال التقييم",
+      "goHome": "العودة للرئيسية",
+      "skipAndGoHome": "تخطي والعودة للرئيسية"
+    },
+    "success": {
+      "title": "شكراً لك!",
+      "feedbackSubmitted": "تم إرسال تقييمك بنجاح"
+    },
+    "error": {
+      "title": "خطأ",
+      "emptyFeedback": "يرجى إدخال تقييمك قبل الإرسال",
+      "submissionFailed": "فشل في إرسال التقييم. يرجى المحاولة مرة أخرى."
+    }
+  },
+  "passengerCard": {
+    "rideFare": "تكلفة الرحلة"
+  },
+  "rideRequestCard": {
+    "rideFare": "تكلفة الرحلة",
+    "status": {
+      "onTheWay": "في الطريق إلى الراكب",
+      "inProgress": "الرحلة قيد التنفيذ"
+    },
+    "actions": {
+      "accept": "قبول",
+      "decline": "رفض",
+      "startRide": "بدء الرحلة",
+      "completeRide": "إنهاء الرحلة"
+    }
+  },
   "drawer": {
     "myAccount": "حسابي",
     "history": "التاريخ",

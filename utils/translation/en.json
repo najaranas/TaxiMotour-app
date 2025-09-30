@@ -95,6 +95,70 @@
     "cancelRide": "Cancel ride",
     "findingDriver": "Finding your driver..."
   },
+  "ride": {
+    "status": {
+      "inProgress": "Ride in progress",
+      "driverOnTheWay": "Driver is on the way",
+      "pending": "Waiting for driver",
+      "accepted": "Ride accepted",
+      "completed": "Ride completed",
+      "canceled": "Ride canceled"
+    },
+    "actions": {
+      "complete": "Complete Ride",
+      "cancel": "Cancel Ride",
+      "accept": "Accept Ride",
+      "decline": "Decline Ride"
+    },
+    "navigation": {
+      "toCompletion": "Navigating to completion screen",
+      "toCancellation": "Navigating to cancellation screen"
+    }
+  },
+  "rideResult": {
+    "completed": {
+      "title": "Ride Completed!",
+      "subtitle": "Thank you for riding with us"
+    },
+    "canceled": {
+      "title": "Ride Canceled",
+      "subtitle": "We apologize for the inconvenience"
+    },
+    "feedback": {
+      "title": "Share Your Feedback",
+      "placeholder": "Tell us about your ride experience..."
+    },
+    "actions": {
+      "submitFeedback": "Submit Feedback",
+      "goHome": "Go Home",
+      "skipAndGoHome": "Skip & Go Home"
+    },
+    "success": {
+      "title": "Thank you!",
+      "feedbackSubmitted": "Your feedback has been submitted successfully"
+    },
+    "error": {
+      "title": "Error",
+      "emptyFeedback": "Please enter your feedback before submitting",
+      "submissionFailed": "Failed to submit feedback. Please try again."
+    }
+  },
+  "passengerCard": {
+    "rideFare": "Ride Fare"
+  },
+  "rideRequestCard": {
+    "rideFare": "Ride Fare",
+    "status": {
+      "onTheWay": "On the way to passenger",
+      "inProgress": "Ride in progress"
+    },
+    "actions": {
+      "accept": "Accept",
+      "decline": "Decline",
+      "startRide": "Start Ride",
+      "completeRide": "Complete Ride"
+    }
+  },
   "drawer": {
     "myAccount": "My account",
     "history": "History",

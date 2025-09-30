@@ -359,8 +359,12 @@ export interface RideRequestCardProps {
 
   removeCardFromRequestedRides?: (ride_id: string) => void;
   removeOtherFromRequestedRides?: (ride_id: string) => void;
+  clearAllRideData?: () => void;
+  setAcceptedRide?: (
+    ride: PassengerAcceptedCardProps["acceptedRideData"] | null
+  ) => void;
 }
-export interface PassengerAceptedCardProps {
+export interface PassengerAcceptedCardProps {
   acceptedRideData: {
     ride_id?: string;
     status?: RideStatus;
