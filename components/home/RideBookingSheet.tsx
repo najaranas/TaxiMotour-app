@@ -158,6 +158,125 @@ export default function RideBookingSheet({
     }, 100);
   };
 
+  const renderskeletonContainer = () => (
+    <>
+      <View
+        style={{
+          flexDirection: "row",
+          paddingHorizontal: horizontalScale(15),
+          alignItems: "center",
+          gap: horizontalScale(10),
+          marginTop: verticalScale(35),
+        }}>
+        <SkeletonPlaceholder animationType="shimmer">
+          <View
+            style={{
+              width: horizontalScale(40),
+              height: verticalScale(40),
+              borderRadius: "50%",
+            }}
+          />
+        </SkeletonPlaceholder>
+        <View style={{ flex: 1, gap: verticalScale(10) }}>
+          <SkeletonPlaceholder animationType="shimmer">
+            <View
+              style={{
+                width: "100%",
+                height: verticalScale(20),
+                borderRadius: moderateScale(10),
+              }}
+            />
+          </SkeletonPlaceholder>
+          <SkeletonPlaceholder animationType="shimmer">
+            <View
+              style={{
+                width: "100%",
+                height: verticalScale(20),
+                borderRadius: moderateScale(10),
+              }}
+            />
+          </SkeletonPlaceholder>
+        </View>
+      </View>
+      <View
+        style={{
+          flexDirection: "row",
+          paddingHorizontal: horizontalScale(15),
+          alignItems: "center",
+          gap: horizontalScale(10),
+          marginTop: verticalScale(35),
+        }}>
+        <SkeletonPlaceholder animationType="shimmer">
+          <View
+            style={{
+              width: horizontalScale(40),
+              height: verticalScale(40),
+              borderRadius: "50%",
+            }}
+          />
+        </SkeletonPlaceholder>
+        <View style={{ flex: 1, gap: verticalScale(10) }}>
+          <SkeletonPlaceholder animationType="shimmer">
+            <View
+              style={{
+                width: "100%",
+                height: verticalScale(20),
+                borderRadius: moderateScale(10),
+              }}
+            />
+          </SkeletonPlaceholder>
+          <SkeletonPlaceholder animationType="shimmer">
+            <View
+              style={{
+                width: "100%",
+                height: verticalScale(20),
+                borderRadius: moderateScale(10),
+              }}
+            />
+          </SkeletonPlaceholder>
+        </View>
+      </View>
+      <View
+        style={{
+          flexDirection: "row",
+          paddingHorizontal: horizontalScale(15),
+          alignItems: "center",
+          gap: horizontalScale(10),
+          marginTop: verticalScale(35),
+        }}>
+        <SkeletonPlaceholder animationType="shimmer">
+          <View
+            style={{
+              width: horizontalScale(40),
+              height: verticalScale(40),
+              borderRadius: "50%",
+            }}
+          />
+        </SkeletonPlaceholder>
+        <View style={{ flex: 1, gap: verticalScale(10) }}>
+          <SkeletonPlaceholder animationType="shimmer">
+            <View
+              style={{
+                width: "100%",
+                height: verticalScale(20),
+                borderRadius: moderateScale(10),
+              }}
+            />
+          </SkeletonPlaceholder>
+          <SkeletonPlaceholder animationType="shimmer">
+            <View
+              style={{
+                width: "100%",
+                height: verticalScale(20),
+                borderRadius: moderateScale(10),
+              }}
+            />
+          </SkeletonPlaceholder>
+        </View>
+      </View>
+    </>
+  );
+
   if (activeIndex === 0) {
     return (
       <BottomSheetView
@@ -260,120 +379,7 @@ export default function RideBookingSheet({
             style={{ flex: 1, gap: verticalScale(20) }}
             entering={FadeInRight.duration(300)}
             exiting={FadeOutLeft}>
-            <View
-              style={{
-                flexDirection: "row",
-                paddingHorizontal: horizontalScale(15),
-                alignItems: "center",
-                gap: horizontalScale(10),
-                marginTop: verticalScale(35),
-              }}>
-              <SkeletonPlaceholder animationType="shimmer">
-                <View
-                  style={{
-                    width: horizontalScale(40),
-                    height: verticalScale(40),
-                    borderRadius: "50%",
-                  }}
-                />
-              </SkeletonPlaceholder>
-              <View style={{ flex: 1, gap: verticalScale(10) }}>
-                <SkeletonPlaceholder animationType="shimmer">
-                  <View
-                    style={{
-                      width: "100%",
-                      height: verticalScale(20),
-                      borderRadius: moderateScale(10),
-                    }}
-                  />
-                </SkeletonPlaceholder>
-                <SkeletonPlaceholder animationType="shimmer">
-                  <View
-                    style={{
-                      width: "100%",
-                      height: verticalScale(20),
-                      borderRadius: moderateScale(10),
-                    }}
-                  />
-                </SkeletonPlaceholder>
-              </View>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                paddingHorizontal: horizontalScale(15),
-                alignItems: "center",
-                gap: horizontalScale(10),
-                marginTop: verticalScale(35),
-              }}>
-              <SkeletonPlaceholder animationType="shimmer">
-                <View
-                  style={{
-                    width: horizontalScale(40),
-                    height: verticalScale(40),
-                    borderRadius: "50%",
-                  }}
-                />
-              </SkeletonPlaceholder>
-              <View style={{ flex: 1, gap: verticalScale(10) }}>
-                <SkeletonPlaceholder animationType="shimmer">
-                  <View
-                    style={{
-                      width: "100%",
-                      height: verticalScale(20),
-                      borderRadius: moderateScale(10),
-                    }}
-                  />
-                </SkeletonPlaceholder>
-                <SkeletonPlaceholder animationType="shimmer">
-                  <View
-                    style={{
-                      width: "100%",
-                      height: verticalScale(20),
-                      borderRadius: moderateScale(10),
-                    }}
-                  />
-                </SkeletonPlaceholder>
-              </View>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                paddingHorizontal: horizontalScale(15),
-                alignItems: "center",
-                gap: horizontalScale(10),
-                marginTop: verticalScale(35),
-              }}>
-              <SkeletonPlaceholder animationType="shimmer">
-                <View
-                  style={{
-                    width: horizontalScale(40),
-                    height: verticalScale(40),
-                    borderRadius: "50%",
-                  }}
-                />
-              </SkeletonPlaceholder>
-              <View style={{ flex: 1, gap: verticalScale(10) }}>
-                <SkeletonPlaceholder animationType="shimmer">
-                  <View
-                    style={{
-                      width: "100%",
-                      height: verticalScale(20),
-                      borderRadius: moderateScale(10),
-                    }}
-                  />
-                </SkeletonPlaceholder>
-                <SkeletonPlaceholder animationType="shimmer">
-                  <View
-                    style={{
-                      width: "100%",
-                      height: verticalScale(20),
-                      borderRadius: moderateScale(10),
-                    }}
-                  />
-                </SkeletonPlaceholder>
-              </View>
-            </View>
+            {renderskeletonContainer()}
           </Animated.View>
         ) : (
           <Animated.View

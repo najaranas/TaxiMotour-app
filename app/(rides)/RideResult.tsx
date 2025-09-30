@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, TextInput, Alert } from "react-native";
+import { View, StyleSheet, TextInput } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import ScreenWrapper from "@/components/common/ScreenWrapper";
 import Typo from "@/components/common/Typo";
@@ -26,15 +26,16 @@ export default function RideResult() {
   // State management
   const [userFeedback, setUserFeedback] = useState("");
   const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
+  const [feedbackError, setFeedbackError] = useState("");
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const supabaseClient = getSupabaseClient();
   const isRideCompleted = status === "completed";
 
   const handleSubmitFeedback = async () => {
+    setFeedbackError("");
+
     if (!userFeedback.trim()) {
-      Alert.alert(
-        t("rideResult.error.title"),
-        t("rideResult.error.emptyFeedback")
-      );
+      setFeedbackError(t("rideResult.error.emptyFeedback"));
       return;
     }
 
@@ -54,17 +55,14 @@ export default function RideResult() {
         throw error;
       }
 
-      Alert.alert(
-        t("rideResult.success.title"),
-        t("rideResult.success.feedbackSubmitted"),
-        [{ text: t("common.ok"), onPress: () => handleNavigateHome() }]
-      );
+      // Show success message briefly then navigate
+      setShowSuccessMessage(true);
+      setTimeout(() => {
+        handleNavigateHome();
+      }, 500);
     } catch (error) {
       console.error("Error submitting feedback:", error);
-      Alert.alert(
-        t("rideResult.error.title"),
-        t("rideResult.error.submissionFailed")
-      );
+      setFeedbackError(t("rideResult.error.submissionFailed"));
     } finally {
       setIsSubmittingFeedback(false);
     }
@@ -118,18 +116,47 @@ export default function RideResult() {
                     {
                       backgroundColor: theme.background,
                       color: theme.text.primary,
-                      borderColor: theme.text.secondary + "30",
+                      borderColor: feedbackError
+                        ? COLORS.danger
+                        : theme.text.secondary + "30",
                     },
                   ]}
                   placeholder={t("rideResult.feedback.placeholder")}
                   placeholderTextColor={theme.text.secondary}
                   value={userFeedback}
-                  onChangeText={setUserFeedback}
+                  onChangeText={(text) => {
+                    setUserFeedback(text);
+                    if (feedbackError) setFeedbackError("");
+                  }}
                   multiline
                   numberOfLines={4}
                   textAlignVertical="top"
                 />
+                {feedbackError ? (
+                  <Typo
+                    variant="caption"
+                    style={[styles.errorText, { color: COLORS.danger }]}>
+                    {feedbackError}
+                  </Typo>
+                ) : null}
               </KeyboardStickyView>
+            </View>
+          )}
+
+          {/* Success Message */}
+          {showSuccessMessage && (
+            <View
+              style={[
+                styles.successMessage,
+                { backgroundColor: COLORS.success + "15" },
+              ]}>
+              <CheckCircle size={moderateScale(20)} color={COLORS.success} />
+              <Typo
+                variant="body"
+                style={{ color: COLORS.success }}
+                fontFamily={FONTS.medium}>
+                {t("rideResult.success.feedbackSubmitted")}
+              </Typo>
             </View>
           )}
 
@@ -255,5 +282,19 @@ const styles = StyleSheet.create({
     borderRadius: moderateScale(12),
     borderWidth: 1,
     borderColor: COLORS.gray[300],
+  },
+  errorText: {
+    marginTop: verticalScale(5),
+    textAlign: "left",
+  },
+  successMessage: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: horizontalScale(8),
+    padding: verticalScale(12),
+    borderRadius: moderateScale(8),
+    borderWidth: 1,
+    borderColor: COLORS.success + "30",
   },
 });

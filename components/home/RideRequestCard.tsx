@@ -254,6 +254,7 @@ export default function RideRequestCard({
           </Typo>
         </View>
       )}
+
       {/* Action Buttons */}
       <View style={styles.actionButtonsRow}>
         {currentRideStatus === "accepted" ||
@@ -285,12 +286,12 @@ export default function RideRequestCard({
                 styles.secondaryActionButton,
                 {
                   borderRadius: theme.borderRadius.medium,
-                  backgroundColor: theme.surface,
-                  borderWidth: 1,
-                  borderColor: COLORS.gray[300],
+                  backgroundColor: theme.button.secondary,
                 },
               ]}>
-              <Typo variant="body">{t("rideRequestCard.actions.decline")}</Typo>
+              <Typo variant="body" color={COLORS.white}>
+                {t("rideRequestCard.actions.decline")}
+              </Typo>
             </Button>
             <Button
               onPress={handleAcceptRideRequest}
@@ -367,7 +368,6 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   fareAmount: {
-    textAlign: "center",
     marginVertical: verticalScale(8),
   },
   statusContainer: {

@@ -53,7 +53,7 @@ export default function LocationSuggestionItem({
           </Typo>
         </View>
         <Button onPress={() => onRefine(item)}>
-          <TopIcon size={horizontalScale(25)} />
+          <TopIcon size={horizontalScale(25)} color={theme.text.secondary} />
         </Button>
       </View>
     </Button>

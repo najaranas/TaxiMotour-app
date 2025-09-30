@@ -37,7 +37,7 @@ import { pricingService } from "@/constants/app";
 import { useSession } from "@clerk/clerk-expo";
 import RideRequestCard from "@/components/home/RideRequestCard";
 import Animated, { SequencedTransition } from "react-native-reanimated";
-import PassengerAcceptedCard from "@/components/home/PassengerAceptedCard";
+import PassengerAcceptedCard from "@/components/home/PassengerAcceptedCard";
 
 interface LocationData {
   place?: string;
@@ -202,6 +202,7 @@ export default function Home() {
       setIsRequestingRide(false);
     }
   };
+
   const handleCancelRide = useCallback(async () => {
     try {
       setIsRequestingRide(true);
